@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">OVETalk</string>
+
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="pull_to_refresh_pull_label">下拉可以刷新</string>
+    <string name="pull_to_refresh_release_label">松开可以刷新</string>
+    <string name="pull_to_refresh_refreshing_label">加载中...</string>
+    <string name="pull_to_refresh_tap_label">下拉可以刷新</string>
+    <string name="pull_to_refresh_update">最近更新：</string>
+    <string name="history_null">暂无数据</string>
+    <string name="tip">微信支付</string>
+
+
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_mygroup">Mygroup</string>
+    <string name="title_activity_create_group">CreateGroupActivity</string>
+
+    <string name="vitamio_name">Vitamio</string>
+    <string name="vitamio_init_decoders">加载中…</string>
+    <string name="vitamio_videoview_error_title">Cannot play video</string>
+    <string name="vitamio_videoview_error_text_invalid_progressive_playback">Sorry, this video is not valid for streaming to
+		this device.</string>
+    <string name="vitamio_videoview_error_text_unknown">Sorry, this video cannot be played.</string>
+    <string name="vitamio_videoview_error_button">OK</string>
+    <string name="mediacontroller_play_pause">Play/Pause</string>
+
+
+
+
+    <string name="selectChooser">请选择文件打开方式：</string>
+
+    <string name="about_rss">关于程序</string>
+    <string name="close_rss_menu">关闭</string>
+    <string name="sure_menu">确定</string>
+    <string name="rss_loading">正在加载中，请稍候...</string>
+    <string name="cancel_menu">取消</string>
+    <string name="alert_msg">提示信息</string>
+    <string name="no_sdcard">未检测到SD卡</string>
+    <string name="finishapp">再按一次退出程序</string>
+    <string name="nofile">没有发现文件或文件夹</string>
+    <string name="optionSuccess">操作成功</string>
+    <string name="optionFail">操作失败</string>
+    <string name="attribute">属性</string>
+    <string name="setAsRoot">设为根目录</string>
+    <string name="optionSelect">请选择文件操作</string>
+    <string name="fileinfo">文件信息</string>
+    <string name="about_msg">本程序只适用于Android开发及使用者，作者保留一切权利，任何试图使用此程序来营利的行为都是违法的！程序使用过程中，如果发现BUG，请联系作者：\nQQ：261816582\nEmail：culin003@126.com</string>
+    <string name="notepad">记事本</string>
+    <string name="title_activity_member">Member</string>
+    <string name="title_activity_make_task">MakeTaskActivity</string>
+    <string name="title_activity_task">TaskActivity</string>
+</resources>

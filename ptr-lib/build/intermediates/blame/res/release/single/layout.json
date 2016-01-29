@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\build\\intermediates\\res\\merged\\release\\layout\\cube_ptr_classic_default_header.xml",
+        "source": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\layout\\cube_ptr_classic_default_header.xml"
+    },
+    {
+        "merged": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\build\\intermediates\\res\\merged\\release\\layout\\cube_ptr_simple_loading.xml",
+        "source": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\layout\\cube_ptr_simple_loading.xml"
+    }
+]

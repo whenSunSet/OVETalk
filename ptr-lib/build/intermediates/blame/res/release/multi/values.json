@@ -1,0 +1,197 @@
+[
+    {
+        "outputFile": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\build\\intermediates\\res\\merged\\release\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 58,
+                    "endOffset": 109
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\build\\intermediates\\exploded-aar\\com.astuetz\\pagerslidingtabstrip\\1.0.1\\res\\values\\values.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 185,
+                        "endColumn": 58,
+                        "endOffset": 239
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 1346,
+                    "endColumn": 57,
+                    "endOffset": 1399
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 605,
+                        "endColumn": 62,
+                        "endOffset": 663
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 1404,
+                    "endColumn": 62,
+                    "endOffset": 1462
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 400,
+                        "endColumn": 67,
+                        "endOffset": 463
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 1467,
+                    "endColumn": 61,
+                    "endOffset": 1524
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 537,
+                        "endColumn": 66,
+                        "endOffset": 599
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 1529,
+                    "endColumn": 56,
+                    "endOffset": 1581
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 59,
+                        "endColumn": 56,
+                        "endOffset": 111
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 1586,
+                    "endColumn": 78,
+                    "endOffset": 1660
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 117,
+                        "endColumn": 78,
+                        "endOffset": 191
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 11,
+                    "startColumn": 4,
+                    "startOffset": 1665,
+                    "endColumn": 62,
+                    "endOffset": 1723
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 334,
+                        "endColumn": 62,
+                        "endOffset": 392
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 12,
+                    "startColumn": 4,
+                    "startOffset": 1728,
+                    "endColumn": 59,
+                    "endOffset": 1783
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 273,
+                        "endColumn": 59,
+                        "endOffset": 328
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 13,
+                    "startColumn": 4,
+                    "startOffset": 1788,
+                    "endColumn": 74,
+                    "endOffset": 1858
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 197,
+                        "endColumn": 74,
+                        "endOffset": 267
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 14,
+                    "startColumn": 4,
+                    "startOffset": 1863,
+                    "endColumn": 61,
+                    "endOffset": 1920
+                },
+                "from": {
+                    "file": "D:\\androidStudioProject\\OVETalk\\ptr-lib\\res\\values\\cube_ptr_string.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 469,
+                        "endColumn": 66,
+                        "endOffset": 531
+                    }
+                }
+            }
+        ]
+    }
+]
