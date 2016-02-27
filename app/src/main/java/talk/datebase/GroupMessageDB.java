@@ -30,6 +30,7 @@ public class GroupMessageDB {
     private static final String COL_DATE = "date";
     private static final String COL_USER_NAME = "userName";
     private static final String COL_MESSAGE_IMAGE="messageImage";
+    private static final String COL_MESSAGE_STATU="messageStatu";
 
     private SQLiteDatabase mDb;
 
@@ -43,6 +44,7 @@ public class GroupMessageDB {
                 + COL_GROUP_NAME +" TEXT, "
                 + COL_ICON +" TEXT, "
                 + COL_IS_COMING +" INTEGER ,"
+                + COL_MESSAGE_STATU +" INTEGER ,"
                 + COL_MESSAGE +" TEXT , "
                 + COL_USER_NICK_NAME +" TEXT , "
                 + COL_DATE +" TEXT , "
@@ -65,11 +67,17 @@ public class GroupMessageDB {
         int readed = groupChatMessage.isReaded() ? 1 : 0;
 
         mDb.execSQL(
-                "insert into _"
-                        + groupName + " (" + COL_GROUP_NAME + "," + COL_ICON
-                        + "," + COL_IS_COMING + "," + COL_MESSAGE + ","
-                        + COL_USER_NICK_NAME + "," + COL_DATE + "," + COL_USER_NAME
-                        + "," + COL_READED + "," + COL_MESSAGE_IMAGE + ") values(?,?,?,?,?,?,?,?,?)",
+                "insert into _" + groupName + " ("
+                        + COL_GROUP_NAME + ","
+                        + COL_ICON + ","
+                        + COL_IS_COMING + ","
+                        + COL_MESSAGE + ","
+                        + COL_USER_NICK_NAME + ","
+                        + COL_DATE + ","
+                        + COL_USER_NAME + ","
+                        + COL_READED + ","
+                        + COL_MESSAGE_STATU+ ","
+                        + COL_MESSAGE_IMAGE + ") values(?,?,?,?,?,?,?,?,?,?)",
                 new Object[]{groupChatMessage.getGroupName(),
                         groupChatMessage.getUserIcon(),
                         isComing,
@@ -78,6 +86,7 @@ public class GroupMessageDB {
                         groupChatMessage.getDateStr(),
                         groupChatMessage.getUserName(),
                         readed,
+                        groupChatMessage.getMessageStatu(),
                         groupChatMessage.getMessageImage()});
     }
 
@@ -85,8 +94,8 @@ public class GroupMessageDB {
      *
      查找指定的最后n条消息记录
      */
-    public List<GroupChatMessage> find(String groupName, int currentPage, int pageSize) {
-        List<GroupChatMessage> groupChatMessages = new ArrayList<GroupChatMessage>();
+    public ArrayList<GroupChatMessage> find(String groupName, int currentPage, int pageSize) {
+        ArrayList<GroupChatMessage> groupChatMessages = new ArrayList<GroupChatMessage>();
         createTable(groupName);
         int start = (currentPage - 1) * pageSize;
         int end = start + pageSize;
@@ -105,7 +114,8 @@ public class GroupMessageDB {
                     c.getString(c.getColumnIndex(COL_DATE)),
                     c.getString(c.getColumnIndex(COL_USER_NICK_NAME)),
                     c.getString(c.getColumnIndex(COL_USER_NAME)),
-                    c.getString(c.getColumnIndex(COL_MESSAGE_IMAGE))
+                    c.getString(c.getColumnIndex(COL_MESSAGE_IMAGE)),
+                    c.getInt(c.getColumnIndex(COL_MESSAGE_STATU))
             );
 
             if (!TextUtils.isEmpty(groupChatMessage.getMessage())){
@@ -151,7 +161,8 @@ public class GroupMessageDB {
                     c.getString(c.getColumnIndex(COL_DATE)),
                     c.getString(c.getColumnIndex(COL_USER_NICK_NAME)),
                     c.getString(c.getColumnIndex(COL_USER_NAME)),
-                    c.getString(c.getColumnIndex(COL_MESSAGE_IMAGE))
+                    c.getString(c.getColumnIndex(COL_MESSAGE_IMAGE)),
+                    c.getInt(c.getColumnIndex(COL_MESSAGE_STATU))
             );
         }
         c.close();

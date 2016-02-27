@@ -24,8 +24,7 @@ public class Work {
         this.date = date;
     }
 
-    public Work() {
-    }
+    public Work() {}
 
     public int getTaskId() {
         return taskId;

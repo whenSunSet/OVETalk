@@ -8,34 +8,32 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
 
-import talk.model.Task;
+import talk.model.Work;
 
 /**
- * Created by asus on 2015/12/21.
+ * Created by heshixiyang on 2016/2/22.
  */
-public class TaskAdapter extends ArrayAdapter<Task> {
+public class WorkAdapter extends ArrayAdapter<Work> {
     private int resourceId;
     private View view;
-    public TaskAdapter(Context context, int resourceId, List objects) {
+    public WorkAdapter(Context context, int resourceId, List objects) {
         super(context, resourceId, objects);
         this.resourceId=resourceId;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Task task=getItem(position);
+        Work work=getItem(position);
         ViewHolder holder;
         if (convertView==null){
             view= LayoutInflater.from(getContext()).inflate(resourceId,null);
             holder=new ViewHolder();
             holder.name=(TextView)view.findViewById(R.id.name);
             holder.typeImage=(ImageView)view.findViewById(R.id.typeImage);
-            holder.content=(TextView)view.findViewById(R.id.content);
             holder.date=(TextView)view.findViewById(R.id.date);
             view.setTag(holder);
         }else {
@@ -43,17 +41,16 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             holder=(ViewHolder)convertView.getTag();
         }
 
-        setResource(task,holder);
+        setResource(work,holder);
 
         return view;
     }
 
-    private void setResource(Task task,ViewHolder holder){
-        holder.date.setText(task.getDate());
-        holder.name.setText("master name:"+task.getGroupName());
-        holder.content.setText("target:"+task.getTarget());
+    private void setResource(Work work,ViewHolder holder){
+        holder.date.setText(work.getDate());
+        holder.name.setText("master name:"+work.getMaster());
 
-        switch (task.getType()){
+        switch (work.getType()){
             case 0:
                 holder.typeImage.setImageResource(R.drawable.text);
                 break;
@@ -73,6 +70,4 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         TextView content;
         TextView date;
     }
-
-
 }

@@ -2,6 +2,8 @@ package talk.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -87,29 +90,44 @@ public class ChatMessageAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		//当点击converView的时候，让软键盘和More收缩
+		// 初始化View状态
+		if (viewHolder.isFrom){
+			viewHolder.disagree.setVisibility(View.GONE);
+			viewHolder.agree.setVisibility(View.GONE);
+		}
+		viewHolder.img.setVisibility(View.GONE);
+
+		//当点击convert   More收缩
 		final View view=convertView;
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					InputMethodManager im = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-					im.hideSoftInputFromWindow(view.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
 					mCallBackMore.callBackMore();
 				}
 				return false;
 			}
 		});
 
-		int messageStatu=Integer.parseInt(chatMessage.getMessageImage());
-        viewHolder.img.setVisibility(View.GONE);
-		if (viewHolder.isFrom){
-			//一开始就把Button隐藏起来
-			viewHolder.agree.setVisibility(View.GONE);
-			viewHolder.disagree.setVisibility(View.GONE);
-		}
+		int messageStatu=chatMessage.getMessageStatu();
 
+		if (messageStatu==GlobleData.PHOTO_MESSAGE){
+			viewHolder.img.setVisibility(View.VISIBLE);
+			viewHolder.img.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
+		}else if (messageStatu==GlobleData.EMOJI_MESSAGE){
+
+		}else {
+			viewHolder.content.setText(chatMessage.getMessage());
+			if (messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
+				viewHolder.img.setVisibility(View.VISIBLE);
+				viewHolder.img.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
+
+			}else if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
+				viewHolder.agree.setVisibility(View.VISIBLE);
+				viewHolder.disagree.setVisibility(View.VISIBLE);
+
+			}
+		}
 		if (messageStatu<=1){
 			switch (messageStatu){
 				case 0:
@@ -183,26 +201,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	private class ViewHolder {
-		public TextView createDate;
-		public TextView nickname;
-		public TextView content;
-		public ImageView img;
-		public Button agree;
-		public Button disagree;
-		public boolean isFrom;
-		public boolean isChoose;
-		public int chooseWhich;
-	}
-
-	public interface OnCallBackMore{
-		public void callBackMore();
-	}
-
-	public interface OnCallBackDialog{
-		public void callBackDialog(boolean isAgree, String time);
-	}
-
 	@Override
 	public int getCount()
 	{
@@ -216,22 +214,35 @@ public class ChatMessageAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public long getItemId(int position)
-	{
-		return position;
+	public long getItemId(int position) {
+		return 0;
 	}
 
 	@Override
-	public int getItemViewType(int position)
-	{
+	public int getItemViewType(int position) {
 		GroupChatMessage msg = mDatas.get(position);
 		return msg.isComing() ? 1 : 0;
 	}
 
-	@Override
-	public int getViewTypeCount()
-	{
-		return 2;
+	public interface OnCallBackMore{
+		public void callBackMore();
 	}
+
+	public interface OnCallBackDialog{
+		public void callBackDialog(boolean isAgree, String time);
+	}
+
+	private class ViewHolder {
+		public TextView createDate;
+		public TextView nickname;
+		public TextView content;
+		public ImageView img;
+		public Button agree;
+		public Button disagree;
+		public boolean isFrom;
+		public boolean isChoose;
+		public int chooseWhich;
+	}
+
 
 }

@@ -14,8 +14,8 @@ public class ClickWorkDB {
     public static final String CLICK_WORK_TABLE_NAME="clickWork";
 
     public static final String GROUP_NAME="groupName";
-    public static final String TASK_ID="taskId";
-    public static final String WORK_ID="workId";
+    public static final String TASK_ID="idInGroup";
+    public static final String WORK_ID="idInTask";
     public static final String USER_ID="userId";
     public static final String DATE="date";
 
@@ -29,12 +29,12 @@ public class ClickWorkDB {
 
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + CLICK_WORK_TABLE_NAME
-                + " (" + USER_ID + " TEXT, " //
-                + GROUP_NAME + " TEXT, "//
-                + TASK_ID + " INTEGER "
-                + WORK_ID + " INTEGER "
-                + DATE + " TEXT "
-                + "foreign key (" + GROUP_NAME + "," + TASK_ID + "," + WORK_ID + ") references " + "work(groupName,taskId,idInTask) "
+                + " (" + USER_ID + " TEXT,"
+                + GROUP_NAME + " TEXT, "
+                + TASK_ID + " INTEGER,"
+                + WORK_ID + " INTEGER,"
+                + DATE + " TEXT,"
+                + "foreign key (" + GROUP_NAME + "," + TASK_ID + "," + WORK_ID + ") references " + "work(groupName,idInGroup,idInTask) "
                 + "PRIMARY KEY (" + USER_ID + "," + GROUP_NAME + "," + TASK_ID + "," + WORK_ID + "))");
 
     }

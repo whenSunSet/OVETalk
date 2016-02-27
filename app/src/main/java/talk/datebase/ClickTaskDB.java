@@ -28,10 +28,10 @@ public class ClickTaskDB {
 
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + CLICK_TASK_TABLE_NAME
-                + " (" + USER_ID + " TEXT, " //
-                + GROUP_NAME + " TEXT, "//
+                + " (" + USER_ID + " TEXT, "
+                + GROUP_NAME + " TEXT, "
                 + TASK_ID + " INTEGER "
-                + DATE + " TEXT "
+                + DATE + " TEXT,"
                 + "foreign key (" + GROUP_NAME + "," + TASK_ID + ") references " + "task(groupName,idInGroup) "
                 + "PRIMARY KEY (" + USER_ID + "," + GROUP_NAME + "," + TASK_ID + "))");
 

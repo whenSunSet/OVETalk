@@ -22,11 +22,12 @@ import com.example.heshixiyang.ovetalk.R;
 import java.util.Date;
 
 import talk.TalkApplication;
+import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.model.Task;
 import talk.util.DialogUtil;
 
-public class MakeTaskActivity extends Activity {
+public class MakeTaskActivity extends BasicActivity {
     private Task mTask;
     private TalkApplication mApplication;
     private String[] mDate;

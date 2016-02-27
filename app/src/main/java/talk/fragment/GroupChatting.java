@@ -1,26 +1,19 @@
 package talk.fragment;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.BuildConfig;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-
+import android.widget.ListAdapter;
 
 import com.example.heshixiyang.ovetalk.R;
 
@@ -31,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 
 import talk.Globle.GlobleData;
-import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
 import talk.adapter.ChatMessageAdapter;
@@ -42,7 +34,7 @@ import talk.util.DialogUtil;
 import talk.util.MyPreferenceManager;
 import talk.util.MyRunnable;
 
-public class GroupChatting extends Fragment {
+public class GroupChatting extends BasicFragment {
     //-------------------------handler的几种状态
     public static final int SEND_JOIN_MESSAGE_ERROR=1;
     public static final int SEND_JOIN_MESSAGE_INTERNET_ERROR=2;
@@ -50,63 +42,100 @@ public class GroupChatting extends Fragment {
     public static final int CHANGE_MESSAGE_NUM=4;
     public static final int I_WANT_TO_CALL_110=110;
     //---------------------listView
-    private ListView mGroupChatMessagesListView;
-    private ChatMessageAdapter mAdapter;
-    private List<GroupChatMessage> mDatas = new ArrayList<GroupChatMessage>();
     private Button mMsgSend;
     private EditText mMsgInput;
     private ImageView mMore;
+
     private ImageView mVedio;
     private LinearLayout mContainer;
+
     private String mGroupName;
     private GroupAll mActivity;
     private GroupChatMessage mChatMessage ;
 
     //发送消息的数据
     private List<NameValuePair> formparams;
-    private View view;
-    private TalkApplication mApplication;
     private MyPreferenceManager mPreferenceManager;
     private GroupMessageDB mGroupMessageDB;
 
     private Group mGroup;
-    private int mClickNum=0;
     //---------------------mContan是否可见
     private Boolean isVisble=false;
 
     //---------------------每次加载消息10个为阶梯
     private int mMessageNum=10;
-
     private int mMessageMax;
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case SEND_JOIN_MESSAGE_ERROR:
+                    DialogUtil.showToast(getActivity(), "返回值错误");
+                    break;
+
+                case SEND_JOIN_MESSAGE_INTERNET_ERROR:
+                    DialogUtil.showToast(getActivity(),"网络错误");
+                    break;
+
+                case SEND_JOIN_MESSAGE_SUCCESS:
+
+                    break;
+
+                case CHANGE_MESSAGE_NUM:
+                    if (mMessageMax<=mMessageNum){
+                        DialogUtil.showToast(mTalkApplication,"没有更多的消息了");
+
+                        break;
+                    }
+
+                    mMessageNum=mMessageNum+10;
+                    mData = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
+
+                    mAdapter.notifyDataSetChanged();
+                    ((GroupAll)getActivity()).myAdapter.notifyDataSetChanged();
+                    //将焦点放在上一次消息的最前面一个
+                    mListView.setSelection(10);
+                    break;
+                default:
+                    break;
+
+            }
+        }
+
+    };
 
     public void setIsVisble(Boolean isVisble) {
         this.isVisble = isVisble;
     }
+
     public LinearLayout getmContan() {
         return mContainer;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view=inflater.inflate(R.layout.main_chatting,null);
-        initView();
+        isChattingFragment=true;
+        init(inflater);
+
         initEvent();
         return view;
     }
 
-    private void initView() {
+    @Override
+    protected void init(LayoutInflater inflater) {
+        super.init(inflater);
         mActivity=(GroupAll)getActivity();
-        mApplication = mActivity.mApplication;
+        mPreferenceManager = mTalkApplication.getSpUtil();
         mGroupMessageDB=mActivity.mGroupMessageDB;
-        mPreferenceManager = mApplication.getSpUtil();
+
         mGroup = mActivity.mGroup;
         mGroupName= mGroup.getGroupName();
 
         if (mActivity.isSystemGroup){
             //如果是SystemGroup的话就把输入框去掉
-            mGroupName=mApplication.getSpUtil().getUserName();
+            mGroupName=mTalkApplication.getSpUtil().getUserName();
             view.findViewById(R.id.contant).setVisibility(View.GONE);
-            if (BuildConfig.DEBUG) Log.d("GroupChatting", "isSystemGroup");
         }else {
             mMsgSend = (Button) view.findViewById(R.id.id_chat_send);
             mMsgInput = (EditText) view.findViewById(R.id.id_chat_msg);
@@ -116,17 +145,16 @@ public class GroupChatting extends Fragment {
             formparams = new ArrayList<NameValuePair>();
         }
 
-        mGroupChatMessagesListView = (ListView) view.findViewById(R.id.id_chat_listView);
         //将本group的所有消息设置为已读
         mGroupMessageDB.updateReaded(mGroupName);
 
         mMessageMax=mGroupMessageDB.getMessageNum(mGroup.getGroupName());
 
         // 获取10条聊天记录
-        mDatas = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
-        mAdapter = new ChatMessageAdapter(getActivity(), mDatas);
-        mGroupChatMessagesListView.setAdapter(mAdapter);
-        mGroupChatMessagesListView.setSelection(mDatas.size() - 1);
+        mData = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
+        mAdapter = new ChatMessageAdapter(getActivity(), mData);
+        mListView.setAdapter((ListAdapter) mAdapter);
+        mListView.setSelection(mData.size() - 1);
 
     }
 
@@ -137,22 +165,12 @@ public class GroupChatting extends Fragment {
     }
 
     private void initPrintEvent() {
-
         //通过点击mMore这个按钮让mContan显示或者消失
         mMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isVisble) {
-                    mClickNum++;
                     mContainer.setVisibility(View.VISIBLE);
-                    //当让mMore出现的时候，让软键盘关闭
-                    InputMethodManager im = (InputMethodManager) mApplication.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    im.hideSoftInputFromWindow(mMsgInput.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-                    Message message = new Message();
-                    message.what = I_WANT_TO_CALL_110;
-                    handler.sendMessage(message);
-
                     isVisble = true;
                 } else {
                     mContainer.setVisibility(View.GONE);
@@ -162,40 +180,12 @@ public class GroupChatting extends Fragment {
             }
         });
 
-        //当要输入文字的时候，让mMore消失
-        mMsgInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mClickNum++;
-
-                if (BuildConfig.DEBUG) Log.d("GroupChatting", "input");
-
-                //当软键盘出现的时候，让listView 不被下面的信息不被遮挡
-                Message message = new Message();
-                message.what = I_WANT_TO_CALL_110;
-                handler.sendMessage(message);
-
-            }
-        });
-
-//
-//        //跳转到视频收藏那分享视频
-//        mVedio.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), MyFavoritesActivity.class);
-//                intent.putExtra("isMessage", "isMessage");
-//                getActivity().startActivityForResult(intent, 1);
-//            }
-//        });
-
-
         mMsgSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String msg = mMsgInput.getText().toString();
                 if (TextUtils.isEmpty(msg)) {
-                    DialogUtil.showToast(mApplication, "你还没输入文字呢");
+                    DialogUtil.showToast(mTalkApplication, "你还没输入文字呢");
                     return;
                 }
 
@@ -229,6 +219,26 @@ public class GroupChatting extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
+
+        mMsgInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContainer.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    //-------------------------刷新本fragment
+    public void flash(GroupChatMessage chatMessage) {
+        if (chatMessage==null){
+            mData=mGroupMessageDB.find(mGroup.getGroupName(), 1, mGroupMessageDB.getUnreadedMsgsCountByGroupId(mGroup.getGroupName()));
+        }else {
+            mData.add(chatMessage);
+        }
+        mGroupMessageDB.updateReaded(mGroup.getGroupName());
+        mListView.setSelection(mData.size() - 1);
+
+        GroupAll.isFlash=false;
     }
 
     private void openThread(String message,String isImage){
@@ -239,6 +249,7 @@ public class GroupChatting extends Fragment {
         formparams.add(new NameValuePair("isImage", isImage));
         new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
     }
+
     //-----------------------添加自己的信息，分为普通的信息和视频信息
     public void addMessage(String message,String img) {
         GroupChatMessage chatMessage = new GroupChatMessage();
@@ -252,83 +263,14 @@ public class GroupChatting extends Fragment {
         chatMessage.setUserName(mPreferenceManager.getUserName());
         chatMessage.setMessageImage(img);
         mGroupMessageDB.add(mGroup.getGroupName(), chatMessage);
-        mDatas.add(chatMessage);
+        mData.add(chatMessage);
         mAdapter.notifyDataSetChanged();
-        mGroupChatMessagesListView.setSelection(mDatas.size() - 1);
+        mListView.setSelection(mData.size() - 1);
 
         //如果是视屏的话在这里开启一个线程，发送视频信息
             openThread(message,img);
 
     }
-    //-------------------------刷新本fragment
-    public void flashFragment(){
-        mDatas.addAll(mGroupMessageDB.find(mGroup.getGroupName(), 1, mGroupMessageDB.getUnreadedMsgsCountByGroupId(mGroup.getGroupName())));
-        mAdapter.notifyDataSetChanged();
-        mGroupChatMessagesListView.setSelection(mDatas.size() - 1);
-        mGroupMessageDB.updateReaded(mGroup.getGroupName());
-        GroupAll.isFlash=false;
-    }
-
-
-    //------------------------当他人发送信息，接受时添加信息并刷新
-    public void addNewMessage(GroupChatMessage groupChatMessage){
-        //只有在这个的当前group的聊天界面的时候才会调用这个函数，调用这个函数的时候把所有的message 设置为已经读
-        mGroupMessageDB.updateReaded(mGroup.getGroupName());
-        mDatas.add(groupChatMessage);
-        mAdapter.notifyDataSetChanged();
-        mGroupChatMessagesListView.setSelection(mDatas.size() - 1);
-    }
-
-
-
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case SEND_JOIN_MESSAGE_ERROR:
-                    DialogUtil.showToast(getActivity(), "返回值错误");
-                    break;
-
-                case SEND_JOIN_MESSAGE_INTERNET_ERROR:
-                    DialogUtil.showToast(getActivity(),"网络错误");
-                    break;
-
-                case SEND_JOIN_MESSAGE_SUCCESS:
-
-                    break;
-
-                case CHANGE_MESSAGE_NUM:
-                    if (mMessageMax<=mMessageNum){
-                        DialogUtil.showToast(mApplication,"没有更多的消息了");
-
-                        break;
-                    }
-
-                    mMessageNum=mMessageNum+10;
-                    mDatas = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
-
-                    mAdapter.notifyDataSetChanged();
-                    ((GroupAll)getActivity()).myAdapter.notifyDataSetChanged();
-                    //将焦点放在上一次消息的最前面一个
-                    mGroupChatMessagesListView.setSelection(10);
-                    break;
-                case 110:
-                    mGroupChatMessagesListView.setAdapter(mAdapter);
-                    mGroupChatMessagesListView.setSelection(mDatas.size() - 1);
-                    if (mClickNum<2){
-                        mMsgInput.performClick();
-                    }else if (mClickNum==2){
-                        mClickNum=0;
-                    }
-                    break;
-                default:
-                    break;
-
-            }
-        }
-
-    };
 
 
     //    public void messageSend(GroupChatMessage chatMessage){
@@ -344,7 +286,7 @@ public class GroupChatting extends Fragment {
 //                if (jsonObject.toString()=="1"){
 //
 //                }else {
-//                    DialogUtil.showToast(mApplication,"信息发送失败");
+//                    DialogUtil.showToast(mTalkApplication,"信息发送失败");
 //                }
 //            }
 //        }, new Response.ErrorListener() {
@@ -352,7 +294,7 @@ public class GroupChatting extends Fragment {
 //            public void onErrorResponse(VolleyError volleyError) {
 //                if (BuildConfig.DEBUG)
 //                    Log.d("GroupChatting", "volleyError.networkResponse.statusCode:" + volleyError.networkResponse.statusCode);
-//                DialogUtil.showToast(mApplication,"网络错误，信息发送失败");
+//                DialogUtil.showToast(mTalkApplication,"网络错误，信息发送失败");
 //            }
 //        });
 //        requestQueue.add(request);

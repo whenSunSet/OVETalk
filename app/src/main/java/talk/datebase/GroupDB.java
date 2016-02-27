@@ -13,7 +13,7 @@ import talk.model.Group;
 
 public class GroupDB {
 
-    public static final String GROUP_TABLE_NAME="group";
+    public static final String GROUP_TABLE_NAME="groups";
 
     public static final String GROUP_NAME="groupName";
     public static final String GROUP_NICK_NAME="groupNickName";
@@ -25,16 +25,19 @@ public class GroupDB {
     private TalkApplication mApplication;
     private SQLiteDatabase mDb;
 
+    private GroupMessageDB messageDB;
+
 
     public GroupDB(Context context) {
         mApplication=(TalkApplication)context;
+        messageDB=mApplication.getGroupMessageDB();
         mDb = context.openOrCreateDatabase(GlobleData.GROUP_DB_NAME, Context.MODE_PRIVATE, null);
         createTable(mDb);
     }
 
     public void createTable(SQLiteDatabase mDb) {
         mDb.execSQL("CREATE table IF NOT EXISTS "+GROUP_TABLE_NAME
-                + " ("+GROUP_NAME +" TEXT PRIMARY KEY,"
+                +" ( "+GROUP_NAME +" TEXT PRIMARY KEY,"
                 +GROUP_NICK_NAME +" TEXT,"
                 +GROUP_ICON +" TEXT,"
                 +GROUP_TASK_NUM +" INTEGER,"
@@ -62,6 +65,8 @@ public class GroupDB {
                         u.getTaskNum(),
                         u.getGroupIcon(),
                         u.getGroupMaster()});
+
+        messageDB.createTable(u.getGroupName());
     }
 
 
@@ -74,6 +79,8 @@ public class GroupDB {
     public void delGroup(String groupName) {
         mDb.execSQL("delete from " + GROUP_TABLE_NAME + " where " + GROUP_NAME + "=?",
                 new Object[]{groupName});
+
+        messageDB.createTable(groupName);
     }
 
     public void upDateGroup(List<Group> list) {
@@ -123,8 +130,8 @@ public class GroupDB {
 
 
 
-    public List<Group> getGroups() {
-        List<Group> list = new ArrayList<Group>();
+    public ArrayList<Group> getGroups() {
+        ArrayList<Group> list = new ArrayList<Group>();
         Cursor c = mDb.rawQuery("select * from "+GROUP_TABLE_NAME, null);
         while (c.moveToNext())
         {

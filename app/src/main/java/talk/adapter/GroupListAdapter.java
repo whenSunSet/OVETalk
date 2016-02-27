@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.heshixiyang.ovetalk.R;
@@ -116,11 +117,16 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
     }
 
     private void setClick(LinearLayout chatAll, final String extraMessage, final Group group){
+        final Group group1=((TalkApplication)mContext).getGroupDB().getGroup(group.getGroupName());
+        if (group1==null) {
+            Toast.makeText(mContext, "该群组已经解散,请刷新列表", Toast.LENGTH_SHORT).show();
+            return;
+        }
         chatAll.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 ((TalkApplication)mContext).map.put("nowGroup",group);
+
                 Intent intent = new Intent(mContext, GroupAll.class);
                 intent.putExtra("groupName", extraMessage);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

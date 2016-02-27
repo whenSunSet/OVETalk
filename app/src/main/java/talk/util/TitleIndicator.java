@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
@@ -32,49 +31,32 @@ import talk.model.TabInfo;
  *这是个选项卡式的控件，会随着viewpager的滑动而滑动
  */
 public class TitleIndicator extends LinearLayout implements View.OnClickListener, OnFocusChangeListener {
-    private boolean DEBUG = false;
 
     private static final String TAG = "TitleFlowIndicator";
-
     private static final float FOOTER_LINE_HEIGHT = 4.0f;
-
     private static final int FOOTER_COLOR = 0xFFFFC445;
-
-
     private static final float FOOTER_TRIANGLE_HEIGHT = 10;
-
+private final int BSSEEID = 0xffff00;
+    private boolean DEBUG = false;
     private int mCurrentScroll = 0;
     //选项卡列表
     private List<TabInfo> mTabs;
-
     //选项卡所依赖的viewpager
     private ViewPager mViewPager;
-
     //选项卡普通状态下的字体颜色
     private ColorStateList mTextColor;
-
     //普通状态和选中状态下的字体大小
     private float mTextSizeNormal;
     private float mTextSizeSelected;
-
     private Path mPath = new Path();
-
     private Paint mPaintFooterLine;
-
     private Paint mPaintFooterTriangle;
-
     private float mFooterTriangleHeight;
-
     //滚动条的高度
     private float mFooterLineHeight;
-
     //当前选项卡的下标，从0开始
     private int mSelectedTab = 0;
-
-    private Context mContext;
-
-    private final int BSSEEID = 0xffff00;;
-
+    private Context mContext;;
     private boolean mChangeOnClick = true;
 
     private int mCurrID = 0;
@@ -171,8 +153,8 @@ public class TitleIndicator extends LinearLayout implements View.OnClickListener
         path.lineTo(left_x, bottom_y + 1f);
         path.close();
         canvas.drawPath(path, mPaintFooterTriangle);
-    }
 
+    }
     /**
      * 获取指定下标的选项卡的标题
      */
@@ -250,6 +232,8 @@ public class TitleIndicator extends LinearLayout implements View.OnClickListener
         } else {
             tabIndicator = mInflater.inflate(R.layout.title_flow_indicator_v2, this, false);
         }
+
+
         final TextView tv = (TextView) tabIndicator.findViewById(R.id.tab_title);
         final ImageView tips = (ImageView) tabIndicator.findViewById(R.id.tab_title_tips);
         if (mTextColor != null) {
@@ -278,12 +262,12 @@ public class TitleIndicator extends LinearLayout implements View.OnClickListener
         mSelectedTab = index;
     }
 
-    public void setChangeOnClick(boolean changeOnClick) {
-        mChangeOnClick = changeOnClick;
-    }
-
     public boolean getChangeOnClick() {
         return mChangeOnClick;
+    }
+
+    public void setChangeOnClick(boolean changeOnClick) {
+        mChangeOnClick = changeOnClick;
     }
 
     @Override

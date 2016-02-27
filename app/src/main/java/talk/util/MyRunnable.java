@@ -5,14 +5,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.android.volley.Request;
 import com.example.heshixiyang.ovetalk.BuildConfig;
 
 import org.apache.commons.httpclient.NameValuePair;
 
 import java.util.List;
 
-import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 
 /**
@@ -35,7 +33,7 @@ public class MyRunnable implements Runnable {
         msg.obj = GlobleMethod.GetResult(url, formparams);
 
         if (BuildConfig.DEBUG) Log.d("MyRunnable", "run");
-        if (msg.obj.equals("")) {
+        if (msg.obj.equals(" ")) {
             //返回值错误
             msg.what = 1;
         }else if (msg.obj.equals("")) {

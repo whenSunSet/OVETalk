@@ -38,7 +38,7 @@ public class Groups extends IndicatorFragmentActivity implements ChatMessageAdap
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                fragmentFlash();
+                flashFragment();
             }
         });
     }
@@ -80,8 +80,9 @@ public class Groups extends IndicatorFragmentActivity implements ChatMessageAdap
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);
+
         if (mCurrentTab==0&& Groups.isFlash) {
-            fragmentFlash();
+            flashFragment();
         }
     }
 
@@ -90,16 +91,13 @@ public class Groups extends IndicatorFragmentActivity implements ChatMessageAdap
         super.onResume();
         isForeground=true;
 
-        if (mCurrentTab==0&&isResume&& Groups.isFlash) {
-                fragmentFlash();
+        if (isResume&&mCurrentTab==0&&Groups.isFlash) {
+            flashFragment();
         }
 
         isResume=true;
     }
 
-    public void fragmentFlash(){
-        ((GroupsList) (mTabs.get(0).fragment)).flashFragment(myAdapter);
-    }
 
     @Override
     public void callBackMore() {}

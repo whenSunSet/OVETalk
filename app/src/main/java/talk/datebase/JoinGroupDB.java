@@ -29,8 +29,8 @@ public class JoinGroupDB {
         mDb.execSQL("CREATE table IF NOT EXISTS " + JOIN_TABLE_NAME
                 + " (" + USER_ID + " TEXT, " //
                 + GROUP_NAME + " TEXT, "//
-                + DATE + " TEXT "
-                + "foreign key (" + GROUP_NAME + ") references " + "group(groupName) "
+                + DATE + " TEXT,"
+                + "foreign key (" + GROUP_NAME + ") references " + "groups(groupName) "
                 + "PRIMARY KEY (" + USER_ID + "," + GROUP_NAME + "))");
         
     }

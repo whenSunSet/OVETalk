@@ -17,12 +17,13 @@ public class GroupChatMessage {
     private String userNickName;
     private String userName;
     private String messageImage;
+    private int messageStatu;
 
-    public GroupChatMessage()
-    {
-    }
+    public GroupChatMessage() {}
 
-    public GroupChatMessage(String message, boolean isComing, String groupName, String userIcon, boolean readed, String dateStr, String userNickName, String userName, String messageImage) {
+    public GroupChatMessage(String message, boolean isComing, String groupName, String userIcon,
+                            boolean readed, String dateStr, String userNickName, String userName,
+                            String messageImage,int messageStatu) {
         this.message = message;
         this.isComing = isComing;
         this.groupName = groupName;
@@ -32,6 +33,15 @@ public class GroupChatMessage {
         this.userNickName = userNickName;
         this.userName = userName;
         this.messageImage = messageImage;
+        this.messageStatu=messageStatu;
+    }
+
+    public int getMessageStatu() {
+        return messageStatu;
+    }
+
+    public void setMessageStatu(int messageStatu) {
+        this.messageStatu = messageStatu;
     }
 
     public String getMessage() {
@@ -54,19 +64,19 @@ public class GroupChatMessage {
         return date;
     }
 
+    public void setDate(Date date) {
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.dateStr = df.format(date);
+        this.date = date;
+    }
+
     public String getMessageImage() {
         return messageImage;
     }
 
     public void setMessageImage(String messageImage) {
         this.messageImage = messageImage;
-    }
-
-    public void setDate(Date date) {
-
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.dateStr = df.format(date);
-        this.date = date;
     }
 
     public String getGroupName() {
@@ -131,6 +141,7 @@ public class GroupChatMessage {
                 ", userNickName='" + userNickName + '\'' +
                 ", userName='" + userName + '\'' +
                 ", messageImage='" + messageImage + '\'' +
+                ", messageStatu='" + messageStatu + '\'' +
                 '}';
     }
 }

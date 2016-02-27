@@ -6,16 +6,14 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import talk.Globle.GlobleData;
 import talk.model.Task;
 
 public class TaskDB {
     public static final String TASK_TABLE_NAME="task";
-
-    private static final String ID="idInGroup";
     public  static final String GROUP_NAME="groupName";
+    private static final String ID="idInGroup";
     private static final String TYPE = "type";
     private static final String PATH= "path";
     private static final String TARGET = "target";
@@ -33,11 +31,11 @@ public class TaskDB {
                 + ID + " INTEGER, "
                 + GROUP_NAME + " TEXT, "
                 + TARGET + " TEXT, "
-                + TYPE + " INTEGER ,"
-                + DATE + " TEXT , "
-                + PATH + " TEXT , "
-                + CLICK_NUMBER + " INTEGER "
-                + "foreign key (" + GROUP_NAME + ") references " + "group(groupName) "
+                + TYPE + " INTEGER,"
+                + DATE + " TEXT, "
+                + PATH + " TEXT, "
+                + CLICK_NUMBER + " INTEGER,"
+                + "foreign key (" + GROUP_NAME + ") references " + "groups(groupName) "
                 + "PRIMARY KEY (" + ID + "," + GROUP_NAME + "))");
     }
 
@@ -51,7 +49,7 @@ public class TaskDB {
                         + TYPE + ","
                         + DATE + ","
                         + PATH + ","
-                        + CLICK_NUMBER + ") values(?,?,?,?,?,?)",
+                        + CLICK_NUMBER + ") values(?,?,?,?,?,?,?)",
                 new Object[]{
                         task.getIdInGroup(),
                         task.getGroupName(),
@@ -112,9 +110,9 @@ public class TaskDB {
 
     }
 
-    public List<Task> getGroupTask(String groupName) {
-        List<Task> tasks= new ArrayList<Task>();
-        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+"where "+GROUP_NAME+"=?",new String []{groupName});
+    public ArrayList<Task> getGroupTask(String groupName) {
+        ArrayList<Task> tasks= new ArrayList<Task>();
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
 
         while (c.moveToNext()) {
             Task task=new Task();

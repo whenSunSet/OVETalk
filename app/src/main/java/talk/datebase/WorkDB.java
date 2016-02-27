@@ -16,9 +16,8 @@ import talk.model.Work;
  */
 public class WorkDB {
     public static final String WORK_TABLE_NAME="work";
-
-    private static final String TASK_ID="taskId";
     public  static final String GROUP_NAME="groupName";
+    private static final String TASK_ID="idInGroup";
     private static final String ID="idInTask";
     private static final String TYPE = "type";
     private static final String PATH= "path";
@@ -41,9 +40,9 @@ public class WorkDB {
                 + DATE + " TEXT , "
                 + PATH + " TEXT , "
                 + MASTER + " TEXT , "
-                + CLICK_NUMBER + " INTEGER "
+                + CLICK_NUMBER + " INTEGER,"
                 + "foreign key (" + GROUP_NAME + "," + TASK_ID + ") references " + "task(groupName,idInGroup) "
-                + "PRIMARY KEY (" + ID + "," + GROUP_NAME + TASK_ID + "))");
+                + "PRIMARY KEY (" + ID + "," + GROUP_NAME +","+ TASK_ID + "))");
     }
 
 
@@ -142,8 +141,8 @@ public class WorkDB {
         return list;
 
     }
-    public List<Work> getGroupWork(String groupName) {
-        List<Work> list=new ArrayList<Work>();
+    public ArrayList<Work> getGroupWork(String groupName) {
+        ArrayList<Work> list=new ArrayList<Work>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+"where "+GROUP_NAME+"=?",new String []{groupName});
 
         while (c.moveToNext()) {list.add(makeWork(c));}

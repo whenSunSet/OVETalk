@@ -2,22 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:clickable="true">
+    android:clickable="true"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/chat_send_createDate"
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black_deep"
-        android:text="2012-09-01 18:30:21" />
+        android:text="2012-09-01 18:30:21"
+        android:textColor="@color/black_deep" />
 
-<LinearLayout
+    <LinearLayout
         android:id="@+id/chat_background"
         android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <LinearLayout
             android:id="@+id/ly_chat_icon_big"
@@ -30,7 +30,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="9"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/chat_send_name"
@@ -42,23 +42,23 @@
                     android:textSize="15sp" />
 
                 <LinearLayout
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:orientation="vertical"
-                    android:background="@drawable/chat_send_msg">
+                    android:background="@drawable/chat_to"
+                    android:orientation="vertical">
                     <TextView
                         android:id="@+id/chat_send_content"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="有大吗。。。"
                         android:layout_gravity="center"
+                        android:text="呵呵呵呵"
                         android:textColor="#000"
                         android:textSize="14sp" />
                     <ImageView
-                        android:layout_height="wrap_content"
+                        android:id="@+id/img"
                         android:layout_width="wrap_content"
-                        android:id="@+id/img"/>
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -68,12 +68,12 @@
                 android:id="@+id/ly_chat_icon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:orientation="vertical" >
                 <ImageView
                     android:id="@+id/chat_send_icon"
-                    android:layout_width="49dp"
-                    android:layout_height="49dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_marginRight="10dp"
                     android:src="@drawable/icon" />
 
