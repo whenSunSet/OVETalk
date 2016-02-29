@@ -38,7 +38,7 @@ import talk.util.MyRunnable;
 /**
  * Created by asus on 2015/11/14.
  */
-public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageAdapter.OnCallBackMore,ChatMessageAdapter.OnCallBackDialog{
+public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageAdapter.OnCallBackDialog{
     private static final String TAG="GroupAll";
     //-------------当前的Group
     public Group mGroup;
@@ -80,27 +80,21 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
         super.onCreate(savedInstanceState);
         Groups.isFlash=true;
         GroupAll.isFlash=false;
+
+        initView();
+
+    }
+
+    public void initView() {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 receive(context, intent);
             }
         });
-        initView();
 
-    }
-
-    public void initView() {
-        String groupName=null;
         isSystemGroup=getIntent().getStringExtra("groupName").equals("-1");
         mGroupMessageDB=mApplication.getGroupMessageDB();
-
-        if (isSystemGroup){
-            groupName=mApplication.getSpUtil().getUserName();
-        }else {
-            groupName=getIntent().getStringExtra("groupName");
-        }
-
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
 
         if (mTitle.getVisibility()!=View.GONE){
@@ -110,8 +104,6 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
         }
 
     }
-
-    //----------------------覆盖父类的函数，当滑动页到了本页的时候，刷新本页。
 
     //----------------动态添加一个控件
     public void addView(){
@@ -204,15 +196,7 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
 
         }
     }
-//
-//    @Override
-//    protected boolean isShouldHideInput(View v, MotionEvent event) {
-//        return super.isShouldHideInput(v, event);
-//    }
 
-//        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-
-    //------------------覆盖父类的函数 为当前Activity添加滑动页
     @Override
     protected int supplyTabs(List<TabInfo> tabs) {
 
@@ -243,7 +227,6 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
 
             if (!isSystemGroup&&message.getGroupName().equals(mGroup.getGroupName())){
                 //不是System但是是该group 并且不在chat或者group被解散
-
                 if (messageStatu==GlobleData.USER_CANCEL_GROUP){
                     //如果群被注销，则finish
                     Toast.makeText(mApplication, "该群已经解散", Toast.LENGTH_SHORT).show();
@@ -252,12 +235,10 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
 
                 if ((mCurrentTab==1&&messageStatu==GlobleData.MASTER_PUT_TASK)||(mCurrentTab==2&&messageStatu==GlobleData.USER_PUT_HOMEWORK)){
                     //如果不在chat 且消息类型匹配
-
                     flashFragment();
                     return;
                 }else if (mCurrentTab==1||mCurrentTab==2){
                     //如果不在chat 且消息类型不匹配
-
                     GroupAll.isFlash=true;
                     return;
                 }
@@ -277,15 +258,6 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
             default:
                 break;
         }
-    }
-
-    @Override
-    public void callBackMore() {
-        if (isSystemGroup){
-            return;
-        }
-        ((GroupChatting)(mTabs.get(0).fragment)).getmContan().setVisibility(View.GONE);
-        ((GroupChatting)(mTabs.get(0).fragment)).setIsVisble(false);
     }
 
     @Override
@@ -346,5 +318,4 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
 
         isResume=true;
     }
-
 }

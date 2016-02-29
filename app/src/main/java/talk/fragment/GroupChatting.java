@@ -30,6 +30,7 @@ import talk.adapter.ChatMessageAdapter;
 import talk.datebase.GroupMessageDB;
 import talk.model.Group;
 import talk.model.GroupChatMessage;
+import talk.util.ClickContarctionImageView;
 import talk.util.DialogUtil;
 import talk.util.MyPreferenceManager;
 import talk.util.MyRunnable;
@@ -41,11 +42,10 @@ public class GroupChatting extends BasicFragment {
     public static final int SEND_JOIN_MESSAGE_SUCCESS=3;
     public static final int CHANGE_MESSAGE_NUM=4;
     public static final int I_WANT_TO_CALL_110=110;
+    public ClickContarctionImageView mMore;
     //---------------------listView
     private Button mMsgSend;
     private EditText mMsgInput;
-    private ImageView mMore;
-
     private ImageView mVedio;
     private LinearLayout mContainer;
 
@@ -105,9 +105,6 @@ public class GroupChatting extends BasicFragment {
 
     };
 
-    public void setIsVisble(Boolean isVisble) {
-        this.isVisble = isVisble;
-    }
 
     public LinearLayout getmContan() {
         return mContainer;
@@ -139,7 +136,7 @@ public class GroupChatting extends BasicFragment {
         }else {
             mMsgSend = (Button) view.findViewById(R.id.id_chat_send);
             mMsgInput = (EditText) view.findViewById(R.id.id_chat_msg);
-            mMore=(ImageView)view.findViewById(R.id.more);
+            mMore=(ClickContarctionImageView)view.findViewById(R.id.more);
             mVedio=(ImageView) view.findViewById(R.id.btn_video);
             mContainer=(LinearLayout)view.findViewById(R.id.ll_btn_container);
             formparams = new ArrayList<NameValuePair>();
@@ -190,7 +187,7 @@ public class GroupChatting extends BasicFragment {
                 }
 
                 //添加消息到数据库里并开启线程发送数据
-                addMessage(msg,"0");
+                addMessage(msg, "0");
 
                 //提醒界面改刷新了
                 Groups.isFlash = true;
@@ -215,6 +212,7 @@ public class GroupChatting extends BasicFragment {
                     mMsgSend.setVisibility(View.GONE);
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -268,9 +266,10 @@ public class GroupChatting extends BasicFragment {
         mListView.setSelection(mData.size() - 1);
 
         //如果是视屏的话在这里开启一个线程，发送视频信息
-            openThread(message,img);
+            openThread(message, img);
 
     }
+
 
 
     //    public void messageSend(GroupChatMessage chatMessage){

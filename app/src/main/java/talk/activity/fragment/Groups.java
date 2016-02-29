@@ -10,7 +10,6 @@ import android.widget.GridLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
@@ -18,13 +17,12 @@ import java.util.List;
 import talk.Globle.Test;
 import talk.activity.create.CreateGroupActivity;
 import talk.activity.supers.IndicatorFragmentActivity;
-import talk.adapter.ChatMessageAdapter;
 import talk.fragment.GroupsFind;
 import talk.fragment.GroupsList;
 import talk.model.TabInfo;
 
 
-public class Groups extends IndicatorFragmentActivity implements ChatMessageAdapter.OnCallBackMore{
+public class Groups extends IndicatorFragmentActivity {
     private static final String TAG="Groups";
 
     private TextView makeGroup;
@@ -97,8 +95,4 @@ public class Groups extends IndicatorFragmentActivity implements ChatMessageAdap
 
         isResume=true;
     }
-
-
-    @Override
-    public void callBackMore() {}
 }

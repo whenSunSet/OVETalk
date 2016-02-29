@@ -1,0 +1,80 @@
+----------------------------------ChatMessageAdapter-------------------------------------
+		if (messageStatu<=1){
+
+			switch (messageStatu){
+				case 0:
+					//如果是0则是普通的信息，那么隐藏img和Button，将message的信息显示在content上
+					viewHolder.content.setText(chatMessage.getMessage());
+
+					break;
+				case 1:
+					//如果messageIamge等于1则该信息是视频，那么让img显示，然后message中是视频的name，然后播放视频。
+
+					viewHolder.content.setText("我分享了,视屏快来看看吧!");
+					viewHolder.img.setImageResource(R.drawable.icon);
+					viewHolder.img.setVisibility(View.VISIBLE);
+
+					viewHolder.img.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+//							Intent intent = new Intent(mContext, VideoDetailsActivity.class);
+//							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//							GlobalVariable.currentId = chatMessage.getMessage();
+//							GlobalVariable.currentType = "1";
+//							mContext.startActivity(intent);
+						}
+					});
+					break;
+				default:
+					break;
+			}
+			viewHolder.nickname.setText(chatMessage.getUserNickName());
+		}else {
+			//如果是申请加入群组的信息，就显示Button
+			if (messageStatu== GlobleData.USER_REQUEST_JOIN_GROUP){
+				//如果请求的按钮没有被点击过
+				viewHolder.agree.setVisibility(View.VISIBLE);
+				viewHolder.disagree.setVisibility(View.VISIBLE);
+				viewHolder.agree.setText("同意");
+				viewHolder.disagree.setText("拒绝");
+				viewHolder.agree.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mCallBackDialog.callBackDialog(true, chatMessage.getDateStr());
+					}
+				});
+
+                viewHolder.disagree.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mCallBackDialog.callBackDialog(false, chatMessage.getDateStr());
+
+					}
+				});
+
+            }else if (messageStatu==GlobleData.MASTER_AGREE){
+				viewHolder.agree.setVisibility(View.VISIBLE);
+                viewHolder.agree.setText("已允许其加入");
+
+			}else if (messageStatu==GlobleData.MASTER_DISAGREE){
+                viewHolder.disagree.setVisibility(View.VISIBLE);
+                viewHolder.disagree.setText("已拒绝其加入");
+			}
+
+			//否则就直接放message
+			viewHolder.content.setText(chatMessage.getMessage());
+			viewHolder.img.setVisibility(View.GONE);
+		}
+
+		//在item中布局date
+		viewHolder.createDate.setGravity(Gravity.CENTER);
+-----------------------------------GroupAll---------------------------------
+//
+//    @Override
+//    protected boolean isShouldHideInput(View v, MotionEvent event) {
+//        return super.isShouldHideInput(v, event);
+//    }
+
+//        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+
+    //------------------覆盖父类的函数 为当前Activity添加滑动页

@@ -25,7 +25,9 @@ import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.adapter.ViewPagerAdapter;
 import talk.fragment.BasicFragment;
+import talk.fragment.GroupChatting;
 import talk.model.TabInfo;
+import talk.util.ClickContarctionImageView;
 import talk.util.TitleIndicator;
 
 
@@ -108,11 +110,11 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
         if (ev.getAction() == MotionEvent.ACTION_UP) {
 
             // 获得当前得到焦点的View，一般情况下就是EditText（特殊情况就是轨迹求或者实体案件会移动焦点）
-            View v = getCurrentFocus();
+            View isEdit = getCurrentFocus();
+            View isImage = ((GroupChatting) (mTabs.get(0).fragment)).mMore;
 
-            if (isShouldHideInput(v, ev)) {
-                hideSoftInput(v.getWindowToken());
-            }
+            hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,isImage,ev));
+
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -120,20 +122,30 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     /**
      * 根据EditText所在坐标和用户点击的坐标相对比，来判断是否隐藏键盘，因为当用户点击EditText时没必要隐藏
      *
-     * @param v
+     * @param isEdit
      * @param event
      * @return
      */
-    protected boolean isShouldHideInput(View v, MotionEvent event) {
-        if (v != null && ((v instanceof EditText)||(v instanceof Button))) {
-            int[] l = { 0, 0 };
-            v.getLocationInWindow(l);
-            int left = l[0], top = l[1], bottom = top + v.getHeight(), right = left
-                    + v.getWidth();
-            if (event.getX() > left && event.getX() < right
-                    && event.getY() > top && event.getY() < bottom) {
-                // 点击EditText的事件，忽略它。
-                return false;
+    protected int isShouldHideInput(View isEdit,View isImage, MotionEvent event) {
+        if (isEdit != null&&isEdit instanceof EditText){
+            int[] e = { 0, 0 };
+            int[] i = { 0, 0 };
+            isEdit.getLocationInWindow(e);
+            isImage.getLocationInWindow(i);
+            int eLeft = e[0], eTop = e[1], eBottom = eTop + isEdit.getHeight(), eRight = eLeft + isEdit.getWidth();
+            int iLeft = i[0], iTop = i[1], iBottom = iTop + isImage.getHeight(), iRight = iLeft + isImage.getWidth();
+            if((event.getX() > eLeft && event.getX() < eRight
+                    && event.getY() > eTop && event.getY() < eBottom)||
+                    (event.getX() > iLeft && event.getX() < iRight
+                            && event.getY() > iTop && event.getY() < iBottom)) {
+                return 0;
+            }
+        }else{
+
+        }
+                if {
+                    // 点击Edit或者ClickContarctionImageView的事件，忽略它。
+                return 0;
             } else {
                 return true;
             }
@@ -147,11 +159,13 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
      *
      * @param token
      */
-    protected void hideSoftInput(IBinder token) {
+    protected void hideSoftInput(IBinder token,int statu) {
         if (token != null) {
             InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             im.hideSoftInputFromWindow(token,
                     InputMethodManager.HIDE_NOT_ALWAYS);
+        }else if (view instanceof ClickContarctionImageView){
+            ((GroupChatting) (mTabs.get(0).fragment)).mMore.setVisibility();
         }
     }
 

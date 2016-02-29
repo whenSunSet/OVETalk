@@ -1,22 +1,14 @@
 package talk.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 import com.example.heshixiyang.ovetalk.R;
 
@@ -31,7 +23,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 	private List<GroupChatMessage> mDatas;
 	private Context mContext;
 	private OnCallBackDialog mCallBackDialog;
-	private OnCallBackMore mCallBackMore;
 
 
 	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas) {
@@ -39,7 +30,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 		mDatas = datas;
 		mContext=context;
 		mCallBackDialog=(OnCallBackDialog)mContext;
-		mCallBackMore=(OnCallBackMore)mContext;
 
     }
 
@@ -69,8 +59,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 				convertView.setTag(viewHolder);
 
 				viewHolder.isFrom=true;
-				viewHolder.isChoose=false;
-				viewHolder.chooseWhich=-1;
 			} else {
 				convertView = mInflater.inflate(R.layout.main_chat_send_msg,
 						null);
@@ -90,114 +78,45 @@ public class ChatMessageAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
+		int messageStatu=chatMessage.getMessageStatu();
 		// 初始化View状态
 		if (viewHolder.isFrom){
 			viewHolder.disagree.setVisibility(View.GONE);
 			viewHolder.agree.setVisibility(View.GONE);
 		}
 		viewHolder.img.setVisibility(View.GONE);
+		viewHolder.createDate.setText(chatMessage.getDateStr());
 
-		//当点击convert   More收缩
-		final View view=convertView;
-		view.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					mCallBackMore.callBackMore();
-				}
-				return false;
-			}
-		});
+		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_PUT_HOMEWORK 只能在普通群组里使用
+		if (messageStatu<=3||messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
+			viewHolder.nickname.setText(chatMessage.getUserNickName());
+		}else {
+			//其他的消息只能在system里使用
+			viewHolder.nickname.setText("OVEsystem");
+		}
 
-		int messageStatu=chatMessage.getMessageStatu();
 
 		if (messageStatu==GlobleData.PHOTO_MESSAGE){
+			//发送图片
 			viewHolder.img.setVisibility(View.VISIBLE);
 			viewHolder.img.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
 		}else if (messageStatu==GlobleData.EMOJI_MESSAGE){
+			//发送表情
 
 		}else {
+			//将消息内容显示
 			viewHolder.content.setText(chatMessage.getMessage());
 			if (messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
+				//如果是 任务或者作品 将附上一张图
 				viewHolder.img.setVisibility(View.VISIBLE);
 				viewHolder.img.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
 
 			}else if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
+				//如果是请求加入群里 则显示两个按钮
 				viewHolder.agree.setVisibility(View.VISIBLE);
 				viewHolder.disagree.setVisibility(View.VISIBLE);
-
 			}
 		}
-		if (messageStatu<=1){
-			switch (messageStatu){
-				case 0:
-					//如果是0则是普通的信息，那么隐藏img和Button，将message的信息显示在content上
-					viewHolder.content.setText(chatMessage.getMessage());
-
-					break;
-				case 1:
-					//如果messageIamge等于1则该信息是视频，那么让img显示，然后message中是视频的name，然后播放视频。
-
-					viewHolder.content.setText("我分享了,视屏快来看看吧!");
-					viewHolder.img.setImageResource(R.drawable.icon);
-					viewHolder.img.setVisibility(View.VISIBLE);
-
-					viewHolder.img.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-//							Intent intent = new Intent(mContext, VideoDetailsActivity.class);
-//							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//							GlobalVariable.currentId = chatMessage.getMessage();
-//							GlobalVariable.currentType = "1";
-//							mContext.startActivity(intent);
-						}
-					});
-					break;
-				default:
-					break;
-			}
-			viewHolder.nickname.setText(chatMessage.getUserNickName());
-		}else {
-			//如果是申请加入群组的信息，就显示Button
-			if (messageStatu== GlobleData.USER_REQUEST_JOIN_GROUP){
-				//如果请求的按钮没有被点击过
-				viewHolder.agree.setVisibility(View.VISIBLE);
-				viewHolder.disagree.setVisibility(View.VISIBLE);
-				viewHolder.agree.setText("同意");
-				viewHolder.disagree.setText("拒绝");
-				viewHolder.agree.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mCallBackDialog.callBackDialog(true, chatMessage.getDateStr());
-					}
-				});
-
-                viewHolder.disagree.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mCallBackDialog.callBackDialog(false, chatMessage.getDateStr());
-
-					}
-				});
-
-            }else if (messageStatu==GlobleData.MASTER_AGREE){
-				viewHolder.agree.setVisibility(View.VISIBLE);
-                viewHolder.agree.setText("已允许其加入");
-
-			}else if (messageStatu==GlobleData.MASTER_DISAGREE){
-                viewHolder.disagree.setVisibility(View.VISIBLE);
-                viewHolder.disagree.setText("已拒绝其加入");
-			}
-
-			//否则就直接放message
-			viewHolder.content.setText(chatMessage.getMessage());
-			viewHolder.img.setVisibility(View.GONE);
-			viewHolder.nickname.setText("OVESystem");
-		}
-
-		//在item中布局date
-		viewHolder.createDate.setText(chatMessage.getDateStr());
-		viewHolder.createDate.setGravity(Gravity.CENTER);
 		return convertView;
 	}
 
@@ -224,10 +143,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 		return msg.isComing() ? 1 : 0;
 	}
 
-	public interface OnCallBackMore{
-		public void callBackMore();
-	}
-
 	public interface OnCallBackDialog{
 		public void callBackDialog(boolean isAgree, String time);
 	}
@@ -240,8 +155,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 		public Button agree;
 		public Button disagree;
 		public boolean isFrom;
-		public boolean isChoose;
-		public int chooseWhich;
 	}
 
 
