@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -27,7 +26,6 @@ import talk.adapter.ViewPagerAdapter;
 import talk.fragment.BasicFragment;
 import talk.fragment.GroupChatting;
 import talk.model.TabInfo;
-import talk.util.ClickContarctionImageView;
 import talk.util.TitleIndicator;
 
 
@@ -113,7 +111,7 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
             View isEdit = getCurrentFocus();
             View isImage = ((GroupChatting) (mTabs.get(0).fragment)).mMore;
 
-            hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,isImage,ev));
+            hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,isImage,ev),isImage);
 
         }
         return super.dispatchTouchEvent(ev);
@@ -127,31 +125,35 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
      * @return
      */
     protected int isShouldHideInput(View isEdit,View isImage, MotionEvent event) {
+        int[] i = { 0, 0 };
+        isImage.getLocationInWindow(i);
+        int iLeft = i[0], iTop = i[1], iBottom = iTop + isImage.getHeight(), iRight = iLeft + isImage.getWidth();
+
         if (isEdit != null&&isEdit instanceof EditText){
+            //如果Edit存在
             int[] e = { 0, 0 };
-            int[] i = { 0, 0 };
             isEdit.getLocationInWindow(e);
-            isImage.getLocationInWindow(i);
             int eLeft = e[0], eTop = e[1], eBottom = eTop + isEdit.getHeight(), eRight = eLeft + isEdit.getWidth();
-            int iLeft = i[0], iTop = i[1], iBottom = iTop + isImage.getHeight(), iRight = iLeft + isImage.getWidth();
             if((event.getX() > eLeft && event.getX() < eRight
                     && event.getY() > eTop && event.getY() < eBottom)||
                     (event.getX() > iLeft && event.getX() < iRight
                             && event.getY() > iTop && event.getY() < iBottom)) {
+                //如果点击了more或者Edit
                 return 0;
+            }else {
+                //点击了其他地方
+                return 1;
             }
         }else{
-
-        }
-                if {
-                    // 点击Edit或者ClickContarctionImageView的事件，忽略它。
+            //如果Edit不存在
+            if(event.getX() > iLeft && event.getX() < iRight
+                    && event.getY() > iTop && event.getY() < iBottom){
+                //点击了more
                 return 0;
-            } else {
-                return true;
+            }else {
+                return 3;
             }
         }
-        // 如果焦点不是EditText则忽略，这个发生在视图刚绘制完，第一个焦点不在EditView上，和用户用轨迹球选择其他的焦点
-        return false;
     }
 
     /**
@@ -159,14 +161,18 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
      *
      * @param token
      */
-    protected void hideSoftInput(IBinder token,int statu) {
-        if (token != null) {
+    protected void hideSoftInput(IBinder token,int statu,View image) {
+        if (token != null&&statu==1) {
             InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             im.hideSoftInputFromWindow(token,
                     InputMethodManager.HIDE_NOT_ALWAYS);
-        }else if (view instanceof ClickContarctionImageView){
-            ((GroupChatting) (mTabs.get(0).fragment)).mMore.setVisibility();
+            image.setVisibility(View.GONE);
+
+        }else if (statu==3){
+            image.setVisibility(View.GONE);
         }
+
+        return;
     }
 
     protected abstract int supplyTabs(List<TabInfo> tabs);
