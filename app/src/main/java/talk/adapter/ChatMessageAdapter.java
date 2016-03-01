@@ -22,14 +22,12 @@ public class ChatMessageAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<GroupChatMessage> mDatas;
 	private Context mContext;
-	private OnCallBackDialog mCallBackDialog;
 
 
 	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas) {
 		mInflater = LayoutInflater.from(context);
 		mDatas = datas;
 		mContext=context;
-		mCallBackDialog=(OnCallBackDialog)mContext;
 
     }
 
@@ -78,6 +76,11 @@ public class ChatMessageAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
+		setView(viewHolder,chatMessage);
+		return convertView;
+	}
+
+	public void setView(ViewHolder viewHolder,GroupChatMessage chatMessage){
 		int messageStatu=chatMessage.getMessageStatu();
 		// 初始化View状态
 		if (viewHolder.isFrom){
@@ -117,9 +120,8 @@ public class ChatMessageAdapter extends BaseAdapter {
 				viewHolder.disagree.setVisibility(View.VISIBLE);
 			}
 		}
-		return convertView;
-	}
 
+	}
 	@Override
 	public int getCount()
 	{
@@ -141,10 +143,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 	public int getItemViewType(int position) {
 		GroupChatMessage msg = mDatas.get(position);
 		return msg.isComing() ? 1 : 0;
-	}
-
-	public interface OnCallBackDialog{
-		public void callBackDialog(boolean isAgree, String time);
 	}
 
 	private class ViewHolder {

@@ -56,7 +56,6 @@ public class GroupMessageDB {
         mDb.execSQL("DROP TABLE _"+groupName);
     }
 
-
     /**
      * 为每个用户根据其groupName创建一张消息表
      *
@@ -226,8 +225,8 @@ public class GroupMessageDB {
      */
     public void update(String which,String what,String time,String groupName){
         createTable(groupName);
-        mDb.execSQL("update  _" + groupName + " set " +
-                which+ " = "+what +" where "
+        mDb.execSQL("update  _" + groupName + " set "
+                + which+ " = "+what +" where "
                 + COL_DATE + " ='"+time+"'", new Object[]{});
 
     }

@@ -3,9 +3,6 @@ package talk.util;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
-
-import com.example.heshixiyang.ovetalk.BuildConfig;
 
 import org.apache.commons.httpclient.NameValuePair;
 
@@ -32,7 +29,6 @@ public class MyRunnable implements Runnable {
         Message msg = new Message();
         msg.obj = GlobleMethod.GetResult(url, formparams);
 
-        if (BuildConfig.DEBUG) Log.d("MyRunnable", "run");
         if (msg.obj.equals(" ")) {
             //返回值错误
             msg.what = 1;
@@ -44,9 +40,7 @@ public class MyRunnable implements Runnable {
             msg.what = 3;
             formparams.clear();
 
-
         }
         handler.sendMessage(msg);
-
     }
 }

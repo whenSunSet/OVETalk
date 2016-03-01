@@ -1,5 +1,7 @@
 package talk.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,7 +28,6 @@ import java.util.List;
 
 import talk.Globle.GlobleData;
 import talk.activity.fragment.GroupAll;
-import talk.activity.fragment.Groups;
 import talk.adapter.ChatMessageAdapter;
 import talk.datebase.GroupMessageDB;
 import talk.model.Group;
@@ -105,7 +107,6 @@ public class GroupChatting extends BasicFragment {
 
     };
 
-
     public LinearLayout getmContan() {
         return mContainer;
     }
@@ -152,7 +153,31 @@ public class GroupChatting extends BasicFragment {
         mAdapter = new ChatMessageAdapter(getActivity(), mData);
         mListView.setAdapter((ListAdapter) mAdapter);
         mListView.setSelection(mData.size() - 1);
-
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final GroupChatMessage chatMessage = (GroupChatMessage) mData.get(position);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (chatMessage.getMessageStatu() == GlobleData.USER_REQUEST_JOIN_GROUP){
+                    builder.setMessage("加入请求");
+                    builder.setPositiveButton("同意加入", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mGroupMessageDB.update("messageStatu","12",chatMessage.getDateStr(),mGroupName);
+                            mGroupMessageDB.update("message","您已经同意"+chatMessage.getUserNickName()+"加入了"+chatMessage.getGroupName(),chatMessage.getDateStr(),mGroupName);
+                        }
+                    });
+                    builder.setNegativeButton("不同意加入", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mGroupMessageDB.update("messageStatu","13",chatMessage.getDateStr(),mGroupName);
+                            mGroupMessageDB.update("message","您已经拒绝了"+chatMessage.getUserNickName()+"加入"+chatMessage.getGroupName(),chatMessage.getDateStr(),mGroupName);
+                        }
+                    });
+                }
+                builder.create().show();
+            }
+        });
     }
 
     private void initEvent(){
@@ -185,12 +210,8 @@ public class GroupChatting extends BasicFragment {
                     DialogUtil.showToast(mTalkApplication, "你还没输入文字呢");
                     return;
                 }
-
                 //添加消息到数据库里并开启线程发送数据
                 addMessage(msg, "0");
-
-                //提醒界面改刷新了
-                Groups.isFlash = true;
                 mMsgInput.setText("");
             }
         });
@@ -239,17 +260,8 @@ public class GroupChatting extends BasicFragment {
         GroupAll.isFlash=false;
     }
 
-    private void openThread(String message,String isImage){
-        formparams.clear();
-        formparams.add(new NameValuePair("groupname", mGroup.getGroupName()));
-        formparams.add(new NameValuePair("username", "13588197966"));
-        formparams.add(new NameValuePair("message", message));
-        formparams.add(new NameValuePair("isImage", isImage));
-        new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
-    }
-
-    //-----------------------添加自己的信息，分为普通的信息和视频信息
-    public void addMessage(String message,String img) {
+    //-----------------------添加自己的信息 并开启线程发送信息---------------------------
+    public void addMessage(String message,String messageImage,int statu,String path) {
         GroupChatMessage chatMessage = new GroupChatMessage();
         chatMessage.setIsComing(false);
         chatMessage.setDate(new Date());
@@ -259,44 +271,34 @@ public class GroupChatting extends BasicFragment {
         chatMessage.setUserNickName(mPreferenceManager.getUsreNickName());
         chatMessage.setGroupName(mGroupName);
         chatMessage.setUserName(mPreferenceManager.getUserName());
-        chatMessage.setMessageImage(img);
+        chatMessage.setMessageImage(messageImage);
+        chatMessage.setMessageStatu(statu);
         mGroupMessageDB.add(mGroup.getGroupName(), chatMessage);
         mData.add(chatMessage);
         mAdapter.notifyDataSetChanged();
         mListView.setSelection(mData.size() - 1);
 
         //如果是视屏的话在这里开启一个线程，发送视频信息
-            openThread(message, img);
-
+        openThread(message, messageImage,statu,path);
     }
 
+    private void openThread(String message,String isImage,int statu,String path){
+        formparams.clear();
+        formparams.add(new NameValuePair("groupname", mGroup.getGroupName()));
+        formparams.add(new NameValuePair("username", "13588197966"));
+        formparams.add(new NameValuePair("message", message));
+        formparams.add(new NameValuePair("messageStatu", String.valueOf(statu)));
 
+        if (statu==GlobleData.COMMOM_MESSAGE){
+        }else if (statu==GlobleData.EMOJI_MESSAGE){
 
-    //    public void messageSend(GroupChatMessage chatMessage){
-//        Map requestMap=new HashMap();
-//        requestMap.put("groupname",chatMessage.getGroupName());
-//        requestMap.put("username",chatMessage.getUserName());
-//        requestMap.put("data",chatMessage.getDateStr());
-//        requestMap.put("message", chatMessage.getMessage());
-//        JSONObject jsonRequest=new JSONObject(requestMap);
-//        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST, GlobalVariable.GROUP_SEND_MESSAGE, jsonRequest, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject jsonObject) {
-//                if (jsonObject.toString()=="1"){
-//
-//                }else {
-//                    DialogUtil.showToast(mTalkApplication,"信息发送失败");
-//                }
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                if (BuildConfig.DEBUG)
-//                    Log.d("GroupChatting", "volleyError.networkResponse.statusCode:" + volleyError.networkResponse.statusCode);
-//                DialogUtil.showToast(mTalkApplication,"网络错误，信息发送失败");
-//            }
-//        });
-//        requestQueue.add(request);
-//    }
+        }else if (statu==GlobleData.PHOTO_MESSAGE){
+            formparams.remove("message");
+
+        }else if (statu==GlobleData.USER_PUT_HOMEWORK){
+            formparams.add(new NameValuePair("",path));
+        }
+        new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
+    }
 
 }

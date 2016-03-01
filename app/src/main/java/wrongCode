@@ -78,3 +78,73 @@
 //        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
 
     //------------------覆盖父类的函数 为当前Activity添加滑动页
+------------------------------------GroupAll-----------------------------------
+    @Override
+    public void callBackDialog(final boolean isAgree, final String time) {
+        final AlertDialog.Builder builder=new AlertDialog.Builder(GroupAll.this);
+        builder.setTitle("提示");
+        if (isAgree){
+            builder.setMessage("是否确定其加入该群");
+            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    android.os.Message message=new android.os.Message();
+                    message.what=1;
+                    message.obj=time;
+                    handler.sendMessage(message);
+                }
+            });
+        }else {
+            builder.setMessage("是否拒绝其加入该群");
+            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    android.os.Message message=new android.os.Message();
+                    message.what=0;
+                    message.obj=time;
+                    handler.sendMessage(message);
+                }
+            });
+        }
+
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+            }
+        });
+        builder.create().show();
+
+    }
+----------------------------------GroupChatting-----------------------------
+
+    //    public void messageSend(GroupChatMessage chatMessage){
+//        Map requestMap=new HashMap();
+//        requestMap.put("groupname",chatMessage.getGroupName());
+//        requestMap.put("username",chatMessage.getUserName());
+//        requestMap.put("data",chatMessage.getDateStr());
+//        requestMap.put("message", chatMessage.getMessage());
+//        JSONObject jsonRequest=new JSONObject(requestMap);
+//        JsonObjectRequest request=new JsonObjectRequest(Request.Method.POST, GlobalVariable.GROUP_SEND_MESSAGE, jsonRequest, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject jsonObject) {
+//                if (jsonObject.toString()=="1"){
+//
+//                }else {
+//                    DialogUtil.showToast(mTalkApplication,"信息发送失败");
+//                }
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//                if (BuildConfig.DEBUG)
+//                    Log.d("GroupChatting", "volleyError.networkResponse.statusCode:" + volleyError.networkResponse.statusCode);
+//                DialogUtil.showToast(mTalkApplication,"网络错误，信息发送失败");
+//            }
+//        });
+//        requestQueue.add(request);
+//    }
+

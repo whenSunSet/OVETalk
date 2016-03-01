@@ -1,9 +1,7 @@
 package talk.activity.fragment;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,7 +22,6 @@ import talk.TalkApplication;
 import talk.activity.aboutGroup.GroupActivity;
 import talk.activity.create.MakeTaskActivity;
 import talk.activity.supers.IndicatorFragmentActivity;
-import talk.adapter.ChatMessageAdapter;
 import talk.datebase.GroupMessageDB;
 import talk.fragment.GroupChatting;
 import talk.fragment.GroupTask;
@@ -38,7 +35,7 @@ import talk.util.MyRunnable;
 /**
  * Created by asus on 2015/11/14.
  */
-public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageAdapter.OnCallBackDialog{
+public class  GroupAll extends IndicatorFragmentActivity {
     private static final String TAG="GroupAll";
     //-------------当前的Group
     public Group mGroup;
@@ -65,7 +62,7 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
             }
         }
     };
-    //-------------view控件
+        //-------------view控件
     private TextView textView;
     private ImageView myGroup;
     private ImageView mMakeTask;
@@ -74,6 +71,7 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
     private Boolean isResume=false;
     private MyRunnable myRunnable;
     private Thread mTread;
+    private Boolean isMaster=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +94,12 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
         isSystemGroup=getIntent().getStringExtra("groupName").equals("-1");
         mGroupMessageDB=mApplication.getGroupMessageDB();
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
+        //判断当前的用户是不是当前群的master
+        if (mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserName())){
+            isMaster=true;
+        }else {
+            isMaster=false;
+        }
 
         if (mTitle.getVisibility()!=View.GONE){
             textView = (TextView) findViewById(R.id.textView1);
@@ -184,22 +188,19 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
             myGroup.setVisibility(View.VISIBLE);
             mMakeTask.setVisibility(View.GONE);
             mMakeWork.setVisibility(View.GONE);
-        }else if (position==1){
-            myGroup.setVisibility(View.GONE);
-            mMakeTask.setVisibility(View.VISIBLE);
-            mMakeWork.setVisibility(View.GONE);
-
+        }else if (position==1&&isMaster){
+                myGroup.setVisibility(View.GONE);
+                mMakeTask.setVisibility(View.VISIBLE);
+                mMakeWork.setVisibility(View.GONE);
         }else if (position==2){
             myGroup.setVisibility(View.GONE);
             mMakeTask.setVisibility(View.GONE);
             mMakeWork.setVisibility(View.VISIBLE);
-
         }
     }
 
     @Override
     protected int supplyTabs(List<TabInfo> tabs) {
-
         //如果是SystemGroup群
         if (getIntent().getStringExtra("groupName").equals("-1")){
             tabs.add(new TabInfo(FRAGMENT_ONE, "SystemGroup",
@@ -258,47 +259,6 @@ public class  GroupAll extends IndicatorFragmentActivity implements ChatMessageA
             default:
                 break;
         }
-    }
-
-    @Override
-    public void callBackDialog(final boolean isAgree, final String time) {
-        final AlertDialog.Builder builder=new AlertDialog.Builder(GroupAll.this);
-        builder.setTitle("提示");
-        if (isAgree){
-            builder.setMessage("是否确定其加入该群");
-            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    android.os.Message message=new android.os.Message();
-                    message.what=1;
-                    message.obj=time;
-                    handler.sendMessage(message);
-                }
-            });
-        }else {
-            builder.setMessage("是否拒绝其加入该群");
-            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    android.os.Message message=new android.os.Message();
-                    message.what=0;
-                    message.obj=time;
-                    handler.sendMessage(message);
-                }
-            });
-        }
-
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-
-            }
-        });
-        builder.create().show();
-
     }
 
     //-------------------生命周期函数，负责对 isForeground 的判断

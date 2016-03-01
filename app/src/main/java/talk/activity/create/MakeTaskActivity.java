@@ -1,8 +1,9 @@
 package talk.activity.create;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,19 +16,25 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
-
 import com.example.heshixiyang.ovetalk.R;
-
+import org.apache.commons.httpclient.NameValuePair;
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
 import talk.TalkApplication;
 import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.model.Task;
 import talk.util.DialogUtil;
+import talk.util.MyRunnable;
 
 public class MakeTaskActivity extends BasicActivity {
+    Handler handler=new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
     private Task mTask;
     private TalkApplication mApplication;
     private String[] mDate;
@@ -37,18 +44,16 @@ public class MakeTaskActivity extends BasicActivity {
     private int nowStep=1;
     private LinearLayout.LayoutParams layoutParams;
     private String mGroupName;
-
     private Button mChoose;
     private ListView mItem;
     private ArrayAdapter<String > mAdapter;
     private Animation mAnimationExpand;//显示listView
     private Animation mAnimationPullBack;//收缩listView
-
     private EditText mName;
-
     private EditText mConent;
-
+    private List<NameValuePair> formparams;
     private boolean isListViewVisible=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +84,6 @@ public class MakeTaskActivity extends BasicActivity {
 
         mAll.removeView(mName);
         mAll.addView(mConent,layoutParams);
-
     }
 
     private void initStep(){
@@ -148,11 +152,13 @@ public class MakeTaskActivity extends BasicActivity {
         mConent.setHint("请输入任务的要求和目标");
         mConent.setId(R.id.all+4);
     }
+
     public void init(){
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
         mTask=new Task();
         mGroupName=getIntent().getStringExtra("groupName");
+        formparams = new ArrayList<NameValuePair>();
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
         mAnimationExpand.setDuration(500);
@@ -206,7 +212,10 @@ public class MakeTaskActivity extends BasicActivity {
                             mTask.setTarget(mName.getText().toString());
                             mTask.setDate(new Date().toString());
                             mTask.setClickNumber(0);
-                            mApplication.getTaskDB().add( mTask);
+                            mApplication.getTaskDB().add(mTask);
+
+                            sendMessage();
+
                             finish();
                         }
                         break;
@@ -216,9 +225,19 @@ public class MakeTaskActivity extends BasicActivity {
             }
         });
         stepOne();
-
-
     }
+
+    private void sendMessage(){
+        formparams.clear();
+        formparams.add(new NameValuePair("idInGroup", String.valueOf(mTask.getIdInGroup())));
+        formparams.add(new NameValuePair("type", String.valueOf(mTask.getType())));
+        formparams.add(new NameValuePair("path", mTask.getPath()));
+        formparams.add(new NameValuePair("target", mTask.getTarget()));
+        formparams.add(new NameValuePair("clickNumber", String.valueOf(mTask.getClickNumber())));
+        formparams.add(new NameValuePair("date", mTask.getDate()));
+        new Thread(new MyRunnable(formparams,"",handler)).start();
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
             case RESULT_OK:

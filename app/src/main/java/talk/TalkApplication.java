@@ -19,19 +19,15 @@ import talk.model.User;
 import talk.util.MyPreferenceManager;
 
 public class TalkApplication extends Application {
-    public Map map=new HashMap();
-
     private static TalkApplication mApplication;
+    public Map map=new HashMap();
     private MyPreferenceManager mSpUtil;
-
     private NotificationManager mNotificationManager;
-
     private GroupMessageDB groupMessageDB;
     private GroupDB groupDB;
     private UserDB userDB;
     private TaskDB taskDB;
     private WorkDB workDB;
-
     private JoinGroupDB joinGroupDB;
     private ClickTaskDB clickTaskDB;
     private ClickWorkDB clickWorkDB;
