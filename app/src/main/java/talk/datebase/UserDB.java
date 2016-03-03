@@ -78,14 +78,12 @@ public class UserDB {
         return user;
     }
 
-
-
     /**
      *
      获得所有的member
      */
-    public List<User> getMembers() {
-        List<User> list = new ArrayList<User>();
+    public ArrayList<User> getMembers() {
+        ArrayList<User> list = new ArrayList<User>();
         Cursor c = mDb.rawQuery("select * from "+USER_TABLE_NAME, null);
         while (c.moveToNext())
         {

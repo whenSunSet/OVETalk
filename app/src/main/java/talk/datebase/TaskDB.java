@@ -79,16 +79,16 @@ public class TaskDB {
 
     public void update(int clickNum,int idInGroup ,String groupName){
         mDb.execSQL("update "
-                        +TASK_TABLE_NAME
+                        + TASK_TABLE_NAME
                         + " set "
-                        + CLICK_NUMBER+ " =?"
+                        + CLICK_NUMBER + " =?"
                         + " where "
                         + ID + "=? AND "
-                        + GROUP_NAME +"=?",
-                        new Object[]{
-                                clickNum,
-                                idInGroup,
-                                groupName});
+                        + GROUP_NAME + "=?",
+                new Object[]{
+                        clickNum,
+                        idInGroup,
+                        groupName});
     }
 
     public Task getTask(String groupName,int idInGroup){
@@ -130,6 +130,17 @@ public class TaskDB {
         return tasks;
     }
 
+
+    public int getGroupTaskNum(String groupName) {
+        ArrayList<Task> tasks= new ArrayList<Task>();
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
+        int a=0;
+        while (c.moveToNext()) {
+            a++;
+        }
+        c.close();
+        return a;
+    }
     public void delTable(String groupName) {
         mDb.execSQL("DROP TABLE " + TASK_TABLE_NAME);
     }

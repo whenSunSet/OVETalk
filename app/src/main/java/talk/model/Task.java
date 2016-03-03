@@ -1,11 +1,23 @@
 package talk.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by asus on 2015/12/16.
  */
-public class Task  {
+public class Task implements Parcelable {
 
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        public Task createFromParcel(Parcel source) {
+            return new Task(source);
+        }
+
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
     //0 ：文档，1：音频，2：视频
     private String groupName;
     private int idInGroup;
@@ -26,6 +38,16 @@ public class Task  {
         this.target = target;
         this.clickNumber = clickNumber;
         this.date = date;
+    }
+
+    protected Task(Parcel in) {
+        this.groupName = in.readString();
+        this.idInGroup = in.readInt();
+        this.type = in.readInt();
+        this.path = in.readString();
+        this.target = in.readString();
+        this.clickNumber = in.readInt();
+        this.date = in.readString();
     }
 
     public String getGroupName() {
@@ -82,5 +104,21 @@ public class Task  {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.groupName);
+        dest.writeInt(this.idInGroup);
+        dest.writeInt(this.type);
+        dest.writeString(this.path);
+        dest.writeString(this.target);
+        dest.writeInt(this.clickNumber);
+        dest.writeString(this.date);
     }
 }

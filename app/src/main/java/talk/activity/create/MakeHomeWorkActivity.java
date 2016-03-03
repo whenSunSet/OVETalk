@@ -4,70 +4,70 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import com.example.heshixiyang.ovetalk.R;
 import org.apache.commons.httpclient.NameValuePair;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
-import talk.model.Task;
-import talk.util.DialogUtil;
+import talk.activity.util.ListViewActivity;
+import talk.model.Work;
 import talk.util.MyRunnable;
 
-public class MakeTaskActivity extends BasicActivity {
+public class MakeHomeWorkActivity extends BasicActivity {
+
     Handler handler=new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
         }
     };
-    private Task mTask;
-    private TalkApplication mApplication;
-    private String[] mDate;
-    private LinearLayout mAll;
     private Button mLastStep;
     private Button mNextStep;
     private int nowStep=1;
+
+    private Work mWork;
+    private TalkApplication mApplication;
+    private String[] mDate;
+    private LinearLayout mAll;
     private LinearLayout.LayoutParams layoutParams;
-    private String mGroupName;
-    private Button mChoose;
+
+    private Button mChooseType;
+    private Button mChooseTask;
     private ListView mItem;
     private ArrayAdapter<String > mAdapter;
     private Animation mAnimationExpand;//显示listView
     private Animation mAnimationPullBack;//收缩listView
-    private EditText mName;
-    private EditText mConent;
     private List<NameValuePair> formparams;
     private boolean isListViewVisible=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_make_task);
+        setContentView(R.layout.activity_make_home_work);
         init();
-
     }
+
     public void init(){
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
-        mTask=new Task();
-        mGroupName=getIntent().getStringExtra("groupName");
+        mWork=new Work();
         formparams = new ArrayList<NameValuePair>();
+
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
         mAnimationExpand.setDuration(500);
@@ -88,11 +88,7 @@ public class MakeTaskActivity extends BasicActivity {
                         break;
                     case 2:
                         stepOne();
-                        mAll.removeView(mName);
-                        break;
-                    case 3:
-                        stepTwo();
-                        mAll.removeView(mConent);
+                        mAll.removeView(mChooseType);
                         break;
                     default:
                         break;
@@ -107,28 +103,17 @@ public class MakeTaskActivity extends BasicActivity {
                         stepTwo();
                         break;
                     case 2:
-                        if (TextUtils.isEmpty(mName.getText().toString())) {
-                            DialogUtil.showToast(mApplication, "还没有输入任务的名字");
-                        } else {
-                            mTask.setGroupName(mName.getText().toString());
-                            stepThree();
-                        }
-                        break;
-                    case 3:
-                        if (TextUtils.isEmpty(mConent.getText().toString())) {
-                            DialogUtil.showToast(mApplication, "还没有输入任务的目标");
-                        } else {
-                            mTask.setTarget(mName.getText().toString());
-                            mTask.setDate(new Date().toString());
-                            mTask.setClickNumber(0);
-                            mTask.setGroupName(mGroupName);
-                            mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupName) + 1);
+                        mWork.setMaster(mApplication.getSpUtil().getUserName());
+                        mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupName(), mWork.getTaskId()) + 1);
+                        mWork.setClickNumber(0);
+                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
+                        simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
+                        mWork.setDate(simpleDateFormat.format(new Date()));
 
-                            mApplication.getTaskDB().add(mTask);
-                            sendMessage();
-                            GroupAll.isFlash=true;
-                            finish();
-                        }
+                        mApplication.getWorkDB().add(mWork);
+                        sendWork();
+                        GroupAll.isFlash=true;
+                        finish();
                         break;
                     default:
                         break;
@@ -137,7 +122,6 @@ public class MakeTaskActivity extends BasicActivity {
         });
         stepOne();
     }
-
     private void initStep(){
         //stepOne
         mItem=new ListView(mApplication);
@@ -148,20 +132,20 @@ public class MakeTaskActivity extends BasicActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String date = (String) (mItem.getItemAtPosition(position));
-                Intent intent=new Intent(MakeTaskActivity.this,GugleFileActivity.class);
+                Intent intent=new Intent(MakeHomeWorkActivity.this,GugleFileActivity.class);
                 if (date.equals("文档")) {
-                    mChoose.setText("选择发布文件类型：文档");
+                    mChooseType.setText("选择发布文件类型：文档");
                     intent.putExtra("fileType", 0);
                     startActivityForResult(intent, 2);
-                    mTask.setType(0);
+                    mWork.setType(0);
                 } else if (date.equals("音频")) {
-                    mChoose.setText("选择发布文件类型：音频");
+                    mChooseType.setText("选择发布文件类型：音频");
                     intent.putExtra("fileType", 1);
                     startActivityForResult(intent,2);
-                    mTask.setType(1);
+                    mWork.setType(1);
                 } else {
-                    mChoose.setText("选择发布文件类型：视频");
-                    mTask.setType(2);
+                    mChooseType.setText("选择发布文件类型：视频");
+                    mWork.setType(2);
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);
@@ -170,10 +154,10 @@ public class MakeTaskActivity extends BasicActivity {
         });
 
 
-        mChoose=new Button(mApplication);
-        mChoose.setId(R.id.all + 1);
-        mChoose.setText("选择发布文件类型：文档");
-        mChoose.setOnClickListener(new View.OnClickListener() {
+        mChooseType =new Button(mApplication);
+        mChooseType.setId(R.id.all + 1);
+        mChooseType.setText("选择发布文件类型：文档");
+        mChooseType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Animation animation;
@@ -191,23 +175,22 @@ public class MakeTaskActivity extends BasicActivity {
         });
 
         //stepTwo
-        mName=new EditText(mApplication);
-        mName.setBackgroundColor(R.color.titlebar2);
-        mName.setMinLines(1);
-        mName.setHint("请输入任务名字");
-        mName.setId(R.id.all+3);
-
-        //stepThree
-        mConent=new EditText(mApplication);
-        mConent.setBackgroundColor(R.color.black);
-        mName.setMinLines(1);
-        mConent.setHint("请输入任务的要求和目标");
-        mConent.setId(R.id.all + 4);
+        mChooseTask=new Button(mApplication);
+        mChooseType.setId(R.id.all + 2);
+        mChooseType.setText("请选择任务");
+        mChooseTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MakeHomeWorkActivity.this, ListViewActivity.class);
+                intent.putExtra("which",1);
+                startActivityForResult(intent,1);
+            }
+        });
     }
     private void stepOne(){
         nowStep=1;
 
-        mAll.addView(mChoose, layoutParams);
+        mAll.addView(mChooseType, layoutParams);
         mAll.addView(mItem, layoutParams);
 
     }
@@ -215,36 +198,33 @@ public class MakeTaskActivity extends BasicActivity {
     private void stepTwo(){
         nowStep=2;
 
-        mAll.removeView(mChoose);
+        mAll.removeView(mChooseType);
         mAll.removeView(mItem);
-        mAll.addView(mName,layoutParams);
+        mAll.addView(mChooseTask,layoutParams);
 
     }
 
-    private void stepThree(){
-        nowStep=3;
-
-        mAll.removeView(mName);
-        mAll.addView(mConent,layoutParams);
-    }
-
-    private void sendMessage(){
+    private void sendWork(){
         formparams.clear();
-        formparams.add(new NameValuePair("idInGroup", String.valueOf(mTask.getIdInGroup())));
-        formparams.add(new NameValuePair("groupName",mGroupName));
-        formparams.add(new NameValuePair("type", String.valueOf(mTask.getType())));
-        formparams.add(new NameValuePair("path", mTask.getPath()));
-        formparams.add(new NameValuePair("target", mTask.getTarget()));
-        formparams.add(new NameValuePair("clickNumber", String.valueOf(mTask.getClickNumber())));
-        formparams.add(new NameValuePair("date", mTask.getDate()));
+        formparams.add(new NameValuePair("idInTask", String.valueOf(mWork.getIdInTask())));
+        formparams.add(new NameValuePair("groupName", mWork.getGroupName()));
+        formparams.add(new NameValuePair("master", mWork.getMaster()));
+        formparams.add(new NameValuePair("type", String.valueOf(mWork.getType())));
+        formparams.add(new NameValuePair("path", mWork.getPath()));
+        formparams.add(new NameValuePair("taskId",String.valueOf(mWork.getTaskId()) ));
+        formparams.add(new NameValuePair("clickNumber", String.valueOf(mWork.getClickNumber())));
+        formparams.add(new NameValuePair("date", mWork.getDate()));
         new Thread(new MyRunnable(formparams,"",handler)).start();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
+        switch (resultCode) {
+            case 1:
+                mWork.setTaskId(data.getIntExtra("idInGroup",-999));
+                mWork.setGroupName(data.getStringExtra("groupName"));
+                break;
             case 2:
-                mTask.setPath(data.getStringExtra("filePath"));
-                Log.d("MakeTaskActivity", data.getStringExtra("filePath"));
+                mWork.setPath(data.getStringExtra("filePath"));
                 break;
             default:
                 break;

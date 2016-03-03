@@ -15,6 +15,7 @@ import java.util.List;
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.Groups;
+import talk.activity.util.ListViewActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
 import talk.util.MyPreferenceManager;
@@ -99,8 +100,9 @@ public class GroupActivity extends Activity {
         mMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(GroupActivity.this,MemberActivity.class);
+                Intent intent=new Intent(GroupActivity.this,ListViewActivity.class);
                 intent.putExtra("groupName",mGroup.getGroupName());
+                intent.putExtra("which",2);
                 startActivity(intent);
             }
         });

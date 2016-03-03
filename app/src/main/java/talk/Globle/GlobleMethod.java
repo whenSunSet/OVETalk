@@ -1,17 +1,9 @@
 package talk.Globle;
 
 
-import android.util.Log;
-
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +42,16 @@ public class GlobleMethod {
         userDB.add(user);
         joinGroupDB.add(joinGroup);
 
+    }
+
+    public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,String groupName){
+        ArrayList<User> list=new ArrayList<User>();
+        ArrayList<String > nameList=new ArrayList<String >();
+        nameList=joinGroupDB.getMembersName(groupName);
+        for (String name:nameList) {
+            list.add(userDB.getMember(name));
+        }
+        return list;
     }
 
     public static final void quitFromGroup(TalkApplication talkApplication,Message message){

@@ -42,7 +42,7 @@ public class WorkDB {
                 + MASTER + " TEXT , "
                 + CLICK_NUMBER + " INTEGER,"
                 + "foreign key (" + GROUP_NAME + "," + TASK_ID + ") references " + "task(groupName,idInGroup) "
-                + "PRIMARY KEY (" + ID + "," + GROUP_NAME +","+ TASK_ID + "))");
+                + "PRIMARY KEY (" + ID + "," + GROUP_NAME + "," + TASK_ID + "))");
     }
 
 
@@ -140,6 +140,21 @@ public class WorkDB {
         c.close();
         return list;
 
+    }
+
+    public  int getTaskWorkNum(String groupName,int taskId){
+        List<Work> list=new ArrayList<Work>();
+        Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
+                        + " where "
+                        + GROUP_NAME + "=? AND "
+                        + TASK_ID +"=?",
+                new String []{
+                        groupName,
+                        String.valueOf(taskId)});
+        int a=0;
+        while (c.moveToNext()) {a++;}
+        c.close();
+        return a;
     }
     public ArrayList<Work> getGroupWork(String groupName) {
         ArrayList<Work> list=new ArrayList<Work>();

@@ -27,44 +27,29 @@ import talk.util.GugleConstants;
 import talk.util.GugleUtils;
 
 public class GugleFileActivity extends Activity {
-	// 列表数据集合 27
-	private ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
-
-	// 列表界面视图
-	private ListView listView;
-
-	// 列表数据与视图的适配器
-	private SimpleAdapter adapter;
-
-	// 目录层级的堆栈
-	private Stack<String> folderStack = new Stack<String>();
-
-	// 当前的目录
-	private String nowFolder;
-
-	// 返回次数，当为2时，退出软件
-	private int backIndex = 1;
-
-	// 是否是升序
-	private boolean isAsc = true;
-
+	public static final int TEXT=0;
+	public static final int MUSIC=1;
 	// 共享属性的名称
 	private final String GUGLE_FILE_SET = "GUGLE_FILE";
-
 	private final String GF_SET_LIST_TYPE = "LIST_TYPE";
-
+	// 列表数据集合 27
+	private ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
+	// 列表界面视图
+	private ListView listView;
+	// 列表数据与视图的适配器
+	private SimpleAdapter adapter;
+	// 目录层级的堆栈
+	private Stack<String> folderStack = new Stack<String>();
+	// 当前的目录
+	private String nowFolder;
+	// 返回次数，当为2时，退出软件
+	private int backIndex = 1;
+	// 是否是升序
+	private boolean isAsc = true;
 	private SharedPreferences setting = null;
-
 	private String fileManagePath;
-
 	private String TEMP_BASE = null;
-
 	private int fileType;
-
-	public static final int TEXT=0;
-
-	public static final int MUSIC=1;
-
 	private ImageButton mGoBackBtn;
 	private ImageButton goBackBtn;
 	private File sdFile;
@@ -288,8 +273,7 @@ public class GugleFileActivity extends Activity {
 		}else {
 			Intent intent = new Intent();
 			intent.putExtra("filePath",absolutePath);
-			setResult(RESULT_OK, intent);
-			Log.d("GugleFileActivity", "text");
+			setResult(2, intent);
 			finish();
 
 //			String fileName = file.getName();

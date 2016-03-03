@@ -147,7 +147,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", mGroup);
                 intent.putExtra("group", mGroup);
-                startActivity(intent);
+                startActivityForResult(intent,RESULT_OK);
             }
         });
 
@@ -246,12 +246,11 @@ public class  GroupAll extends IndicatorFragmentActivity {
             }
         //其他情况 添加一个消息item 然后刷新
         ((GroupChatting) (mTabs.get(0).fragment)).flash(chatMessage);
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
-            case RESULT_OK:
+            case 1:
                 if (mCurrentTab==0) {
                     ((GroupChatting) (mTabs.get(0).fragment)).addMessage(String.valueOf(data.getIntExtra("url",0)), data.getStringExtra("img"));
                 }

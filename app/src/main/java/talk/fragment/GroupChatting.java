@@ -2,6 +2,7 @@ package talk.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,12 +28,13 @@ import java.util.Date;
 import java.util.List;
 
 import talk.Globle.GlobleData;
+import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.adapter.ChatMessageAdapter;
 import talk.datebase.GroupMessageDB;
 import talk.model.Group;
 import talk.model.GroupChatMessage;
-import talk.util.ClickContarctionImageView;
+import talk.model.Work;
 import talk.util.DialogUtil;
 import talk.util.MyPreferenceManager;
 import talk.util.MyRunnable;
@@ -44,11 +46,14 @@ public class GroupChatting extends BasicFragment {
     public static final int SEND_JOIN_MESSAGE_SUCCESS=3;
     public static final int CHANGE_MESSAGE_NUM=4;
     public static final int I_WANT_TO_CALL_110=110;
-    public ClickContarctionImageView mMore;
-    //---------------------listView
+
+    public ImageView mMore;
     private Button mMsgSend;
     private EditText mMsgInput;
-    private ImageView mVedio;
+
+    private ImageView mHomeWork;
+    private ImageView mPicture;
+    private ImageView mEmoji;
     private LinearLayout mContainer;
 
     private String mGroupName;
@@ -61,6 +66,7 @@ public class GroupChatting extends BasicFragment {
     private GroupMessageDB mGroupMessageDB;
 
     private Group mGroup;
+    private Work mWork;
     //---------------------mContan是否可见
     private Boolean isVisble=false;
 
@@ -137,8 +143,12 @@ public class GroupChatting extends BasicFragment {
         }else {
             mMsgSend = (Button) view.findViewById(R.id.id_chat_send);
             mMsgInput = (EditText) view.findViewById(R.id.id_chat_msg);
-            mMore=(ClickContarctionImageView)view.findViewById(R.id.more);
-            mVedio=(ImageView) view.findViewById(R.id.btn_video);
+            mMore=(ImageView)view.findViewById(R.id.more);
+
+            mHomeWork=(ImageView) view.findViewById(R.id.btn_homework);
+            mPicture=(ImageView) view.findViewById(R.id.btn_picture);
+            mEmoji=(ImageView) view.findViewById(R.id.btn_emoji);
+
             mContainer=(LinearLayout)view.findViewById(R.id.ll_btn_container);
             formparams = new ArrayList<NameValuePair>();
         }
@@ -183,7 +193,35 @@ public class GroupChatting extends BasicFragment {
     private void initEvent(){
         if (!mActivity.isSystemGroup){
             initPrintEvent();
+            initMoreEvent();
         }
+    }
+
+    private void initMoreEvent(){
+
+        mEmoji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mHomeWork.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MakeHomeWorkActivity.class);
+                intent.putExtra("group", mGroup.getGroupName());
+                startActivityForResult(intent,1);
+            }
+        });
+
     }
 
     private void initPrintEvent() {
@@ -212,7 +250,7 @@ public class GroupChatting extends BasicFragment {
                 }
                 //添加消息到数据库里并开启线程发送数据
 
-                addMessage(msg, "0",1,null);
+                addMessage(msg, "0",1,-999);
                 mMsgInput.setText("");
             }
         });
@@ -262,7 +300,7 @@ public class GroupChatting extends BasicFragment {
     }
 
     //-----------------------添加自己的信息 并开启线程发送信息---------------------------
-    public void addMessage(String message,String messageImage,int statu,String path) {
+    public void addMessage(String message,String messageImage,int statu,int type) {
         GroupChatMessage chatMessage = new GroupChatMessage();
         chatMessage.setIsComing(false);
         chatMessage.setDate(new Date());
@@ -283,16 +321,13 @@ public class GroupChatting extends BasicFragment {
             openThread(chatMessage.getMessage(),null,chatMessage.getMessageStatu(),-999);
         }else if (chatMessage.getMessageStatu()==GlobleData.PHOTO_MESSAGE){
             openThread(null,chatMessage.getMessageImage(),chatMessage.getMessageStatu(),-999);
-        }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK){
-
         }
     }
+
     /**
      *  如果是普通消息 message=消息 isIamge=空 type=空
      *  如果是 Emoji消息 同上
      *  如果是 photo消息 message=空 isIamge=图片路径 type=空
-     *  如果是 homeWork 1.音频或者文档 message=“我用？完成了一个任务，快来看看吧” isImage=文件路径 type=0或者1
-     *                  2.视频 message=视频路径 isImage=图片路径 type=2 path=视频路径
      */
 
     private void openThread(String message,String isImage,int statu,int type){
@@ -310,11 +345,6 @@ public class GroupChatting extends BasicFragment {
         }else if (statu==GlobleData.PHOTO_MESSAGE){
             //传输图片
 
-        }else if (statu==GlobleData.USER_PUT_HOMEWORK){
-            if (type==0||type==1){
-                formparams.add(new NameValuePair("message", message));
-            }
-            formparams.add(new NameValuePair("type",String .valueOf(type)));
         }
         new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
     }

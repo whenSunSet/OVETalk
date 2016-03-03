@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 import talk.Globle.GlobleData;
 import talk.model.JoinGroup;
 
@@ -76,6 +78,17 @@ public class JoinGroupDB {
         return joinGroup;
     }
 
+    public ArrayList<String> getMembersName(String groupName){
+        Cursor c=mDb.rawQuery("select from " + JOIN_TABLE_NAME + " where "+ GROUP_NAME +"=?",
+                new String []{groupName});
+        ArrayList<String> list=new ArrayList<String>();
+        if (c.moveToFirst()){
+            list.add(c.getString(c.getColumnIndex(USER_ID)));
+        }
+
+        c.close();
+        return list;
+    }
 
 
 

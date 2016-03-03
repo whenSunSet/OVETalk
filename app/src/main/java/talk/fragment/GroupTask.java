@@ -11,6 +11,7 @@ import com.example.heshixiyang.ovetalk.R;
 
 import talk.activity.aboutGroup.TaskActivity;
 import talk.activity.fragment.GroupAll;
+import talk.activity.util.ListViewActivity;
 import talk.adapter.TaskAdapter;
 import talk.model.Group;
 import talk.model.Task;
@@ -20,32 +21,39 @@ import talk.model.Task;
  */
 public class GroupTask extends BasicFragment{
     private Group mGroup;
-
+    private int whichActivity;
     public GroupTask() {
         super();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (getActivity() instanceof GroupAll){
+            whichActivity=1;
+            mGroup=((GroupAll)getActivity()).mGroup;
+        }else if (getActivity() instanceof ListViewActivity){
+            whichActivity=2;
+            mGroup=((ListViewActivity)getActivity()).mGroup;
+        }
         init(inflater);
-
         return view;
     }
     protected void init(LayoutInflater inflater) {
         super.init(inflater);
-        mGroup=((GroupAll)getActivity()).mGroup;
-
         mData=mTalkApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
         mAdapter=new TaskAdapter(mTalkApplication,R.layout.task_item,mData);
         mListView.setAdapter(mAdapter);
-
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task=(Task)(mListView.getItemAtPosition(position));
-                mTalkApplication.map.put("nowTask", task);
-                Intent intent=new Intent(getActivity(),TaskActivity.class);
-                getActivity().startActivity(intent);
+                Task task = (Task) (mListView.getItemAtPosition(position));
+                if (whichActivity==1){
+                    mTalkApplication.map.put("nowTask", task);
+                    Intent intent = new Intent(getActivity(), TaskActivity.class);
+                    getActivity().startActivity(intent);
+                }else if (whichActivity==2){
+                    ((ListViewActivity)getActivity()).finish(task.getGroupName(),task.getIdInGroup());
+                }
             }
         });
     }
