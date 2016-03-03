@@ -211,7 +211,8 @@ public class GroupChatting extends BasicFragment {
                     return;
                 }
                 //添加消息到数据库里并开启线程发送数据
-                addMessage(msg, "0");
+
+                addMessage(msg, "0",1,null);
                 mMsgInput.setText("");
             }
         });
@@ -278,25 +279,42 @@ public class GroupChatting extends BasicFragment {
         mAdapter.notifyDataSetChanged();
         mListView.setSelection(mData.size() - 1);
 
-        //如果是视屏的话在这里开启一个线程，发送视频信息
-        openThread(message, messageImage,statu,path);
-    }
+        if (chatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE&&chatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
+            openThread(chatMessage.getMessage(),null,chatMessage.getMessageStatu(),-999);
+        }else if (chatMessage.getMessageStatu()==GlobleData.PHOTO_MESSAGE){
+            openThread(null,chatMessage.getMessageImage(),chatMessage.getMessageStatu(),-999);
+        }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK){
 
-    private void openThread(String message,String isImage,int statu,String path){
+        }
+    }
+    /**
+     *  如果是普通消息 message=消息 isIamge=空 type=空
+     *  如果是 Emoji消息 同上
+     *  如果是 photo消息 message=空 isIamge=图片路径 type=空
+     *  如果是 homeWork 1.音频或者文档 message=“我用？完成了一个任务，快来看看吧” isImage=文件路径 type=0或者1
+     *                  2.视频 message=视频路径 isImage=图片路径 type=2 path=视频路径
+     */
+
+    private void openThread(String message,String isImage,int statu,int type){
         formparams.clear();
         formparams.add(new NameValuePair("groupname", mGroup.getGroupName()));
         formparams.add(new NameValuePair("username", "13588197966"));
-        formparams.add(new NameValuePair("message", message));
         formparams.add(new NameValuePair("messageStatu", String.valueOf(statu)));
 
         if (statu==GlobleData.COMMOM_MESSAGE){
+            formparams.add(new NameValuePair("message", message));
+
         }else if (statu==GlobleData.EMOJI_MESSAGE){
+            formparams.add(new NameValuePair("message", message));
 
         }else if (statu==GlobleData.PHOTO_MESSAGE){
-            formparams.remove("message");
+            //传输图片
 
         }else if (statu==GlobleData.USER_PUT_HOMEWORK){
-            formparams.add(new NameValuePair("",path));
+            if (type==0||type==1){
+                formparams.add(new NameValuePair("message", message));
+            }
+            formparams.add(new NameValuePair("type",String .valueOf(type)));
         }
         new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
     }
