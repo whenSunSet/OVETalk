@@ -66,6 +66,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
         mWork=new Work();
+        mWork.setGroupName(getIntent().getStringExtra("groupName"));
         formparams = new ArrayList<NameValuePair>();
 
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
@@ -111,8 +112,14 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         mWork.setDate(simpleDateFormat.format(new Date()));
 
                         mApplication.getWorkDB().add(mWork);
-                        sendWork();
                         GroupAll.isFlash=true;
+                        sendWork();
+
+                        Intent intent=new Intent();
+                        intent.putExtra("taskId",mWork.getTaskId());
+                        intent.putExtra("idInTask",mWork.getIdInTask());
+                        intent.putExtra("path",mWork.getPath());
+                        setResult(1,intent);
                         finish();
                         break;
                     default:
@@ -220,8 +227,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case 1:
-                mWork.setTaskId(data.getIntExtra("idInGroup",-999));
-                mWork.setGroupName(data.getStringExtra("groupName"));
+                mWork.setTaskId(data.getIntExtra("idInGroup", -999));
                 break;
             case 2:
                 mWork.setPath(data.getStringExtra("filePath"));

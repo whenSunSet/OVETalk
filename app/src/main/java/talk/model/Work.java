@@ -36,7 +36,14 @@ public class Work implements Parcelable {
         this.date = date;
     }
 
+    public Work(int idInTask, int taskId,String path) {
+        this.idInTask = idInTask;
+        this.taskId = taskId;
+        this.path=path;
+    }
+
     public Work() {}
+
 
     protected Work(Parcel in) {
         this.taskId = in.readInt();

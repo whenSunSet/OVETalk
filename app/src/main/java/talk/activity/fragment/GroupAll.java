@@ -20,6 +20,7 @@ import java.util.List;
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.aboutGroup.GroupActivity;
+import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.create.MakeTaskActivity;
 import talk.activity.supers.IndicatorFragmentActivity;
 import talk.datebase.GroupMessageDB;
@@ -80,9 +81,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
         GroupAll.isFlash=false;
 
         initView();
-
     }
-
     public void initView() {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
@@ -147,18 +146,18 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", mGroup);
                 intent.putExtra("group", mGroup);
-                startActivityForResult(intent,RESULT_OK);
+                startActivityForResult(intent,2);
             }
         });
 
         mMakeWork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(GroupAll.this, GroupActivity.class);
+                Intent intent = new Intent(GroupAll.this, MakeHomeWorkActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", mGroup);
                 intent.putExtra("group", mGroup);
-                startActivity(intent);
+                startActivityForResult(intent, 3);
             }
         });
         RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT, GridLayout.LayoutParams.WRAP_CONTENT);
@@ -248,12 +247,13 @@ public class  GroupAll extends IndicatorFragmentActivity {
         ((GroupChatting) (mTabs.get(0).fragment)).flash(chatMessage);
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
-            case 1:
-                if (mCurrentTab==0) {
-                    ((GroupChatting) (mTabs.get(0).fragment)).addMessage(String.valueOf(data.getIntExtra("url",0)), data.getStringExtra("img"));
-                }
+        switch (resultCode){
+            case 2:
+
+                break;
+            case 3:
                 break;
             default:
                 break;

@@ -70,6 +70,7 @@ public class BasicFragment extends Fragment {
 
     public void flash(){
         mListView.setSelection(0);
+        mAdapter.notifyDataSetChanged();
         Groups.isFlash=false;
     }
 

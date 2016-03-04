@@ -125,8 +125,9 @@ public class MakeTaskActivity extends BasicActivity {
                             mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupName) + 1);
 
                             mApplication.getTaskDB().add(mTask);
-                            sendMessage();
                             GroupAll.isFlash=true;
+                            sendMessage();
+
                             finish();
                         }
                         break;
