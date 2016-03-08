@@ -12,11 +12,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.heshixiyang.ovetalk.R;
-
 import java.util.List;
-
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.aboutGroup.GroupActivity;
@@ -31,6 +28,8 @@ import talk.model.Group;
 import talk.model.GroupChatMessage;
 import talk.model.Message;
 import talk.model.TabInfo;
+import talk.model.Task;
+import talk.model.Work;
 import talk.util.MyRunnable;
 
 /**
@@ -82,6 +81,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         initView();
     }
+
     public void initView() {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
@@ -146,7 +146,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", mGroup);
                 intent.putExtra("group", mGroup);
-                startActivityForResult(intent,2);
+                startActivityForResult(intent,1);
             }
         });
 
@@ -157,7 +157,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", mGroup);
                 intent.putExtra("group", mGroup);
-                startActivityForResult(intent, 3);
+                startActivityForResult(intent, 2);
             }
         });
         RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT, GridLayout.LayoutParams.WRAP_CONTENT);
@@ -249,14 +249,23 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode){
-            case 2:
-
-                break;
-            case 3:
-                break;
-            default:
-                break;
+        if (resultCode==1){
+            ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
+                    "我发布了一个任务，快来看看吧",
+                    null,
+                    11,
+                    null,
+                    new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",-999)));
+        }else {
+            ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
+                    "我发布了一个作业，快来看看吧",
+                    null,
+                    11,
+                    new Work(data.getIntExtra("taskId", -999),
+                            data.getIntExtra("idInTask", -999),
+                            data.getStringExtra("path"),
+                            resultCode),
+                    null);
         }
     }
 
@@ -277,4 +286,5 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         isResume=true;
     }
+
 }

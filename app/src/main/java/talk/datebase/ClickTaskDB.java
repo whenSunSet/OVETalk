@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 import talk.Globle.GlobleData;
 import talk.model.ClickTask;
 
@@ -60,8 +62,8 @@ public class ClickTaskDB {
     }
 
     public void deleteClick(String groupName,String userId,int taskId) {
-        mDb.execSQL("delete from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_NAME + "=? AND"+TASK_ID + "=?",
-                new Object[]{userId, groupName,taskId});
+        mDb.execSQL("delete from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_NAME + "=? AND" + TASK_ID + "=?",
+                new Object[]{userId, groupName, taskId});
     }
 
 
@@ -74,20 +76,47 @@ public class ClickTaskDB {
     public ClickTask getClick(String groupName,String userId,int taskId){
         Cursor c=mDb.rawQuery("select from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_NAME + "=? AND"+TASK_ID + "=?",
                 new String []{userId,groupName,String.valueOf(taskId)});
-        ClickTask clickTask=new ClickTask();
+        ClickTask clickTask=null;
         if (c.moveToFirst()){
-
-            clickTask.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
-            clickTask.setUserId(c.getString(c.getColumnIndex(USER_ID)));
-            clickTask.setDate(c.getString(c.getColumnIndex(DATE)));
-            clickTask.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
-
+            clickTask=makeClickTask(c);
         }
 
         c.close();
         return clickTask;
     }
 
+    public ArrayList<ClickTask> getClicks(String groupName,int taskId){
+        ArrayList<ClickTask> list=new ArrayList<>();
+        Cursor c=mDb.rawQuery("select from " + CLICK_TASK_TABLE_NAME+ " where " + GROUP_NAME + "=? AND"+TASK_ID + "=?",
+                new String []{groupName,String.valueOf(taskId)});
+        while (c.moveToFirst()){
+            list.add(makeClickTask(c));
+        }
+        c.close();
+        return list;
+    }
+
+    public ArrayList<String> getClickMemberName(String groupName,int taskId){
+        ArrayList<String> list=new ArrayList<>();
+        ArrayList<ClickTask> clickTasks=getClicks(groupName,taskId);
+
+        for (ClickTask clickTask:clickTasks){
+            list.add(clickTask.getUserId());
+        }
+
+        return list;
+    }
+
+    public ClickTask makeClickTask(Cursor c){
+        ClickTask clickTask=new ClickTask();
+
+        clickTask.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+        clickTask.setUserId(c.getString(c.getColumnIndex(USER_ID)));
+        clickTask.setDate(c.getString(c.getColumnIndex(DATE)));
+        clickTask.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
+
+        return clickTask;
+    }
 
 
 

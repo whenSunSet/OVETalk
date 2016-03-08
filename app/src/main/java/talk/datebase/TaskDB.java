@@ -111,7 +111,7 @@ public class TaskDB {
     }
 
     public ArrayList<Task> getGroupTask(String groupName) {
-        ArrayList<Task> tasks= new ArrayList<Task>();
+        ArrayList<Task> tasks= new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
 
         while (c.moveToNext()) {
@@ -132,7 +132,7 @@ public class TaskDB {
 
 
     public int getGroupTaskNum(String groupName) {
-        ArrayList<Task> tasks= new ArrayList<Task>();
+        ArrayList<Task> tasks= new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
         int a=0;
         while (c.moveToNext()) {

@@ -21,13 +21,10 @@ import talk.model.GroupChatMessage;
 public class ChatMessageAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<GroupChatMessage> mDatas;
-	private Context mContext;
-
 
 	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas) {
 		mInflater = LayoutInflater.from(context);
 		mDatas = datas;
-		mContext=context;
 
     }
 

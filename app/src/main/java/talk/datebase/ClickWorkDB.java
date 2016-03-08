@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 import talk.Globle.GlobleData;
 import talk.model.ClickWork;
 
@@ -78,22 +80,49 @@ public class ClickWorkDB {
     public ClickWork getClick(String groupName,String userId,int taskId,int workId){
         Cursor c=mDb.rawQuery("select from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ WORK_ID + "=? AND" + GROUP_NAME + "=? AND"+TASK_ID + "=?",
                 new String []{userId,String.valueOf(workId),groupName,String.valueOf(taskId)});
-        ClickWork clickWork=new ClickWork();
+        ClickWork clickWork=null;
         if (c.moveToFirst()){
-
-            clickWork.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
-            clickWork.setUserId(c.getString(c.getColumnIndex(USER_ID)));
-            clickWork.setDate(c.getString(c.getColumnIndex(DATE)));
-            clickWork.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
-            clickWork.setWorkId(c.getInt(c.getColumnIndex(WORK_ID)));
-
+            clickWork=makeClickWork(c);
         }
 
         c.close();
         return clickWork;
     }
 
+    public ArrayList<ClickWork> getClicks(String groupName,int taskId,int workId){
+        ArrayList<ClickWork> list=new ArrayList<>();
+        Cursor c=mDb.rawQuery("select from " + CLICK_WORK_TABLE_NAME + " where " + WORK_ID + "=? AND" + GROUP_NAME + "=? AND"+TASK_ID + "=?",
+                new String []{String.valueOf(workId),groupName,String.valueOf(taskId)});
+        while (c.moveToFirst()){
+            list.add(makeClickWork(c));
+        }
 
+        c.close();
+        return list;
+    }
+
+    public ArrayList<String> getClickMemberName(String groupName,int taskId,int workId){
+        ArrayList<String> list=new ArrayList<>();
+        ArrayList<ClickWork> clickWorks=getClicks(groupName,taskId,workId);
+
+        for (ClickWork clickWork:clickWorks){
+            list.add(clickWork.getUserId());
+        }
+
+        return list;
+    }
+
+    public ClickWork makeClickWork(Cursor c){
+        ClickWork clickWork=new ClickWork();
+
+        clickWork.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+        clickWork.setUserId(c.getString(c.getColumnIndex(USER_ID)));
+        clickWork.setDate(c.getString(c.getColumnIndex(DATE)));
+        clickWork.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
+        clickWork.setWorkId(c.getInt(c.getColumnIndex(WORK_ID)));
+
+        return clickWork;
+    }
 
 
     public void update(ClickWork clickWork){

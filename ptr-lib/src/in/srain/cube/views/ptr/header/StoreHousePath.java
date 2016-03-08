@@ -336,7 +336,7 @@ public class StoreHousePath {
      * @return ArrayList of float[] {x1, y1, x2, y2}
      */
     public static ArrayList<float[]> getPath(String str, float scale, int gapBetweenLetter) {
-        ArrayList<float[]> list = new ArrayList<float[]>();
+        ArrayList<float[]> list = new ArrayList<>();
         float offsetForWidth = 0;
         for (int i = 0; i < str.length(); i++) {
             int pos = str.charAt(i);

@@ -11,12 +11,17 @@ import talk.Globle.GlobleMethod;
 import talk.activity.util.ListViewActivity;
 import talk.adapter.MemberAdapter;
 import talk.model.Group;
+import talk.model.Task;
+import talk.model.Work;
 
 /**
  * Created by heshixiyang on 2016/3/3.
  */
 public class MemberFragment extends BasicFragment {
     private Group mGroup;
+    private ListViewActivity activity;
+    private Work mWork;
+    private Task mTask;
     public MemberFragment() {
         super();
     }
@@ -28,8 +33,27 @@ public class MemberFragment extends BasicFragment {
     }
     protected void init(LayoutInflater inflater) {
         super.init(inflater);
-        mGroup=((ListViewActivity)getActivity()).mGroup;
-        mData= GlobleMethod.findUserFromGroup(mTalkApplication.getJoinGroupDB(),mTalkApplication.getUserDB(),mGroup.getGroupName());
+        activity=(ListViewActivity)getActivity();
+        mGroup=activity.mGroup;
+        mTask=activity.mTask;
+        mWork=activity.mWork;
+        if (activity.isWorkClick){
+            mData=GlobleMethod.findClickWorkMembers(
+                    mGroup.getGroupName(),
+                    mWork.getTaskId(),
+                    mWork.getIdInTask(),
+                    activity.mApplication.getClickWorkDB(),
+                    activity.mApplication.getUserDB());
+
+        }else if (activity.isTaskClick){
+            mData=GlobleMethod.findClickTaskMembers(
+                    mGroup.getGroupName(),
+                    mTask.getIdInGroup(),
+                    activity.mApplication.getClickTaskDB(),
+                    activity.mApplication.getUserDB());
+        }else {
+            mData= GlobleMethod.findUserFromGroup(mTalkApplication.getJoinGroupDB(),mTalkApplication.getUserDB(),mGroup.getGroupName());
+        }
         mAdapter=new MemberAdapter(mTalkApplication, R.layout.member_item_layout,mData);
         mListView.setAdapter(mAdapter);
     }

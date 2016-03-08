@@ -7,22 +7,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.example.heshixiyang.ovetalk.R;
+
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
+import talk.activity.util.ListViewActivity;
 import talk.activity.util.NotePadActivity;
-import talk.model.Group;
 import talk.model.Task;
 
 
 public class TaskActivity extends Activity {
     private TalkApplication mApplication;
-    private Group mGroup;
     private Task mTask;
     private ImageView mType;
     private TextView mName;
     private TextView mTime;
     private TextView mTarget;
     private Button mButton;
+    private Button mCliclMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,6 @@ public class TaskActivity extends Activity {
 
     public void init(){
         mApplication=(TalkApplication)getApplication();
-        mGroup=(Group)mApplication.map.get("nowGroup");
         mTask=((Task)(mApplication.map.get("nowTask")));
 
         mType = (ImageView) findViewById(R.id.type);
@@ -41,6 +43,7 @@ public class TaskActivity extends Activity {
         mTime=(TextView)findViewById(R.id.time);
         mTarget=(TextView)findViewById(R.id.target);
         mButton=(Button)findViewById(R.id.button);
+        mCliclMember=(Button)findViewById(R.id.clickMember);
 
         mName.setText(mTask.getGroupName());
         mTime.setText(mTask.getDate());
@@ -70,6 +73,14 @@ public class TaskActivity extends Activity {
                 break;
         }
 
+        mCliclMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(TaskActivity.this, ListViewActivity.class);
+                intent.putExtra("which", GlobleData.GROUP_MEMBER_LIST);
+                startActivity(intent);
+            }
+        });
     }
 
 }

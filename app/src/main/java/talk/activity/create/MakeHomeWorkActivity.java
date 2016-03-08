@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.supers.BasicActivity;
@@ -119,7 +121,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         intent.putExtra("taskId",mWork.getTaskId());
                         intent.putExtra("idInTask",mWork.getIdInTask());
                         intent.putExtra("path",mWork.getPath());
-                        setResult(1,intent);
+                        setResult(getIntent().getIntExtra("type",-999),intent);
                         finish();
                         break;
                     default:
@@ -213,14 +215,13 @@ public class MakeHomeWorkActivity extends BasicActivity {
 
     private void sendWork(){
         formparams.clear();
-        formparams.add(new NameValuePair("idInTask", String.valueOf(mWork.getIdInTask())));
-        formparams.add(new NameValuePair("groupName", mWork.getGroupName()));
-        formparams.add(new NameValuePair("master", mWork.getMaster()));
-        formparams.add(new NameValuePair("type", String.valueOf(mWork.getType())));
-        formparams.add(new NameValuePair("path", mWork.getPath()));
-        formparams.add(new NameValuePair("taskId",String.valueOf(mWork.getTaskId()) ));
-        formparams.add(new NameValuePair("clickNumber", String.valueOf(mWork.getClickNumber())));
-        formparams.add(new NameValuePair("date", mWork.getDate()));
+        formparams.add(new NameValuePair(GlobleData.GROUP_NAME, mWork.getGroupName()));
+        formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
+        formparams.add(new NameValuePair(GlobleData.MASTER, mWork.getMaster()));
+        formparams.add(new NameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));
+        formparams.add(new NameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
+        formparams.add(new NameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
+        formparams.add(new NameValuePair(GlobleData.DATE, mWork.getDate()));
         new Thread(new MyRunnable(formparams,"",handler)).start();
     }
 

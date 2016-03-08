@@ -3,58 +3,64 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
               android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
                 tools:context="talk.activity.aboutGroup.TaskActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:id="@+id/type"
-            android:src="@drawable/icon"
-            />
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/type"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:layout_weight="6"
+            android:orientation="vertical">
         <TextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
             android:text="name"
-            android:id="@+id/name"
-            />
+            android:textSize="20dp"/>
             <TextView
+                android:id="@+id/time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/time"
-                android:text="time"
-                />
+                android:text="time"/>
 
             </LinearLayout>
         </LinearLayout>
     <TextView
+        android:id="@+id/target"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/gray"
+        android:minLines="5"
         android:text="target:"
         android:textColor="@color/white"
-        android:background="@color/gray"
-        android:id="@+id/target"
-        android:minLines="5"
         />
     <Button
+        android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button"
         android:text="button"
         />
-
+    <Button
+        android:id="@+id/clickMember"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="clickMember"
+        />
 
 </LinearLayout>

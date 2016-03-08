@@ -18,13 +18,14 @@ public class Message implements Parcelable {
         }
     };
     private String message;
-    private String groupName;
-    private String userIcon;
     private String date;
-    private String userNickName;
+    private String groupName;
     private String userName;
     private int messageStatu;
     private String messageImage;
+
+    private String userIcon;
+    private String userNickName;
 
     public Message() {}
 

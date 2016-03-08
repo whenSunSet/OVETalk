@@ -45,8 +45,8 @@ public class GlobleMethod {
     }
 
     public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,String groupName){
-        ArrayList<User> list=new ArrayList<User>();
-        ArrayList<String > nameList=new ArrayList<String >();
+        ArrayList<User> list=new ArrayList<>();
+        ArrayList<String> nameList;
         nameList=joinGroupDB.getMembersName(groupName);
         for (String name:nameList) {
             list.add(userDB.getMember(name));
@@ -89,6 +89,28 @@ public class GlobleMethod {
         }
     }
 
+    public static ArrayList<User> findClickWorkMembers(String groupName,
+                                                         int taskId,
+                                                         int workId,
+                                                         ClickWorkDB clickWorkDB,
+                                                         UserDB userDB){
+        ArrayList<User> list=new ArrayList<>();
+        for (String userId:clickWorkDB.getClickMemberName(groupName,taskId,workId)){
+            list.add(userDB.getMember(userId));
+        }
+        return list;
+    }
+
+    public static ArrayList<User> findClickTaskMembers(String groupName,
+                                                       int taskId,
+                                                       ClickTaskDB clickTaskDB,
+                                                       UserDB userDB){
+        ArrayList<User> list=new ArrayList<>();
+        for (String userId:clickTaskDB.getClickMemberName(groupName, taskId)){
+            list.add(userDB.getMember(userId));
+        }
+        return list;
+    }
 
     public static String GetResult(String url, List<NameValuePair> formparams) {
 

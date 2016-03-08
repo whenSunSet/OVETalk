@@ -41,12 +41,14 @@ public class JpushReceiver extends BroadcastReceiver {
     private TalkApplication mApplication;
     private UserDB mUserDB;
     private MyPreferenceManager myPreferenceManager;
+    private List<NameValuePair> formparams;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         mApplication=(TalkApplication)context.getApplicationContext();
         mUserDB =mApplication.getUserDB();
         myPreferenceManager=mApplication.getSpUtil();
+        formparams= new ArrayList<NameValuePair>();
         Bundle bundle = intent.getExtras();
         Message message;
         String groupName;
@@ -65,7 +67,20 @@ public class JpushReceiver extends BroadcastReceiver {
                 //1-3 10 11都是group接受的消息
                 groupName=message.getGroupName();
                 makeAndSaveMessage(message, groupName);
-
+                if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
+                    message.setMessage("我发布了一个任务，快来看看吧");
+                    formparams.clear();
+                    formparams.add(new NameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
+                    formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, message.getUserIcon()));
+                    formparams.add(new NameValuePair(GlobleData.TASK_ID, message.getUserNickName()));
+                    new Thread(new MyRunnable(formparams,"",handler));
+                }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
+                    message.setMessage("我发布了一个作业，快来看看吧");
+                    formparams.clear();
+                    formparams.add(new NameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
+                    formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, message.getUserIcon()));
+                    new Thread(new MyRunnable(formparams,"",handler));
+                }
             }else {
                 //以下都是把信息发在SystemGroup里面的
                 groupName=myPreferenceManager.getUserName();
@@ -79,7 +94,7 @@ public class JpushReceiver extends BroadcastReceiver {
                     case GlobleData.USER_JOIN_GROUP:
                         msg="加入了";
                         GlobleMethod.addUserToGroup(mApplication, message);
-                        //groupname:加入的群组，date：服务器发送的时间，nickname：加入人的昵称，username：加入人的id
+                        //groupname:加入的群组，date：服务器发送的时间，nickname：加入人的昵称，username：加入人的id userIcon: 加入人的头像
 
                         break;
                     case GlobleData.USER_OUT_GROUP:
@@ -98,9 +113,9 @@ public class JpushReceiver extends BroadcastReceiver {
                         msg="同意你加入";
 //                        mApplication.getGroupDB().addGroup(new Group(message.getGroupName(),groupNickName,message.getUserIcon(),message.getUserName()));
                         GlobleMethod.setTag(mApplication);
-                        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-                        formparams.add(new NameValuePair("username",myPreferenceManager.getUserName()));
-                        formparams.add(new NameValuePair("groupname",message.getGroupName()));
+                        formparams.clear();
+                        formparams.add(new NameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));
+                        formparams.add(new NameValuePair(GlobleData.GROUP_NAME,message.getGroupName()));
 
                         new Thread(new MyRunnable(formparams,GlobleData.GET_GROUP_INFO,handler)).start();
 
@@ -115,7 +130,6 @@ public class JpushReceiver extends BroadcastReceiver {
                     case GlobleData.USER_REQUEST_JOIN_GROUP:
                         msg="请求加入";
                         //groupname:请求加入的群组，date：服务器发送的时间，nickname：想加入该群人的昵称，username：想加入该群人的id
-
                         break;
                 }
                 makeAndSaveMessage(msg, message, groupName, groupNickName);

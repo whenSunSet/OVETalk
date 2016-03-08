@@ -30,6 +30,11 @@ public class Task implements Parcelable {
     public Task() {
     }
 
+    public Task(String path, int idInGroup) {
+        this.path = path;
+        this.idInGroup = idInGroup;
+    }
+
     public Task(String groupName, int idInGroup, int type, String path, String target, int clickNumber, String date) {
         this.groupName = groupName;
         this.idInGroup = idInGroup;

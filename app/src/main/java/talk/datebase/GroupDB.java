@@ -131,7 +131,7 @@ public class GroupDB {
 
 
     public ArrayList<Group> getGroups() {
-        ArrayList<Group> list = new ArrayList<Group>();
+        ArrayList<Group> list = new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+GROUP_TABLE_NAME, null);
         while (c.moveToNext())
         {
@@ -159,7 +159,7 @@ public class GroupDB {
     }
 
     public List<String> getGroupNames() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Cursor c = mDb.rawQuery("select " + GROUP_NAME + " from " + GROUP_TABLE_NAME, null);
         while (c.moveToNext()) {
             list.add(c.getString(c.getColumnIndex(GROUP_NAME)));

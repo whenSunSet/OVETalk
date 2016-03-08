@@ -69,4 +69,26 @@ public class GlobleData {
 
     public static final int YOU_DISAGREE_TO_JOIN_GROUP=13;
 
+    public static final String MESSAGE="message";
+    public static final String DATE="date";
+    public static final String GROUP_NAME="groupName";
+    public static final String USER_NAME="userName";
+    public static final String MESSAGE_STATU="messageStatu";
+    public static final String MESSAGE_IMAGE="messageImage";
+
+
+    public static final String PATH="path";
+    public static final String ID_IN_GROUP="idInGroup";
+    public static final String ID_IN_TASK="idInTask";
+    public static final String TASK_ID="taskId";
+    public static final String MASTER="master";
+    public static final String TYPE="type";
+    public static final String CLICK_NUMBER="clickNumber";
+    public static final String TARGET="target";
+
+    public static final int GROUP_TASK_LIST=1;
+    public static final int GROUP_MEMBER_LIST=2;
+    public static final int TASK_CLICK_MEMBER_LIST=3;
+    public static final int WORK_CLICK_MEMBER_LIST=4;
+
 }

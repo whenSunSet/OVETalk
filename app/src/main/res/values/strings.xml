@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">OVETalk</string>
+    <string name="TASK_MESSAGE">我发布了一个任务，快来看看吧</string>
+    <string name="HOMEWORK_MESSAGE">我发布了一个作业，快来看看吧</string>
 
 
     <string name="hello_world">Hello world!</string>

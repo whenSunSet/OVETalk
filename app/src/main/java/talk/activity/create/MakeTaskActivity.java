@@ -21,6 +21,8 @@ import org.apache.commons.httpclient.NameValuePair;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.supers.BasicActivity;
@@ -128,6 +130,10 @@ public class MakeTaskActivity extends BasicActivity {
                             GroupAll.isFlash=true;
                             sendMessage();
 
+                            Intent intent=new Intent();
+                            intent.putExtra("idInGroup",mTask.getIdInGroup());
+                            intent.putExtra("path",mTask.getPath());
+                            setResult(1,intent);
                             finish();
                         }
                         break;
@@ -231,13 +237,12 @@ public class MakeTaskActivity extends BasicActivity {
 
     private void sendMessage(){
         formparams.clear();
-        formparams.add(new NameValuePair("idInGroup", String.valueOf(mTask.getIdInGroup())));
-        formparams.add(new NameValuePair("groupName",mGroupName));
-        formparams.add(new NameValuePair("type", String.valueOf(mTask.getType())));
-        formparams.add(new NameValuePair("path", mTask.getPath()));
-        formparams.add(new NameValuePair("target", mTask.getTarget()));
-        formparams.add(new NameValuePair("clickNumber", String.valueOf(mTask.getClickNumber())));
-        formparams.add(new NameValuePair("date", mTask.getDate()));
+        formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
+        formparams.add(new NameValuePair(GlobleData.GROUP_NAME,mGroupName));
+        formparams.add(new NameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
+        formparams.add(new NameValuePair(GlobleData.TARGET, mTask.getTarget()));
+        formparams.add(new NameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
+        formparams.add(new NameValuePair(GlobleData.DATE, mTask.getDate()));
         new Thread(new MyRunnable(formparams,"",handler)).start();
     }
 

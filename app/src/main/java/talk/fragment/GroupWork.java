@@ -11,7 +11,7 @@ import com.example.heshixiyang.ovetalk.R;
 
 import talk.activity.aboutGroup.TaskActivity;
 import talk.activity.fragment.GroupAll;
-import talk.adapter.TaskAdapter;
+import talk.adapter.WorkAdapter;
 import talk.model.Group;
 import talk.model.Task;
 
@@ -33,7 +33,7 @@ public class GroupWork extends BasicFragment{
         mGroup=((GroupAll)getActivity()).mGroup;
 
         mData=mTalkApplication.getWorkDB().getGroupWork(mGroup.getGroupName());
-        mAdapter=new TaskAdapter(mTalkApplication, R.layout.work_item,mData);
+        mAdapter=new WorkAdapter(mTalkApplication, R.layout.work_item,mData);
         mListView.setAdapter(mAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

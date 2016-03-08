@@ -13,6 +13,10 @@ import java.util.Set;
 
 public class MyPreferenceManager {
 
+    public static final String MESSAGE_NOTIFY_KEY = "message_notify";
+    public static final String MESSAGE_SOUND_KEY = "message_sound";
+    public static final String SHOW_HEAD_KEY = "show_head";
+    public static final String PULLREFRESH_SOUND_KEY = "pullrefresh_sound";
     private static SharedPreferences mSharedPreferences = null;
     private static Editor mEditor = null;
 
@@ -22,8 +26,6 @@ public class MyPreferenceManager {
 
         }
     }
-
-
 
     protected static void removeKey(String key){
         mEditor = mSharedPreferences.edit();
@@ -67,6 +69,10 @@ public class MyPreferenceManager {
         return mSharedPreferences.getLong(key, failValue);
     }
 
+
+
+    //----------------------添加的
+
     public static void commitBoolean(String key, boolean value){
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean(key, value);
@@ -76,7 +82,6 @@ public class MyPreferenceManager {
     public static Boolean getBoolean(String key, boolean failValue){
         return mSharedPreferences.getBoolean(key, failValue);
     }
-
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static void commitStringList(String key,Set<String> value) {
@@ -90,14 +95,9 @@ public class MyPreferenceManager {
         return mSharedPreferences.getStringSet(key,failValue);
     }
 
-
-
-    //----------------------添加的
-
-    public static final String MESSAGE_NOTIFY_KEY = "message_notify";
-    public static final String MESSAGE_SOUND_KEY = "message_sound";
-    public static final String SHOW_HEAD_KEY = "show_head";
-    public static final String PULLREFRESH_SOUND_KEY = "pullrefresh_sound";
+    public boolean getIsCreatSystemGroup(){
+        return mSharedPreferences.getBoolean("isCreateSystemGroup",false) ;
+    }
 
     public void setIsCreatSystemGroup(boolean isCreatSystemGroup){
         mEditor = mSharedPreferences.edit();
@@ -105,18 +105,15 @@ public class MyPreferenceManager {
         mEditor.commit();
 
     }
-    public boolean getIsCreatSystemGroup(){
-        return mSharedPreferences.getBoolean("isCreateSystemGroup",false) ;
+
+    public String getUserName() {
+        return mSharedPreferences.getString("userName","");
     }
 
     public void setUserName(String userName) {
         mEditor = mSharedPreferences.edit();
         mEditor.putString("userName", userName);
         mEditor.commit();
-    }
-
-    public String getUserName() {
-        return mSharedPreferences.getString("userName","");
     }
 
     public String getUserAll(){
@@ -146,16 +143,15 @@ public class MyPreferenceManager {
         return mSharedPreferences.getString("userNickName", "");
     }
 
+    public String getUserIcon() {
+        return mSharedPreferences.getString("userIcon", "");
+    }
+
     public void setUserIcon(String userIcon) {
         mEditor = mSharedPreferences.edit();
         mEditor.putString("userIcon", userIcon);
         mEditor.commit();
     }
-
-    public String getUserIcon() {
-        return mSharedPreferences.getString("userIcon", "");
-    }
-
 
     public void setTagNum(){
         mEditor = mSharedPreferences.edit();
@@ -175,7 +171,7 @@ public class MyPreferenceManager {
     }
 
     public List<String> getTagAll() {
-        List<String > tagAll=new ArrayList<String >();
+        List<String > tagAll=new ArrayList<>();
 
         for (int i=1;i<=getTagNum();i++){
             tagAll.add(mSharedPreferences.getString("tag"+i,""));
@@ -196,11 +192,10 @@ public class MyPreferenceManager {
         return mSharedPreferences.getString("appid", "");
     }
 
-    // channel_id
-    public void setChannelId(String ChannelId)
+    public void setAppId(String appid)
     {
-        mEditor = mSharedPreferences.edit();
-        mEditor.putString("ChannelId", ChannelId);
+        // TODO Auto-generated method stub
+        mEditor.putString("appid", appid);
         mEditor.commit();
     }
 
@@ -209,10 +204,11 @@ public class MyPreferenceManager {
         return mSharedPreferences.getString("ChannelId", "");
     }
 
-    public void setAppId(String appid)
+    // channel_id
+    public void setChannelId(String ChannelId)
     {
-        // TODO Auto-generated method stub
-        mEditor.putString("appid", appid);
+        mEditor = mSharedPreferences.edit();
+        mEditor.putString("ChannelId", ChannelId);
         mEditor.commit();
     }
 

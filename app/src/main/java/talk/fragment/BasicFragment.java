@@ -20,6 +20,7 @@ import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
 import talk.TalkApplication;
 import talk.activity.fragment.Groups;
+import talk.model.GroupChatMessage;
 
 /**
  * Created by heshixiyang on 2016/2/3.
@@ -73,6 +74,5 @@ public class BasicFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
         Groups.isFlash=false;
     }
-
-
+    public void flash(GroupChatMessage chatMessage){}
 }

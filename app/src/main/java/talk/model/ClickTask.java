@@ -1,7 +1,5 @@
 package talk.model;
 
-import com.android.volley.toolbox.Volley;
-
 /**
  * Created by heshixiyang on 2016/1/22.
  */
@@ -20,8 +18,6 @@ public class ClickTask {
     }
 
     public ClickTask() {
-
-
     }
 
     public String getGroupName() {

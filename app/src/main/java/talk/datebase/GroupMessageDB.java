@@ -94,7 +94,7 @@ public class GroupMessageDB {
      查找指定的最后n条消息记录
      */
     public ArrayList<GroupChatMessage> find(String groupName, int currentPage, int pageSize) {
-        ArrayList<GroupChatMessage> groupChatMessages = new ArrayList<GroupChatMessage>();
+        ArrayList<GroupChatMessage> groupChatMessages = new ArrayList<>();
         createTable(groupName);
         int start = (currentPage - 1) * pageSize;
         int end = start + pageSize;

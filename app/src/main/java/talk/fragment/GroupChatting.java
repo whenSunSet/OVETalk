@@ -68,6 +68,7 @@ public class GroupChatting extends BasicFragment {
 
     private Group mGroup;
     private Work mWork;
+    private Task mTask;
     //---------------------mContan是否可见
     private Boolean isVisble=false;
 
@@ -174,19 +175,26 @@ public class GroupChatting extends BasicFragment {
                     builder.setPositiveButton("同意加入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mGroupMessageDB.update("messageStatu","12",chatMessage.getDateStr(),mGroupName);
-                            mGroupMessageDB.update("message","您已经同意"+chatMessage.getUserNickName()+"加入了"+chatMessage.getGroupName(),chatMessage.getDateStr(),mGroupName);
+                            mGroupMessageDB.update("messageStatu", "12", chatMessage.getDateStr(), mGroupName);
+                            mGroupMessageDB.update("message", "您已经同意" + chatMessage.getUserNickName() + "加入了" + chatMessage.getGroupName(), chatMessage.getDateStr(), mGroupName);
                         }
                     });
                     builder.setNegativeButton("不同意加入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mGroupMessageDB.update("messageStatu","13",chatMessage.getDateStr(),mGroupName);
-                            mGroupMessageDB.update("message","您已经拒绝了"+chatMessage.getUserNickName()+"加入"+chatMessage.getGroupName(),chatMessage.getDateStr(),mGroupName);
+                            mGroupMessageDB.update("messageStatu", "13", chatMessage.getDateStr(), mGroupName);
+                            mGroupMessageDB.update("message", "您已经拒绝了" + chatMessage.getUserNickName() + "加入" + chatMessage.getGroupName(), chatMessage.getDateStr(), mGroupName);
                         }
                     });
+                    builder.create().show();
+                }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
+                    mTask=mTalkApplication.getTaskDB().getTask(chatMessage.getGroupName(),Integer.parseInt(chatMessage.getUserIcon()));
+
+                }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK){
+                    mWork=mTalkApplication.getWorkDB().getWork(chatMessage.getGroupName(),
+                            Integer.parseInt(chatMessage.getUserIcon()),
+                            Integer.parseInt(chatMessage.getUserNickName()));
                 }
-                builder.create().show();
             }
         });
     }
@@ -218,11 +226,13 @@ public class GroupChatting extends BasicFragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MakeHomeWorkActivity.class);
                 intent.putExtra("group", mGroup.getGroupName());
-                startActivityForResult(intent, 1);
+                intent.putExtra("type",3);
+                startActivityForResult(intent, 3);
             }
         });
 
     }
+
     private void initPrintEvent() {
         //通过点击mMore这个按钮让mContan显示或者消失
         mMore.setOnClickListener(new View.OnClickListener() {
@@ -284,9 +294,17 @@ public class GroupChatting extends BasicFragment {
             }
         });
     }
+
     //-----------------------添加自己的信息 并开启线程发送信息---------------------------
     public void addMessage(String message,String messageImage,int statu,Work work,Task task) {
         GroupChatMessage chatMessage =makeChatMessage(message,messageImage,statu,null);
+        if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
+            openThread(chatMessage.getMessage(),null,statu,null,task);
+            return;
+        }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK&&work.getType()==2){
+            openThread(chatMessage.getMessage(),chatMessage.getMessageImage(),chatMessage.getMessageStatu(),work,null);
+            return;
+        }
         flash(chatMessage);
         if (chatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE&&chatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
             openThread(chatMessage.getMessage(),null,chatMessage.getMessageStatu(),null,null);
@@ -294,10 +312,9 @@ public class GroupChatting extends BasicFragment {
             openThread(null,chatMessage.getMessageImage(),chatMessage.getMessageStatu(),null,null);
         }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK){
             openThread(chatMessage.getMessage(),chatMessage.getMessageImage(),chatMessage.getMessageStatu(),work,null);
-        }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
-            openThread(chatMessage.getMessage(),null,statu,null,task);
         }
     }
+
     //组装并储存chatMessage
     private GroupChatMessage makeChatMessage(String message,String messageImage,int statu,Task task){
         GroupChatMessage chatMessage = new GroupChatMessage();
@@ -314,6 +331,7 @@ public class GroupChatting extends BasicFragment {
         mGroupMessageDB.add(mGroup.getGroupName(), chatMessage);
         return chatMessage;
     }
+
     //刷新chat界面
     public void flash(GroupChatMessage chatMessage) {
         if (chatMessage==null){
@@ -327,6 +345,7 @@ public class GroupChatting extends BasicFragment {
 
         GroupAll.isFlash=false;
     }
+
     /**
      *  如果是普通消息 message=消息 isIamge=空 type=空
      *  如果是 Emoji消息 同上
@@ -336,35 +355,22 @@ public class GroupChatting extends BasicFragment {
      */
     private void openThread(String message,String isImage,int statu,Work work,Task task){
         formparams.clear();
-        formparams.add(new NameValuePair("groupname", mGroup.getGroupName()));
-        formparams.add(new NameValuePair("username", "13588197966"));
-        formparams.add(new NameValuePair("messageStatu", String.valueOf(statu)));
-        formparams.add(new NameValuePair("message", message));
+        formparams.add(new NameValuePair(GlobleData.GROUP_NAME, mGroup.getGroupName()));
+        formparams.add(new NameValuePair(GlobleData.USER_NAME, "13588197966"));
+        formparams.add(new NameValuePair(GlobleData.MESSAGE_STATU, String.valueOf(statu)));
+        formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
 
-         if (statu==GlobleData.EMOJI_MESSAGE){
+        if (statu==GlobleData.EMOJI_MESSAGE){
 
         }else if (statu==GlobleData.PHOTO_MESSAGE){
 
         }else if (statu==GlobleData.USER_PUT_HOMEWORK){
-            formparams.add(new NameValuePair("taskId", String.valueOf(work.getTaskId())));
-            formparams.add(new NameValuePair("idInTask", String.valueOf(work.getIdInTask())));
+            formparams.add(new NameValuePair(GlobleData.TASK_ID, String.valueOf(work.getTaskId())));
+            formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, String.valueOf(work.getIdInTask())));
         }else if (statu==GlobleData.MASTER_PUT_TASK){
-            formparams.add(new NameValuePair("idInGroup", String.valueOf(task.getIdInGroup())));
+            formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(task.getIdInGroup())));
         }
         new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
     }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode){
-            case 1:
-                addMessage("我完成了一个任务，快来看看吧！",null,11
-                        ,new Work(data.getIntExtra("idInTask", -999)
-                        ,data.getIntExtra("idInTask", -999)
-                        ,data.getStringExtra("path"))
-                        ,null);
-                break;
 
-        }
-    }
 }

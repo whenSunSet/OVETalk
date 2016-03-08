@@ -118,8 +118,8 @@ public class GroupActivity extends Activity {
     }
 
     private void setRequest(String url){
-        formparams.add(new NameValuePair("groupname",mGroup.getGroupName()));
-        formparams.add(new NameValuePair("username",mApplication.getSpUtil().getUserName()));
+        formparams.add(new NameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
+        formparams.add(new NameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));
         new Thread(new MyRunnable(formparams,url,handler)).start();
     }
 

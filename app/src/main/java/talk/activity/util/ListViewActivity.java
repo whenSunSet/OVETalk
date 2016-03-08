@@ -8,16 +8,24 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.fragment.GroupTask;
 import talk.fragment.MemberFragment;
 import talk.model.Group;
+import talk.model.Task;
+import talk.model.Work;
 
 public class ListViewActivity extends AppCompatActivity {
+    public TalkApplication mApplication;
     public Group mGroup;
+    public Boolean isTaskClick=false;
+    public Boolean isWorkClick=false;
+    public Task mTask;
+    public Work mWork;
     private Fragment mFragment;
     private FragmentManager mFragmentManager;
-    private TalkApplication mApplication;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,13 +39,23 @@ public class ListViewActivity extends AppCompatActivity {
 
     private void initWhich(int which){
         switch (which){
-            case 1:
+            case GlobleData.GROUP_TASK_LIST:
                 mFragment=new GroupTask();
                 break;
-            case 2:
+            case GlobleData.GROUP_MEMBER_LIST:
+                isTaskClick=false;
+                isWorkClick=false;
                 mFragment=new MemberFragment();
                 break;
-            case 3:
+            case GlobleData.TASK_CLICK_MEMBER_LIST:
+                isTaskClick=true;
+                mTask=getIntent().getParcelableExtra("task");
+                mFragment=new MemberFragment();
+                break;
+            case GlobleData.WORK_CLICK_MEMBER_LIST:
+                isWorkClick=true;
+                mTask=getIntent().getParcelableExtra("work");
+                mFragment=new MemberFragment();
                 break;
             default:
                 break;
@@ -52,6 +70,5 @@ public class ListViewActivity extends AppCompatActivity {
         intent.putExtra("idInGroup",idInGroup);
         setResult(1, intent);
         super.finish();
-
     }
 }

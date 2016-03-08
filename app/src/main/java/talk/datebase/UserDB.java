@@ -83,7 +83,7 @@ public class UserDB {
      获得所有的member
      */
     public ArrayList<User> getMembers() {
-        ArrayList<User> list = new ArrayList<User>();
+        ArrayList<User> list = new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+USER_TABLE_NAME, null);
         while (c.moveToNext())
         {

@@ -126,7 +126,7 @@ public class WorkDB {
 
 
     public  List<Work> getTaskWorks(String groupName,int taskId){
-        List<Work> list=new ArrayList<Work>();
+        List<Work> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
                         + GROUP_NAME + "=? AND "
@@ -161,7 +161,7 @@ public class WorkDB {
 
 
     public  int getTaskWorkNum(String groupName,int taskId){
-        List<Work> list=new ArrayList<Work>();
+        List<Work> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
                         + GROUP_NAME + "=? AND "
@@ -175,7 +175,7 @@ public class WorkDB {
         return a;
     }
     public ArrayList<Work> getGroupWork(String groupName) {
-        ArrayList<Work> list=new ArrayList<Work>();
+        ArrayList<Work> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+"where "+GROUP_NAME+"=?",new String []{groupName});
 
         while (c.moveToNext()) {list.add(makeWork(c));}

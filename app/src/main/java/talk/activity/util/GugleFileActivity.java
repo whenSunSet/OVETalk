@@ -33,7 +33,7 @@ public class GugleFileActivity extends Activity {
 	private final String GUGLE_FILE_SET = "GUGLE_FILE";
 	private final String GF_SET_LIST_TYPE = "LIST_TYPE";
 	// 列表数据集合 27
-	private ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String, Object>>();
+	private ArrayList<HashMap<String, Object>> listItem = new ArrayList<>();
 	// 列表界面视图
 	private ListView listView;
 	// 列表数据与视图的适配器
@@ -153,7 +153,7 @@ public class GugleFileActivity extends Activity {
 
 	private void freshList(int sortType) {
 		List<File> fileList = GugleUtils.getSortedFiles(new File(nowFolder), sortType, isAsc);
-		ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
+		ArrayList<HashMap<String, Object>> result = new ArrayList<>();
 		HashMap<String, Object> map = null;
 		Log.d("GugleFileActivity", "fileType:" + fileType);
 		for (File file : fileList) {

@@ -42,7 +42,7 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     protected int mCurrentTab = 0;
     protected int mLastTab = -1;
     protected BroadcastReceiver mMessageReceiver;
-    protected ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    protected ArrayList<TabInfo> mTabs = new ArrayList<>();
     protected ViewPager mPager;
     protected TitleIndicator mIndicator;
     protected RelativeLayout mTitle;
@@ -178,7 +178,11 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     protected abstract int supplyTabs(List<TabInfo> tabs);
 
     protected void flashFragment(){
-        ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash();
+        if (mCurrentTab==0){
+            ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash(null);
+        }else {
+            ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash();
+        }
     }
 
     @Override
