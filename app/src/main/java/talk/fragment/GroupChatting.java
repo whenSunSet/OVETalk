@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import talk.Globle.GlobleData;
+import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.adapter.ChatMessageAdapter;
@@ -129,7 +130,7 @@ public class GroupChatting extends BasicFragment {
     }
 
     @Override
-    protected void init(LayoutInflater inflater) {
+    protected void init(final LayoutInflater inflater) {
         super.init(inflater);
         mActivity=(GroupAll)getActivity();
         mPreferenceManager = mTalkApplication.getSpUtil();
@@ -177,6 +178,7 @@ public class GroupChatting extends BasicFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mGroupMessageDB.update("messageStatu", "12", chatMessage.getDateStr(), mGroupName);
                             mGroupMessageDB.update("message", "您已经同意" + chatMessage.getUserNickName() + "加入了" + chatMessage.getGroupName(), chatMessage.getDateStr(), mGroupName);
+                            openThread(null,null,GlobleData.AGREE_USER_TO_GROUP,null,null);
                         }
                     });
                     builder.setNegativeButton("不同意加入", new DialogInterface.OnClickListener() {
@@ -184,16 +186,24 @@ public class GroupChatting extends BasicFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mGroupMessageDB.update("messageStatu", "13", chatMessage.getDateStr(), mGroupName);
                             mGroupMessageDB.update("message", "您已经拒绝了" + chatMessage.getUserNickName() + "加入" + chatMessage.getGroupName(), chatMessage.getDateStr(), mGroupName);
+                            openThread(null, null, GlobleData.DISAGREE_USER_TO_GROUP, null, null);
                         }
                     });
                     builder.create().show();
                 }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
                     mTask=mTalkApplication.getTaskDB().getTask(chatMessage.getGroupName(),Integer.parseInt(chatMessage.getUserIcon()));
-
+                    mTalkApplication.map.put("task",mTask);
+                    Intent intent=new Intent(getActivity(), TaskAndWorkActivity.class);
+                    intent.putExtra("which", GlobleData.IS_TASK);
+                    startActivity(intent);
                 }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK){
                     mWork=mTalkApplication.getWorkDB().getWork(chatMessage.getGroupName(),
                             Integer.parseInt(chatMessage.getUserIcon()),
                             Integer.parseInt(chatMessage.getUserNickName()));
+                    mTalkApplication.map.put("work",mWork);
+                    Intent intent=new Intent(getActivity(),TaskAndWorkActivity.class);
+                    intent.putExtra("which", GlobleData.IS_WORK);
+                    startActivity(intent);
                 }
             }
         });
@@ -352,22 +362,29 @@ public class GroupChatting extends BasicFragment {
      *  如果是 photo消息 message=空 isIamge=图片路径 type=空
      *  如果是 homeWork消息 message=消息 isImage=无 work
      *  如果是 Task消息 message=消息 isImage=无 task
+     *  如果是 同意某人加入 无
+     *  如果是 不同意某人加入 无
      */
     private void openThread(String message,String isImage,int statu,Work work,Task task){
         formparams.clear();
         formparams.add(new NameValuePair(GlobleData.GROUP_NAME, mGroup.getGroupName()));
         formparams.add(new NameValuePair(GlobleData.USER_NAME, "13588197966"));
         formparams.add(new NameValuePair(GlobleData.MESSAGE_STATU, String.valueOf(statu)));
-        formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
+        if (statu==GlobleData.COMMOM_MESSAGE){
+            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
 
-        if (statu==GlobleData.EMOJI_MESSAGE){
+        } else if (statu==GlobleData.EMOJI_MESSAGE){
+            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
 
         }else if (statu==GlobleData.PHOTO_MESSAGE){
+            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
 
         }else if (statu==GlobleData.USER_PUT_HOMEWORK){
+            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
             formparams.add(new NameValuePair(GlobleData.TASK_ID, String.valueOf(work.getTaskId())));
             formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, String.valueOf(work.getIdInTask())));
         }else if (statu==GlobleData.MASTER_PUT_TASK){
+            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
             formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(task.getIdInGroup())));
         }
         new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();

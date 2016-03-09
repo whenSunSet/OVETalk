@@ -50,7 +50,7 @@
         <activity android:name="talk.activity.fragment.GroupAll"/>
         <activity android:name="talk.activity.fragment.Groups"/>
         <activity android:name="talk.activity.aboutGroup.GroupActivity"/>
-        <activity android:name="talk.activity.aboutGroup.TaskActivity"/>
+        <activity android:name="talk.activity.aboutGroup.TaskAndWorkActivity"/>
         <activity android:name="talk.activity.create.CreateGroupActivity"/>
         <activity android:name="talk.activity.create.MakeTaskActivity"/>
         <activity android:name="talk.activity.util.GugleFileActivity"/>

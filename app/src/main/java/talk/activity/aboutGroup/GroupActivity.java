@@ -85,15 +85,14 @@ public class GroupActivity extends Activity {
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setRequest(GlobleData.GROUP_EXIT);
+                setRequest(GlobleData.GROUP_EXIT,GlobleData.USER_OUT_GROUP);
             }
         });
 
         mDestroy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setRequest(GlobleData.GROUP_CANCEL);
-
+                setRequest(GlobleData.GROUP_CANCEL,GlobleData.USER_CANCEL_GROUP);
             }
         });
 
@@ -102,7 +101,7 @@ public class GroupActivity extends Activity {
             public void onClick(View v) {
                 Intent intent=new Intent(GroupActivity.this,ListViewActivity.class);
                 intent.putExtra("groupName",mGroup.getGroupName());
-                intent.putExtra("which",2);
+                intent.putExtra("which",GlobleData.GROUP_MEMBER_LIST);
                 startActivity(intent);
             }
         });
@@ -117,10 +116,10 @@ public class GroupActivity extends Activity {
 
     }
 
-    private void setRequest(String url){
+    private void setRequest(String url,int messageStatu){
         formparams.add(new NameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
         formparams.add(new NameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));
+        formparams.add(new NameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(messageStatu)));
         new Thread(new MyRunnable(formparams,url,handler)).start();
     }
-
 }

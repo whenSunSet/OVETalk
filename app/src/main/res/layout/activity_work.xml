@@ -1,13 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="talk.activity.aboutGroup.TaskAndWorkActivity">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="talk.activity.aboutGroup.WorkActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,28 +29,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="6"
             android:orientation="vertical">
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="name"
-            android:textSize="20dp"/>
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="userName"
+                android:textSize="20dp"/>
             <TextView
                 android:id="@+id/time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="time"/>
 
-            </LinearLayout>
         </LinearLayout>
-    <TextView
-        android:id="@+id/target"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gray"
-        android:minLines="5"
-        android:text="target:"
-        android:textColor="@color/white"/>
+    </LinearLayout>
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
@@ -59,5 +53,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="clickMember"/>
+
 
 </LinearLayout>

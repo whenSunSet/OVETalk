@@ -91,4 +91,11 @@ public class GlobleData {
     public static final int TASK_CLICK_MEMBER_LIST=3;
     public static final int WORK_CLICK_MEMBER_LIST=4;
 
+    public static final int IS_TASK=1;
+    public static final int IS_WORK=2;
+
+    public static final int IS_TEXT=0;
+    public static final int IS_VIDIO=2;
+    public static final int IS_MUSIC=1;
 }
+

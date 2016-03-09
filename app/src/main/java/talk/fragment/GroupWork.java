@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import talk.activity.aboutGroup.TaskActivity;
+import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.adapter.WorkAdapter;
 import talk.model.Group;
@@ -41,7 +41,7 @@ public class GroupWork extends BasicFragment{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Task task=(Task)(mListView.getItemAtPosition(position));
                 mTalkApplication.map.put("nowTask", task);
-                Intent intent=new Intent(getActivity(),TaskActivity.class);
+                Intent intent=new Intent(getActivity(),TaskAndWorkActivity.class);
                 getActivity().startActivity(intent);
             }
         });

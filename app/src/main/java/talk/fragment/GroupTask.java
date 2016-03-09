@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import talk.activity.aboutGroup.TaskActivity;
+import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.activity.util.ListViewActivity;
 import talk.adapter.TaskAdapter;
@@ -49,7 +49,7 @@ public class GroupTask extends BasicFragment{
                 Task task = (Task) (mListView.getItemAtPosition(position));
                 if (whichActivity==1){
                     mTalkApplication.map.put("nowTask", task);
-                    Intent intent = new Intent(getActivity(), TaskActivity.class);
+                    Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
                     getActivity().startActivity(intent);
                 }else if (whichActivity==2){
                     ((ListViewActivity)getActivity()).finish(task.getGroupName(),task.getIdInGroup());
