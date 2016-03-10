@@ -1,6 +1,6 @@
 package talk.activity.create;
+
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
@@ -9,16 +9,21 @@ import android.widget.EditText;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.fragment.Groups;
 import talk.activity.supers.BasicActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
+import talk.util.MyHandler;
+
 public class CreateGroupActivity extends BasicActivity{
     private EditText groupNickNameText;
     private Button create;
@@ -27,36 +32,6 @@ public class CreateGroupActivity extends BasicActivity{
     private String groupNickName=null;
     private Thread mThread;
     private List<NameValuePair> formparams ;
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case 1:
-                    DialogUtil.showToast(CreateGroupActivity.this, "返回值错误");
-                    groupName=(String)msg.obj;
-                    Groups.isFlash=true;
-                    addGroup();
-
-                    break;
-                case 2:
-                    DialogUtil.showToast(CreateGroupActivity.this,"网络错误");
-                    groupName=(String)msg.obj;
-                    Groups.isFlash=true;
-                    addGroup();
-
-                    break;
-                case 3:
-                    DialogUtil.showToast(mApplication, "创建成功");
-                    Groups.isFlash=true;
-                    addGroup();
-                    break;
-                default:
-                    break;
-
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,33 +45,40 @@ public class CreateGroupActivity extends BasicActivity{
         mApplication=(TalkApplication)getApplication();
         groupNickNameText=(EditText)findViewById(R.id.groupName);
 
-//        formparams = new ArrayList<NameValuePair>();
-//        formparams.add(new NameValuePair("username", mApplication.getSpUtil().getUserName()));
-//        formparams.add(new NameValuePair("groupicon", "groupIcon"));
-//        formparams.add(new NameValuePair("groupnickname", ""));
-
-
+        formparams = new ArrayList<NameValuePair>();
+        formparams.add(new BasicNameValuePair("userName", mApplication.getSpUtil().getUserName()));
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 groupNickName = groupNickNameText.getText().toString();
-                groupName = mApplication.getSpUtil().getUserName().substring(6)+System.currentTimeMillis();
-
                 if (TextUtils.isEmpty(groupNickName)) {
                     DialogUtil.showToast(CreateGroupActivity.this, "请输入群组的名字");
                 } else {
-                    addGroup();
+                    formparams.add(new BasicNameValuePair("groupNickName", groupNickName));
                 }
             }
         });
     }
 
+    private MyHandler handler=new MyHandler(CreateGroupActivity.this){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case GlobleData.SEND_MESSAGE_SUCCESS:
+                    groupName=(String)msg.obj;
+                    Groups.isFlash=true;
+                    addGroup();
+
+                    break;
+            }
+        }
+    };
     public void addGroup(){
         Group group=new Group(groupName,groupNickName,"",mApplication.getSpUtil().getUserName(),0,0);
         mApplication.getGroupDB().addGroup(group);
         GlobleMethod.setTag(mApplication);
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

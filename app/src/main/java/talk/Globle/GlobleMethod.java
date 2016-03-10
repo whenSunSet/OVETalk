@@ -1,7 +1,16 @@
 package talk.Globle;
 
 
+import android.util.Log;
+
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -111,10 +120,26 @@ public class GlobleMethod {
         }
         return list;
     }
+    public static String GetResult(String url, List<org.apache.http.NameValuePair> formparams) {
 
-    public static String GetResult(String url, List<NameValuePair> formparams) {
+        HttpResponse response2;// 创建一个可关闭的response对象
+        HttpClient client = new DefaultHttpClient();// 创建一个http客户端，用于发送http请求
+        HttpPost post = new HttpPost(url);// 创建一个post请求对象
+        String result = "";
+        try {
+            // 将参数放入post
+            post.setEntity(new UrlEncodedFormEntity(formparams,"utf-8"));
+            response2 = client.execute(post);// 执行请求
 
-      return null;
+            if (response2.getStatusLine().getStatusCode() != 200) {
+                result = Const.methodString;
+                return result;
+            }
+            HttpEntity entity2 = response2.getEntity();
+            result = EntityUtils.toString(entity2);// 打印出entity2的内容
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
-
 }

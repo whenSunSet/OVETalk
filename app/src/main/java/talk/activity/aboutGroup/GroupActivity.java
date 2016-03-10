@@ -3,21 +3,26 @@ package talk.activity.aboutGroup;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.example.heshixiyang.ovetalk.R;
-import org.apache.commons.httpclient.NameValuePair;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.util.List;
+
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.Groups;
 import talk.activity.util.ListViewActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
+import talk.util.MyHandler;
 import talk.util.MyPreferenceManager;
 import talk.util.MyRunnable;
 
@@ -34,30 +39,6 @@ public class GroupActivity extends Activity {
     private MyPreferenceManager myPreferenceManager;
     private List<NameValuePair> formparams ;
     private GroupActivity groupActivity;
-    Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case 1:
-                    DialogUtil.showToast(mApplication, "返回值错误");
-                    break;
-                case 2:
-                    DialogUtil.showToast(mApplication, "网络错误");
-                    break;
-                case 3:
-                    DialogUtil.showToast(mApplication, "操作成功");
-                    mApplication.getGroupDB().delGroup(mGroup.getGroupName());
-                    groupActivity.finish();
-                    Groups.isFlash=true;
-
-                    break;
-                default:
-                    break;
-
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,9 +98,28 @@ public class GroupActivity extends Activity {
     }
 
     private void setRequest(String url,int messageStatu){
-        formparams.add(new NameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
-        formparams.add(new NameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));
-        formparams.add(new NameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(messageStatu)));
-        new Thread(new MyRunnable(formparams,url,handler)).start();
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
+        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));
+        formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(messageStatu)));
+        new Thread(new MyRunnable(formparams,url,handler,messageStatu)).start();
     }
+    MyHandler handler= new MyHandler(GroupActivity.this){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case GlobleData.SEND_MESSAGE_SUCCESS:
+                    DialogUtil.showToast(mApplication, "操作成功");
+                    mApplication.getGroupDB().delGroup(mGroup.getGroupName());
+                    groupActivity.finish();
+
+                    Groups.isFlash=true;
+                    break;
+                default:
+                    break;
+
+            }
+        }
+    };
+
 }

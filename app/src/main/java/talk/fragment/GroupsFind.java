@@ -1,7 +1,6 @@
 package talk.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -15,40 +14,30 @@ import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.util.DialogUtil;
+import talk.util.MyHandler;
 import talk.util.MyPreferenceManager;
 import talk.util.MyRunnable;
 
 public class GroupsFind extends Fragment {
-    public static final int SEND_JOIN_MESSAGE_ERROR=1;
-    public static final int SEND_JOIN_MESSAGE_INTERNET_ERROR=2;
-    public static final int SEND_JOIN_MESSAGE_SUCCESS=3;
-
     private MyPreferenceManager myPreferenceManager;
     private TalkApplication mApplication;
-    private MyRunnable mRunnable;
-    private Thread mThread;
     private View view;
-
     private EditText mGroupNameEdit;
     private Button mAddGroup;
     private List<NameValuePair> formparams;
     private String mGroupName;
 
-    public GroupsFind() {
-    }
-
+    public GroupsFind() {}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         init(inflater);
-
         return view;
     }
 
@@ -68,44 +57,23 @@ public class GroupsFind extends Fragment {
                     DialogUtil.showToast(mApplication, "你还没输入文字呢");
                     return;
                 }
-
-                formparams.add(new BasicNameValuePair("groupname", mGroupName));
-                formparams.add(new BasicNameValuePair("username", myPreferenceManager.getUserName()));
-//                mRunnable=new MyRunnable(formparams,);
-                mThread=new Thread(mRunnable);
-                mThread.start();
-
-
+                formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mGroupName));
+                formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));
+                formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(9)));
+                new Thread(new MyRunnable(formparams,"",handler,GlobleData.USER_REQUEST_JOIN_GROUP));
             }
         });
-
         return view;
     }
-    Handler handler=new Handler(){
+    MyHandler handler= new MyHandler(getActivity()){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
-                case SEND_JOIN_MESSAGE_ERROR:
-                    DialogUtil.showToast(mApplication, "返回值错误");
-
-                    break;
-                case SEND_JOIN_MESSAGE_INTERNET_ERROR:
-                    DialogUtil.showToast(mApplication, "网络错误");
-                    break;
-                case SEND_JOIN_MESSAGE_SUCCESS:
-                    JSONObject jsonObject=null;
-
-                    try {
-                        jsonObject=new JSONObject(msg.obj.toString());
-                        if (String.valueOf(jsonObject.get("res")).equals("0")){
-                            DialogUtil.showToast(mApplication, "群组不存在");
-                            break;
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                case GlobleData.SEND_MESSAGE_SUCCESS:
                     DialogUtil.showToast(mApplication, "发送加入请求成功");
+                case GlobleData.NO_SUCH_GROUP:
+                    DialogUtil.showToast(mApplication, "不好意思,没有这个群组");
                     break;
                 default:
                     break;

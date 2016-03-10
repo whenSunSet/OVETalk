@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -21,7 +20,8 @@ import android.widget.ListAdapter;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,16 +38,11 @@ import talk.model.GroupChatMessage;
 import talk.model.Task;
 import talk.model.Work;
 import talk.util.DialogUtil;
+import talk.util.MyHandler;
 import talk.util.MyPreferenceManager;
 import talk.util.MyRunnable;
 
 public class GroupChatting extends BasicFragment {
-    //-------------------------handler的几种状态
-    public static final int SEND_JOIN_MESSAGE_ERROR=1;
-    public static final int SEND_JOIN_MESSAGE_INTERNET_ERROR=2;
-    public static final int SEND_JOIN_MESSAGE_SUCCESS=3;
-    public static final int CHANGE_MESSAGE_NUM=4;
-    public static final int I_WANT_TO_CALL_110=110;
 
     public ImageView mMore;
     private Button mMsgSend;
@@ -76,50 +71,9 @@ public class GroupChatting extends BasicFragment {
     //---------------------每次加载消息10个为阶梯
     private int mMessageNum=10;
     private int mMessageMax;
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case SEND_JOIN_MESSAGE_ERROR:
-                    DialogUtil.showToast(getActivity(), "返回值错误");
-                    break;
-
-                case SEND_JOIN_MESSAGE_INTERNET_ERROR:
-                    DialogUtil.showToast(getActivity(),"网络错误");
-                    break;
-
-                case SEND_JOIN_MESSAGE_SUCCESS:
-
-                    break;
-
-                case CHANGE_MESSAGE_NUM:
-                    if (mMessageMax<=mMessageNum){
-                        DialogUtil.showToast(mTalkApplication,"没有更多的消息了");
-
-                        break;
-                    }
-
-                    mMessageNum=mMessageNum+10;
-                    mData = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
-
-                    mAdapter.notifyDataSetChanged();
-                    ((GroupAll)getActivity()).myAdapter.notifyDataSetChanged();
-                    //将焦点放在上一次消息的最前面一个
-                    mListView.setSelection(10);
-                    break;
-                default:
-                    break;
-
-            }
-        }
-
-    };
-
     public LinearLayout getmContan() {
         return mContainer;
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         isChattingFragment=true;
@@ -158,7 +112,6 @@ public class GroupChatting extends BasicFragment {
 
         //将本group的所有消息设置为已读
         mGroupMessageDB.updateReaded(mGroupName);
-
         mMessageMax=mGroupMessageDB.getMessageNum(mGroup.getGroupName());
 
         // 获取10条聊天记录
@@ -166,6 +119,7 @@ public class GroupChatting extends BasicFragment {
         mAdapter = new ChatMessageAdapter(getActivity(), mData);
         mListView.setAdapter((ListAdapter) mAdapter);
         mListView.setSelection(mData.size() - 1);
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -176,7 +130,7 @@ public class GroupChatting extends BasicFragment {
                     builder.setPositiveButton("同意加入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mGroupMessageDB.update("messageStatu", "12", chatMessage.getDateStr(), mGroupName);
+                            mGroupMessageDB.update("messageStatu",String.valueOf(GlobleData.YOU_AGREE_TO_JOIN_GROUP) , chatMessage.getDateStr(), mGroupName);
                             mGroupMessageDB.update("message", "您已经同意" + chatMessage.getUserNickName() + "加入了" + chatMessage.getGroupName(), chatMessage.getDateStr(), mGroupName);
                             openThread(null,null,GlobleData.AGREE_USER_TO_GROUP,null,null);
                         }
@@ -184,7 +138,7 @@ public class GroupChatting extends BasicFragment {
                     builder.setNegativeButton("不同意加入", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mGroupMessageDB.update("messageStatu", "13", chatMessage.getDateStr(), mGroupName);
+                            mGroupMessageDB.update("messageStatu",String.valueOf(GlobleData.YOU_DISAGREE_TO_JOIN_GROUP), chatMessage.getDateStr(), mGroupName);
                             mGroupMessageDB.update("message", "您已经拒绝了" + chatMessage.getUserNickName() + "加入" + chatMessage.getGroupName(), chatMessage.getDateStr(), mGroupName);
                             openThread(null, null, GlobleData.DISAGREE_USER_TO_GROUP, null, null);
                         }
@@ -344,10 +298,20 @@ public class GroupChatting extends BasicFragment {
 
     //刷新chat界面
     public void flash(GroupChatMessage chatMessage) {
+        ArrayList<GroupChatMessage> list=new ArrayList<>();
         if (chatMessage==null){
-            mData=mGroupMessageDB.find(mGroup.getGroupName(), 1, mGroupMessageDB.getUnreadedMsgsCountByGroupId(mGroup.getGroupName()));
+            list=null;
         }else {
             mData.add(chatMessage);
+            list=mData;
+        }
+        flash(list);
+    }
+    public void flash(ArrayList<GroupChatMessage> list) {
+        if (list.isEmpty()){
+            mData=mGroupMessageDB.find(mGroup.getGroupName(), 1, mGroupMessageDB.getUnreadedMsgsCountByGroupId(mGroup.getGroupName()));
+        }else {
+            mData=list;
         }
         mGroupMessageDB.updateReaded(mGroup.getGroupName());
         mAdapter.notifyDataSetChanged();
@@ -356,9 +320,10 @@ public class GroupChatting extends BasicFragment {
         GroupAll.isFlash=false;
     }
 
+
     /**
      *  如果是普通消息 message=消息 isIamge=空 type=空
-     *  如果是 Emoji消息 同上
+     *  如果是 Emoji消息 !
      *  如果是 photo消息 message=空 isIamge=图片路径 type=空
      *  如果是 homeWork消息 message=消息 isImage=无 work
      *  如果是 Task消息 message=消息 isImage=无 task
@@ -367,27 +332,48 @@ public class GroupChatting extends BasicFragment {
      */
     private void openThread(String message,String isImage,int statu,Work work,Task task){
         formparams.clear();
-        formparams.add(new NameValuePair(GlobleData.GROUP_NAME, mGroup.getGroupName()));
-        formparams.add(new NameValuePair(GlobleData.USER_NAME, "13588197966"));
-        formparams.add(new NameValuePair(GlobleData.MESSAGE_STATU, String.valueOf(statu)));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mGroup.getGroupName()));
+        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, "13588197966"));
+        formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU, String.valueOf(statu)));
         if (statu==GlobleData.COMMOM_MESSAGE){
-            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
+            formparams.add(new BasicNameValuePair(GlobleData.MESSAGE, message));
 
         } else if (statu==GlobleData.EMOJI_MESSAGE){
-            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
+            formparams.add(new BasicNameValuePair(GlobleData.MESSAGE, message));
 
         }else if (statu==GlobleData.PHOTO_MESSAGE){
-            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
+            formparams.add(new BasicNameValuePair(GlobleData.MESSAGE, message));
 
         }else if (statu==GlobleData.USER_PUT_HOMEWORK){
-            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
-            formparams.add(new NameValuePair(GlobleData.TASK_ID, String.valueOf(work.getTaskId())));
-            formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, String.valueOf(work.getIdInTask())));
+            formparams.add(new BasicNameValuePair(GlobleData.MESSAGE, message));
+            formparams.add(new BasicNameValuePair(GlobleData.TASK_ID, String.valueOf(work.getTaskId())));
+            formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, String.valueOf(work.getIdInTask())));
         }else if (statu==GlobleData.MASTER_PUT_TASK){
-            formparams.add(new NameValuePair(GlobleData.MESSAGE, message));
-            formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(task.getIdInGroup())));
+            formparams.add(new BasicNameValuePair(GlobleData.MESSAGE, message));
+            formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(task.getIdInGroup())));
         }
-        new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler)).start();
+        new Thread(new MyRunnable(formparams, GlobleData.GROUP_SEND_MESSAGE, handler,statu)).start();
     }
 
+    @Override
+    protected void upData() {
+        super.upData();
+        mMessageNum+=10;
+        if (mMessageNum>=mMessageMax){
+            mMessageNum=mMessageMax;
+            DialogUtil.showToast(getActivity(),"消息已经显示完毕");
+        }
+        ArrayList<GroupChatMessage> list = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
+        flash(list);
+    }
+    private MyHandler handler=new MyHandler(getActivity()){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case GlobleData.SEND_MESSAGE_SUCCESS:
+                    break;
+            }
+        }
+    };
 }

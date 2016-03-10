@@ -16,8 +16,12 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import com.example.heshixiyang.ovetalk.R;
-import org.apache.commons.httpclient.NameValuePair;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -237,13 +241,13 @@ public class MakeTaskActivity extends BasicActivity {
 
     private void sendMessage(){
         formparams.clear();
-        formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
-        formparams.add(new NameValuePair(GlobleData.GROUP_NAME,mGroupName));
-        formparams.add(new NameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
-        formparams.add(new NameValuePair(GlobleData.TARGET, mTask.getTarget()));
-        formparams.add(new NameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
-        formparams.add(new NameValuePair(GlobleData.DATE, mTask.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler)).start();
+        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroupName));
+        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
+        formparams.add(new BasicNameValuePair(GlobleData.TARGET, mTask.getTarget()));
+        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
+        formparams.add(new BasicNameValuePair(GlobleData.DATE, mTask.getDate()));
+        new Thread(new MyRunnable(formparams,"",handler,-999)).start();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

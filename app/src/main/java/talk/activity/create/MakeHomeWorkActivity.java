@@ -2,7 +2,6 @@ package talk.activity.create;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.animation.Animation;
@@ -13,8 +12,12 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import com.example.heshixiyang.ovetalk.R;
-import org.apache.commons.httpclient.NameValuePair;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,16 +31,12 @@ import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.activity.util.ListViewActivity;
 import talk.model.Work;
+import talk.util.DialogUtil;
+import talk.util.MyHandler;
 import talk.util.MyRunnable;
 
 public class MakeHomeWorkActivity extends BasicActivity {
 
-    Handler handler=new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
     private Button mLastStep;
     private Button mNextStep;
     private int nowStep=1;
@@ -215,14 +214,14 @@ public class MakeHomeWorkActivity extends BasicActivity {
 
     private void sendWork(){
         formparams.clear();
-        formparams.add(new NameValuePair(GlobleData.GROUP_NAME, mWork.getGroupName()));
-        formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
-        formparams.add(new NameValuePair(GlobleData.MASTER, mWork.getMaster()));
-        formparams.add(new NameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));
-        formparams.add(new NameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
-        formparams.add(new NameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
-        formparams.add(new NameValuePair(GlobleData.DATE, mWork.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler)).start();
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mWork.getGroupName()));
+        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
+        formparams.add(new BasicNameValuePair(GlobleData.MASTER, mWork.getMaster()));
+        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));
+        formparams.add(new BasicNameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
+        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
+        formparams.add(new BasicNameValuePair(GlobleData.DATE, mWork.getDate()));
+        new Thread(new MyRunnable(formparams,"",handler,-999)).start();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -237,5 +236,16 @@ public class MakeHomeWorkActivity extends BasicActivity {
                 break;
         }
     }
+    MyHandler handler=new MyHandler(MakeHomeWorkActivity.this) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case GlobleData.SEND_MESSAGE_SUCCESS:
+                    DialogUtil.showToast(MakeHomeWorkActivity.this,"发送成功");
+                    break;
+            }
+        }
+    };
 
 }

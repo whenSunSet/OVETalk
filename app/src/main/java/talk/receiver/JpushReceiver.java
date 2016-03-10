@@ -7,7 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,16 +71,16 @@ public class JpushReceiver extends BroadcastReceiver {
                 if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
                     message.setMessage("我发布了一个任务，快来看看吧");
                     formparams.clear();
-                    formparams.add(new NameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
-                    formparams.add(new NameValuePair(GlobleData.ID_IN_TASK, message.getUserIcon()));
-                    formparams.add(new NameValuePair(GlobleData.TASK_ID, message.getUserNickName()));
-                    new Thread(new MyRunnable(formparams,"",handler));
+                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
+                    formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, message.getUserIcon()));
+                    formparams.add(new BasicNameValuePair(GlobleData.TASK_ID, message.getUserNickName()));
+                    new Thread(new MyRunnable(formparams,"",handler,messageStatu));
                 }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
                     message.setMessage("我发布了一个作业，快来看看吧");
                     formparams.clear();
-                    formparams.add(new NameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
-                    formparams.add(new NameValuePair(GlobleData.ID_IN_GROUP, message.getUserIcon()));
-                    new Thread(new MyRunnable(formparams,"",handler));
+                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
+                    formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, message.getUserIcon()));
+                    new Thread(new MyRunnable(formparams,"",handler,messageStatu));
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
@@ -114,10 +115,11 @@ public class JpushReceiver extends BroadcastReceiver {
 //                        mApplication.getGroupDB().addGroup(new Group(message.getGroupName(),groupNickName,message.getUserIcon(),message.getUserName()));
                         GlobleMethod.setTag(mApplication);
                         formparams.clear();
-                        formparams.add(new NameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));
-                        formparams.add(new NameValuePair(GlobleData.GROUP_NAME,message.getGroupName()));
+                        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));
+                        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,message.getGroupName()));
+                        formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String .valueOf(GlobleData.AGREE_USER_TO_GROUP)));
 
-                        new Thread(new MyRunnable(formparams,GlobleData.GET_GROUP_INFO,handler)).start();
+                        new Thread(new MyRunnable(formparams,GlobleData.GET_GROUP_INFO,handler,GlobleData.AGREE_USER_TO_GROUP)).start();
 
                         //groupname:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
 
