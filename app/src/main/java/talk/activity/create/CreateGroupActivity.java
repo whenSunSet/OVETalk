@@ -23,6 +23,7 @@ import talk.activity.supers.BasicActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
 import talk.util.MyHandler;
+import talk.util.MyRunnable;
 
 public class CreateGroupActivity extends BasicActivity{
     private EditText groupNickNameText;
@@ -30,7 +31,6 @@ public class CreateGroupActivity extends BasicActivity{
     private TalkApplication mApplication;
     private String groupName=null;
     private String groupNickName=null;
-    private Thread mThread;
     private List<NameValuePair> formparams ;
 
     @Override
@@ -45,7 +45,7 @@ public class CreateGroupActivity extends BasicActivity{
         mApplication=(TalkApplication)getApplication();
         groupNickNameText=(EditText)findViewById(R.id.groupName);
 
-        formparams = new ArrayList<NameValuePair>();
+        formparams = new ArrayList<>();
         formparams.add(new BasicNameValuePair("userName", mApplication.getSpUtil().getUserName()));
         create.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +55,7 @@ public class CreateGroupActivity extends BasicActivity{
                     DialogUtil.showToast(CreateGroupActivity.this, "请输入群组的名字");
                 } else {
                     formparams.add(new BasicNameValuePair("groupNickName", groupNickName));
+                    new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT));
                 }
             }
         });

@@ -17,16 +17,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-
 import com.example.heshixiyang.ovetalk.R;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.create.MakeHomeWorkActivity;
@@ -55,7 +51,6 @@ public class GroupChatting extends BasicFragment {
 
     private String mGroupName;
     private GroupAll mActivity;
-    private GroupChatMessage mChatMessage ;
 
     //发送消息的数据
     private List<NameValuePair> formparams;
@@ -190,8 +185,7 @@ public class GroupChatting extends BasicFragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MakeHomeWorkActivity.class);
                 intent.putExtra("group", mGroup.getGroupName());
-                intent.putExtra("type",3);
-                startActivityForResult(intent, 3);
+                startActivityForResult(intent, GlobleData.START_MAKE_HOMEWORK_ACTIVITY);
             }
         });
 

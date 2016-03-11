@@ -1,9 +1,5 @@
 package talk.Globle;
 
-
-import android.util.Log;
-
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,12 +7,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 import talk.TalkApplication;
@@ -32,7 +26,6 @@ import talk.model.User;
  * Created by heshixiyang on 2016/1/22.
  */
 public class GlobleMethod {
-
 
     public static final void addUserToGroup(TalkApplication talkApplication,Message message){
         UserDB userDB=talkApplication.getUserDB();

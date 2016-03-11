@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-
 import com.example.heshixiyang.ovetalk.R;
-
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.fragment.GroupTask;
@@ -33,7 +31,7 @@ public class ListViewActivity extends AppCompatActivity {
         mFragmentManager=getSupportFragmentManager();
         mApplication=(TalkApplication)getApplication();
         mGroup=mApplication.getGroupDB().getGroup(getIntent().getStringExtra("groupName"));
-        initWhich(getIntent().getIntExtra("which",-999));
+        initWhich(getIntent().getIntExtra("which",GlobleData.DEFAULT));
     }
 
 

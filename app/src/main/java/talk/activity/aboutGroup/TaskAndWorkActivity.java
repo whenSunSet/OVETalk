@@ -7,15 +7,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.heshixiyang.ovetalk.R;
-
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.util.ListViewActivity;
 import talk.activity.util.NotePadActivity;
 import talk.model.Task;
 import talk.model.Work;
+
 public class TaskAndWorkActivity extends Activity {
     private TalkApplication mApplication;
     private ImageView mType;
@@ -31,7 +30,7 @@ public class TaskAndWorkActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
-        which=getIntent().getIntExtra("which",-999);
+        which=getIntent().getIntExtra("which",GlobleData.DEFAULT);
         init();
     }
 
@@ -84,7 +83,7 @@ public class TaskAndWorkActivity extends Activity {
                 mType.setImageResource(R.drawable.music);
                 mButton.setText("试听音频");
                 break;
-            case GlobleData.IS_VIDIO:
+            case GlobleData.IS_VIDEO:
                 mType.setImageResource(R.drawable.video);
                 mButton.setText("观看视频");
                 break;

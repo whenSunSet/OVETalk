@@ -12,18 +12,14 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
 import com.example.heshixiyang.ovetalk.R;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
@@ -39,7 +35,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
 
     private Button mLastStep;
     private Button mNextStep;
-    private int nowStep=1;
+    private int nowStep=GlobleData.STEP_ONE;
 
     private Work mWork;
     private TalkApplication mApplication;
@@ -68,13 +64,13 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mDate= new String[]{"文档", "音频", "视频"};
         mWork=new Work();
         mWork.setGroupName(getIntent().getStringExtra("groupName"));
-        formparams = new ArrayList<NameValuePair>();
+        formparams = new ArrayList<>();
 
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
         mAnimationExpand.setDuration(500);
         mAnimationPullBack.setDuration(500);
-        mAdapter=new ArrayAdapter<String>(mApplication,R.layout.text,mDate);
+        mAdapter=new ArrayAdapter<>(mApplication,R.layout.text,mDate);
         mAll=(LinearLayout)findViewById(R.id.all);
         mLastStep=(Button)findViewById(R.id.lastStep);
         mNextStep=(Button)findViewById(R.id.nextStep);
@@ -85,10 +81,10 @@ public class MakeHomeWorkActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 switch (nowStep) {
-                    case 1:
+                    case GlobleData.STEP_ONE:
                         finish();
                         break;
-                    case 2:
+                    case GlobleData.STEP_TWO:
                         stepOne();
                         mAll.removeView(mChooseType);
                         break;
@@ -101,10 +97,10 @@ public class MakeHomeWorkActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 switch (nowStep) {
-                    case 1:
+                    case GlobleData.STEP_ONE:
                         stepTwo();
                         break;
-                    case 2:
+                    case GlobleData.STEP_TWO:
                         mWork.setMaster(mApplication.getSpUtil().getUserName());
                         mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupName(), mWork.getTaskId()) + 1);
                         mWork.setClickNumber(0);
@@ -120,7 +116,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         intent.putExtra("taskId",mWork.getTaskId());
                         intent.putExtra("idInTask",mWork.getIdInTask());
                         intent.putExtra("path",mWork.getPath());
-                        setResult(getIntent().getIntExtra("type",-999),intent);
+                        setResult(GlobleData.START_MAKE_HOMEWORK_ACTIVITY, intent);
                         finish();
                         break;
                     default:
@@ -143,17 +139,17 @@ public class MakeHomeWorkActivity extends BasicActivity {
                 Intent intent=new Intent(MakeHomeWorkActivity.this,GugleFileActivity.class);
                 if (date.equals("文档")) {
                     mChooseType.setText("选择发布文件类型：文档");
-                    intent.putExtra("fileType", 0);
-                    startActivityForResult(intent, 2);
-                    mWork.setType(0);
+                    intent.putExtra("fileType",GlobleData.IS_TEXT);
+                    startActivityForResult(intent, GlobleData.CHOOSE_FILE);
+                    mWork.setType(GlobleData.IS_TEXT);
                 } else if (date.equals("音频")) {
                     mChooseType.setText("选择发布文件类型：音频");
-                    intent.putExtra("fileType", 1);
-                    startActivityForResult(intent,2);
-                    mWork.setType(1);
+                    intent.putExtra("fileType", GlobleData.IS_MUSIC);
+                    startActivityForResult(intent,GlobleData.CHOOSE_FILE);
+                    mWork.setType(GlobleData.IS_MUSIC);
                 } else {
                     mChooseType.setText("选择发布文件类型：视频");
-                    mWork.setType(2);
+                    mWork.setType(GlobleData.IS_VIDEO);
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);
@@ -190,13 +186,13 @@ public class MakeHomeWorkActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MakeHomeWorkActivity.this, ListViewActivity.class);
-                intent.putExtra("which",1);
-                startActivityForResult(intent,1);
+                intent.putExtra("which",GlobleData.GROUP_TASK_LIST);
+                startActivityForResult(intent,GlobleData.CHOOSE_TASK);
             }
         });
     }
     private void stepOne(){
-        nowStep=1;
+        nowStep=GlobleData.STEP_ONE;
 
         mAll.addView(mChooseType, layoutParams);
         mAll.addView(mItem, layoutParams);
@@ -204,7 +200,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     }
 
     private void stepTwo(){
-        nowStep=2;
+        nowStep=GlobleData.STEP_TWO;
 
         mAll.removeView(mChooseType);
         mAll.removeView(mItem);
@@ -221,15 +217,15 @@ public class MakeHomeWorkActivity extends BasicActivity {
         formparams.add(new BasicNameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
         formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
         formparams.add(new BasicNameValuePair(GlobleData.DATE, mWork.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler,-999)).start();
+        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
-            case 1:
-                mWork.setTaskId(data.getIntExtra("idInGroup", -999));
+            case GlobleData.CHOOSE_TASK:
+                mWork.setTaskId(data.getIntExtra("idInGroup", GlobleData.DEFAULT));
                 break;
-            case 2:
+            case GlobleData.CHOOSE_FILE:
                 mWork.setPath(data.getStringExtra("filePath"));
                 break;
             default:

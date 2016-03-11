@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -16,16 +15,12 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
 import com.example.heshixiyang.ovetalk.R;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
@@ -73,12 +68,12 @@ public class MakeTaskActivity extends BasicActivity {
         mDate= new String[]{"文档", "音频", "视频"};
         mTask=new Task();
         mGroupName=getIntent().getStringExtra("groupName");
-        formparams = new ArrayList<NameValuePair>();
+        formparams = new ArrayList<>();
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
         mAnimationExpand.setDuration(500);
         mAnimationPullBack.setDuration(500);
-        mAdapter=new ArrayAdapter<String>(mApplication,R.layout.text,mDate);
+        mAdapter=new ArrayAdapter<>(mApplication,R.layout.text,mDate);
         mAll=(LinearLayout)findViewById(R.id.all);
         mLastStep=(Button)findViewById(R.id.lastStep);
         mNextStep=(Button)findViewById(R.id.nextStep);
@@ -89,14 +84,14 @@ public class MakeTaskActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 switch (nowStep) {
-                    case 1:
+                    case GlobleData.STEP_ONE:
                         finish();
                         break;
-                    case 2:
+                    case GlobleData.STEP_TWO:
                         stepOne();
                         mAll.removeView(mName);
                         break;
-                    case 3:
+                    case GlobleData.STEP_THREE:
                         stepTwo();
                         mAll.removeView(mConent);
                         break;
@@ -109,10 +104,10 @@ public class MakeTaskActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 switch (nowStep) {
-                    case 1:
+                    case GlobleData.STEP_ONE:
                         stepTwo();
                         break;
-                    case 2:
+                    case GlobleData.STEP_TWO:
                         if (TextUtils.isEmpty(mName.getText().toString())) {
                             DialogUtil.showToast(mApplication, "还没有输入任务的名字");
                         } else {
@@ -120,7 +115,7 @@ public class MakeTaskActivity extends BasicActivity {
                             stepThree();
                         }
                         break;
-                    case 3:
+                    case GlobleData.STEP_THREE:
                         if (TextUtils.isEmpty(mConent.getText().toString())) {
                             DialogUtil.showToast(mApplication, "还没有输入任务的目标");
                         } else {
@@ -137,7 +132,7 @@ public class MakeTaskActivity extends BasicActivity {
                             Intent intent=new Intent();
                             intent.putExtra("idInGroup",mTask.getIdInGroup());
                             intent.putExtra("path",mTask.getPath());
-                            setResult(1,intent);
+                            setResult(GlobleData.START_MAKE_TASK_ACTIVITY,intent);
                             finish();
                         }
                         break;
@@ -162,17 +157,17 @@ public class MakeTaskActivity extends BasicActivity {
                 Intent intent=new Intent(MakeTaskActivity.this,GugleFileActivity.class);
                 if (date.equals("文档")) {
                     mChoose.setText("选择发布文件类型：文档");
-                    intent.putExtra("fileType", 0);
+                    intent.putExtra("fileType", GlobleData.IS_TEXT);
                     startActivityForResult(intent, 2);
-                    mTask.setType(0);
+                    mTask.setType(GlobleData.IS_TEXT);
                 } else if (date.equals("音频")) {
                     mChoose.setText("选择发布文件类型：音频");
-                    intent.putExtra("fileType", 1);
+                    intent.putExtra("fileType", GlobleData.IS_MUSIC);
                     startActivityForResult(intent,2);
-                    mTask.setType(1);
+                    mTask.setType(GlobleData.IS_MUSIC);
                 } else {
                     mChoose.setText("选择发布文件类型：视频");
-                    mTask.setType(2);
+                    mTask.setType(GlobleData.IS_VIDEO);
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);
@@ -216,15 +211,14 @@ public class MakeTaskActivity extends BasicActivity {
         mConent.setId(R.id.all + 4);
     }
     private void stepOne(){
-        nowStep=1;
+        nowStep=GlobleData.STEP_ONE;
 
         mAll.addView(mChoose, layoutParams);
         mAll.addView(mItem, layoutParams);
-
     }
 
     private void stepTwo(){
-        nowStep=2;
+        nowStep=GlobleData.STEP_TWO;
 
         mAll.removeView(mChoose);
         mAll.removeView(mItem);
@@ -233,7 +227,7 @@ public class MakeTaskActivity extends BasicActivity {
     }
 
     private void stepThree(){
-        nowStep=3;
+        nowStep=GlobleData.STEP_THREE;
 
         mAll.removeView(mName);
         mAll.addView(mConent,layoutParams);
@@ -247,14 +241,13 @@ public class MakeTaskActivity extends BasicActivity {
         formparams.add(new BasicNameValuePair(GlobleData.TARGET, mTask.getTarget()));
         formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
         formparams.add(new BasicNameValuePair(GlobleData.DATE, mTask.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler,-999)).start();
+        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
             case 2:
                 mTask.setPath(data.getStringExtra("filePath"));
-                Log.d("MakeTaskActivity", data.getStringExtra("filePath"));
                 break;
             default:
                 break;

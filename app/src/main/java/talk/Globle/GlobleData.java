@@ -96,16 +96,27 @@ public class GlobleData {
 
     public static final int IS_TEXT=0;
     public static final int IS_MUSIC=1;
-    public static final int IS_VIDIO=2;
+    public static final int IS_VIDEO =2;
 
-    public static final int SEND_MESSAGE_FAILD=0;
+    public static final int SEND_MESSAGE_FILE =0;
     public static final int SEND_MESSAGE_SUCCESS=1;
     public static final int NET_ERROR=2;
     public static final int CAN_NOT_CONNECT_SERVER=3;
     public static final int NO_SUCH_GROUP=4;
 
-    public static final int SEND_FILE_FAILD=0;
+    public static final int SEND_FILE_FILE =0;
     public static final int SEND_FILE_SUCCESS=1;
 
+    public static final int CHOOSE_TASK =1;
+    public static final int CHOOSE_FILE =2;
+
+    public static final int STEP_ONE=1;
+    public static final int STEP_TWO=2;
+    public static final int STEP_THREE=3;
+
+    public static final int START_MAKE_TASK_ACTIVITY=1;
+    public static final int START_MAKE_HOMEWORK_ACTIVITY=2;
+
+    public static final int DEFAULT=-999;
 }
 

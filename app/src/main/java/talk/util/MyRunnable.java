@@ -3,11 +3,8 @@ package talk.util;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
 import org.apache.http.NameValuePair;
-
 import java.util.List;
-
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 
@@ -37,7 +34,7 @@ public class MyRunnable implements Runnable {
             msg.what = GlobleData.NET_ERROR;
         }else if (msg.obj.equals("0")) {
             //发送信息失败
-            msg.what = GlobleData.SEND_MESSAGE_FAILD;
+            msg.what = GlobleData.SEND_MESSAGE_FILE;
         }else if (msg.obj.equals("1")){
             //发送成功
             msg.what = GlobleData.SEND_MESSAGE_SUCCESS;

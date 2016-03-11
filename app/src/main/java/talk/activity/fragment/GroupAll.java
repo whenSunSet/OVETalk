@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.GridLayout;
@@ -30,7 +29,6 @@ import talk.model.Message;
 import talk.model.TabInfo;
 import talk.model.Task;
 import talk.model.Work;
-import talk.util.MyRunnable;
 
 /**
  * Created by asus on 2015/11/14.
@@ -41,27 +39,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
     public Group mGroup;
     public boolean isSystemGroup;
     public GroupMessageDB mGroupMessageDB;
-    Handler handler=new Handler(){
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case 0:
-                    mGroupMessageDB.update("messageImage",String.valueOf(GlobleData.DISAGREE_USER_TO_GROUP),(String)msg.obj,mApplication.getSpUtil().getUserName());
-                    flashFragment();
-
-                    break;
-                case 1:
-                    mGroupMessageDB.update("messageImage",String.valueOf(GlobleData.AGREE_USER_TO_GROUP),(String)msg.obj,mApplication.getSpUtil().getUserName());
-                    flashFragment();
-
-                    break;
-                default:
-                    break;
-
-            }
-        }
-    };
         //-------------view控件
     private TextView textView;
     private ImageView myGroup;
@@ -69,8 +46,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
     private ImageView mMakeWork;
     //--------------Activity是否重新Resume过
     private Boolean isResume=false;
-    private MyRunnable myRunnable;
-    private Thread mTread;
     private Boolean isMaster=false;
 
     @Override
@@ -89,7 +64,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 receive(context, intent);
             }
         });
-
         isSystemGroup=getIntent().getStringExtra("groupName").equals("-1");
         mGroupMessageDB=mApplication.getGroupMessageDB();
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
@@ -107,6 +81,36 @@ public class  GroupAll extends IndicatorFragmentActivity {
         }
 
     }
+    public void receive(Context context, Intent intent) {
+        Message message=intent.getParcelableExtra(GlobleData.KEY_MESSAGE);
+        GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupName()
+                ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserName()
+                ,message.getMessageImage(),message.getMessageStatu());
+
+        int messageStatu=message.getMessageStatu();
+
+        if (!isSystemGroup&&message.getGroupName().equals(mGroup.getGroupName())){
+            //不是System但是是该group 并且不在chat或者group被解散
+            if (messageStatu==GlobleData.USER_CANCEL_GROUP){
+                //如果群被注销，则finish
+                Toast.makeText(mApplication, "该群已经解散", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            if ((mCurrentTab==1&&messageStatu==GlobleData.MASTER_PUT_TASK)||(mCurrentTab==2&&messageStatu==GlobleData.USER_PUT_HOMEWORK)){
+                //如果不在chat 且消息类型匹配
+                flashFragment();
+                return;
+            }else if (mCurrentTab==1||mCurrentTab==2){
+                //如果不在chat 且消息类型不匹配
+                GroupAll.isFlash=true;
+                return;
+            }
+        }
+        //其他情况 添加一个消息item 然后刷新
+        ((GroupChatting) (mTabs.get(0).fragment)).flash(chatMessage);
+    }
+
 
     //----------------动态添加一个控件
     public void addView(){
@@ -146,7 +150,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("group", mGroup);
                 intent.putExtra("group", mGroup);
-                startActivityForResult(intent,1);
+                startActivityForResult(intent,GlobleData.START_MAKE_TASK_ACTIVITY);
             }
         });
 
@@ -154,10 +158,8 @@ public class  GroupAll extends IndicatorFragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GroupAll.this, MakeHomeWorkActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("group", mGroup);
-                intent.putExtra("group", mGroup);
-                startActivityForResult(intent, 2);
+                intent.putExtra("group",mGroup.getGroupName());
+                startActivityForResult(intent, GlobleData.START_MAKE_HOMEWORK_ACTIVITY);
             }
         });
         RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT, GridLayout.LayoutParams.WRAP_CONTENT);
@@ -217,52 +219,23 @@ public class  GroupAll extends IndicatorFragmentActivity {
         return 0;
     }
 
-    public void receive(Context context, Intent intent) {
-            Message message=intent.getParcelableExtra(GlobleData.KEY_MESSAGE);
-            GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupName()
-                    ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserName()
-                    ,message.getMessageImage(),message.getMessageStatu());
-
-            int messageStatu=message.getMessageStatu();
-
-            if (!isSystemGroup&&message.getGroupName().equals(mGroup.getGroupName())){
-                //不是System但是是该group 并且不在chat或者group被解散
-                if (messageStatu==GlobleData.USER_CANCEL_GROUP){
-                    //如果群被注销，则finish
-                    Toast.makeText(mApplication, "该群已经解散", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-
-                if ((mCurrentTab==1&&messageStatu==GlobleData.MASTER_PUT_TASK)||(mCurrentTab==2&&messageStatu==GlobleData.USER_PUT_HOMEWORK)){
-                    //如果不在chat 且消息类型匹配
-                    flashFragment();
-                    return;
-                }else if (mCurrentTab==1||mCurrentTab==2){
-                    //如果不在chat 且消息类型不匹配
-                    GroupAll.isFlash=true;
-                    return;
-                }
-            }
-        //其他情况 添加一个消息item 然后刷新
-        ((GroupChatting) (mTabs.get(0).fragment)).flash(chatMessage);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode==1){
+        if (resultCode==GlobleData.START_MAKE_TASK_ACTIVITY){
             ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
                     "我发布了一个任务，快来看看吧",
                     null,
                     11,
                     null,
-                    new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",-999)));
-        }else {
+                    new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",GlobleData.DEFAULT)));
+        }else if (resultCode==GlobleData.START_MAKE_HOMEWORK_ACTIVITY){
             ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
                     "我发布了一个作业，快来看看吧",
                     null,
                     11,
-                    new Work(data.getIntExtra("taskId", -999),
-                            data.getIntExtra("idInTask", -999),
+                    new Work(data.getIntExtra("taskId", GlobleData.DEFAULT),
+                            data.getIntExtra("idInTask", GlobleData.DEFAULT),
                             data.getStringExtra("path"),
                             resultCode),
                     null);
