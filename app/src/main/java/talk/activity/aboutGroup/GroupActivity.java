@@ -9,11 +9,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 
 import talk.Globle.GlobleData;
@@ -23,7 +27,9 @@ import talk.activity.util.ListViewActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
 import talk.util.MyHandler;
+import talk.util.MyJsonObjectRequest;
 import talk.util.MyPreferenceManager;
+import talk.util.MyResponseErrorListener;
 import talk.util.MyRunnable;
 
 
@@ -66,14 +72,16 @@ public class GroupActivity extends Activity {
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setRequest(GlobleData.GROUP_EXIT,GlobleData.USER_OUT_GROUP);
+//                setRequest(GlobleData.GROUP_EXIT,GlobleData.USER_OUT_GROUP);
+                sendMessage("",GlobleData.USER_OUT_GROUP);
             }
         });
 
         mDestroy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setRequest(GlobleData.GROUP_CANCEL,GlobleData.USER_CANCEL_GROUP);
+//                setRequest(GlobleData.GROUP_CANCEL,GlobleData.USER_CANCEL_GROUP);
+                sendMessage("",GlobleData.USER_CANCEL_GROUP);
             }
         });
 
@@ -81,7 +89,7 @@ public class GroupActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(GroupActivity.this,ListViewActivity.class);
-                intent.putExtra("groupName",mGroup.getGroupName());
+                intent.putExtra(GlobleData.GROUP_NAME,mGroup.getGroupName());
                 intent.putExtra("which",GlobleData.GROUP_MEMBER_LIST);
                 startActivity(intent);
             }
@@ -96,7 +104,35 @@ public class GroupActivity extends Activity {
         }
 
     }
+    private void sendMessage(String url,int messageStatu){
+        JSONObject jsonObject = new JSONObject();
+        MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
+                Request.Method.POST,
+                url,
+                jsonObject,
+                new MyResponseErrorListener(GroupActivity.this,messageStatu),
+                makeMap(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        DialogUtil.showToast(mApplication, "操作成功");
+                        mApplication.getGroupDB().delGroup(mGroup.getGroupName());
+                        groupActivity.finish();
 
+                        Groups.isFlash=true;
+
+                    }
+                }
+        );
+        mApplication.getRequestQueue().add(jsonObjectRequest);
+    }
+    private HashMap<String ,String > makeMap(){
+        HashMap<String ,String > map=new HashMap();
+        map.put(GlobleData.GROUP_NAME, mGroup.getGroupName());
+        map.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserName());
+        map.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
+        return map;
+    }
     private void setRequest(String url,int messageStatu){
         formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
         formparams.add(new BasicNameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));

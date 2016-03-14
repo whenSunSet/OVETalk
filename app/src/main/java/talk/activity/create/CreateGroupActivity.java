@@ -7,13 +7,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
@@ -23,6 +29,8 @@ import talk.activity.supers.BasicActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
 import talk.util.MyHandler;
+import talk.util.MyJsonObjectRequest;
+import talk.util.MyResponseErrorListener;
 import talk.util.MyRunnable;
 
 public class CreateGroupActivity extends BasicActivity{
@@ -45,8 +53,6 @@ public class CreateGroupActivity extends BasicActivity{
         mApplication=(TalkApplication)getApplication();
         groupNickNameText=(EditText)findViewById(R.id.groupName);
 
-        formparams = new ArrayList<>();
-        formparams.add(new BasicNameValuePair("userName", mApplication.getSpUtil().getUserName()));
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,11 +60,61 @@ public class CreateGroupActivity extends BasicActivity{
                 if (TextUtils.isEmpty(groupNickName)) {
                     DialogUtil.showToast(CreateGroupActivity.this, "请输入群组的名字");
                 } else {
-                    formparams.add(new BasicNameValuePair("groupNickName", groupNickName));
-                    new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT));
+//                    makeF();
+                    sendMessage("");
                 }
             }
         });
+    }
+
+    private void sendMessage(String url){
+        JSONObject jsonObject = new JSONObject();
+        MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
+                Request.Method.POST,
+                url,
+                jsonObject,
+                new MyResponseErrorListener(CreateGroupActivity.this,GlobleData.DEFAULT),
+                makeMap(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        try {
+                            groupName = jsonObject.getString(GlobleData.GROUP_NAME);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Groups.isFlash=true;
+                        addGroup();
+                    }
+                }
+        );
+        mApplication.getRequestQueue().add(jsonObjectRequest);
+    }
+
+    private HashMap makeMap(){
+        Map map=new HashMap();
+        map.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName());
+        map.put(GlobleData.GROUP_NICK_NAME,groupNickName);
+        return makeMap();
+    }
+
+    public void addGroup(){
+        Group group=new Group(groupName,groupNickName,"",mApplication.getSpUtil().getUserName(),0,0);
+        mApplication.getGroupDB().addGroup(group);
+        GlobleMethod.setTag(mApplication);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //从当前Activity回到GroupAll的时候将其设置为需要刷新
+        Groups.isFlash=true;
+    }
+    private void makeF(){
+        formparams = new ArrayList<>();
+        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, mApplication.getSpUtil().getUserName()));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NICK_NAME, groupNickName));
+        new Thread(new MyRunnable(formparams, "", handler, GlobleData.DEFAULT));
+
     }
 
     private MyHandler handler=new MyHandler(CreateGroupActivity.this){
@@ -75,15 +131,4 @@ public class CreateGroupActivity extends BasicActivity{
             }
         }
     };
-    public void addGroup(){
-        Group group=new Group(groupName,groupNickName,"",mApplication.getSpUtil().getUserName(),0,0);
-        mApplication.getGroupDB().addGroup(group);
-        GlobleMethod.setTag(mApplication);
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //从当前Activity回到GroupAll的时候将其设置为需要刷新
-        Groups.isFlash=true;
-    }
 }

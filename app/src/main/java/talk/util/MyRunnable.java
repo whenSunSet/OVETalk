@@ -34,7 +34,7 @@ public class MyRunnable implements Runnable {
             msg.what = GlobleData.NET_ERROR;
         }else if (msg.obj.equals("0")) {
             //发送信息失败
-            msg.what = GlobleData.SEND_MESSAGE_FILE;
+            msg.what = GlobleData.SEND_MESSAGE_FAIL;
         }else if (msg.obj.equals("1")){
             //发送成功
             msg.what = GlobleData.SEND_MESSAGE_SUCCESS;

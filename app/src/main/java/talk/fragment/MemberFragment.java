@@ -52,9 +52,9 @@ public class MemberFragment extends BasicFragment {
                     activity.mApplication.getClickTaskDB(),
                     activity.mApplication.getUserDB());
         }else {
-            mData= GlobleMethod.findUserFromGroup(mTalkApplication.getJoinGroupDB(),mTalkApplication.getUserDB(),mGroup.getGroupName());
+            mData= GlobleMethod.findUserFromGroup(mApplication.getJoinGroupDB(), mApplication.getUserDB(),mGroup.getGroupName());
         }
-        mAdapter=new MemberAdapter(mTalkApplication, R.layout.member_item_layout,mData);
+        mAdapter=new MemberAdapter(mApplication, R.layout.member_item_layout,mData);
         mListView.setAdapter(mAdapter);
     }
 

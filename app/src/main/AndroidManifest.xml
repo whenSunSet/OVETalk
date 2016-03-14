@@ -137,7 +137,7 @@
         <!-- Required. AppKey copied from Portal -->
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="Your AppKey"/>
+            android:value="c0b219d3c2a9063b09fefb03"/>
         <!-- 、、、、、、、、、、、、、、、、、、、、、、Jpush配置、、、、、、、、、、、、、、、、、、、、、、、 -->
 
         <activity android:name="talk.activity.create.MakeHomeWorkActivity">

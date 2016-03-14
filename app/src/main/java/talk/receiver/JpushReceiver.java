@@ -112,7 +112,7 @@ public class JpushReceiver extends BroadcastReceiver {
                         break;
                     case GlobleData.AGREE_USER_TO_GROUP:
                         msg="同意你加入";
-//                        mApplication.getGroupDB().addGroup(new Group(message.getGroupName(),groupNickName,message.getUserIcon(),message.getUserName()));
+//                      mApplication.getGroupDB().addGroup(new Group(message.getGroupName(),groupNickName,message.getUserIcon(),message.getUserName()));
                         GlobleMethod.setTag(mApplication);
                         formparams.clear();
                         formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));

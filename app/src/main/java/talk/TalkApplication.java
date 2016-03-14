@@ -1,11 +1,12 @@
 package talk;
-
 import android.app.Application;
 import android.app.NotificationManager;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 import java.util.HashMap;
 import java.util.Map;
-
 import cn.jpush.android.api.JPushInterface;
 import talk.datebase.ClickTaskDB;
 import talk.datebase.ClickWorkDB;
@@ -19,7 +20,6 @@ import talk.model.User;
 import talk.util.MyPreferenceManager;
 
 public class TalkApplication extends Application {
-    private static TalkApplication mApplication;
     public Map map=new HashMap();
     private MyPreferenceManager mSpUtil;
     private NotificationManager mNotificationManager;
@@ -31,14 +31,13 @@ public class TalkApplication extends Application {
     private JoinGroupDB joinGroupDB;
     private ClickTaskDB clickTaskDB;
     private ClickWorkDB clickWorkDB;
-
+    private RequestQueue requestQueue;
     @Override
     public void onCreate() {
         super.onCreate();
         JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
         JPushInterface.init(this);     		// 初始化 JPush
 
-        mApplication=this;
         initData();
 
     }
@@ -47,6 +46,7 @@ public class TalkApplication extends Application {
         mSpUtil = new MyPreferenceManager();
         MyPreferenceManager.init(this);
         mNotificationManager = (NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        requestQueue= Volley.newRequestQueue(this);
 
         groupMessageDB = new GroupMessageDB(this);
         groupDB = new GroupDB(this);
@@ -63,8 +63,6 @@ public class TalkApplication extends Application {
 
     }
 
-
-
     public NotificationManager getNotificationManager() {
         if (mNotificationManager == null)
             mNotificationManager = (NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
@@ -75,6 +73,14 @@ public class TalkApplication extends Application {
         if (mSpUtil == null)
             mSpUtil = new MyPreferenceManager();
         return mSpUtil;
+    }
+
+    public RequestQueue getRequestQueue() {
+        return requestQueue;
+    }
+
+    public void setRequestQueue(RequestQueue requestQueue) {
+        this.requestQueue = requestQueue;
     }
 
     public GroupMessageDB getGroupMessageDB() {

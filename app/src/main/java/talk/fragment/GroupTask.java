@@ -2,6 +2,7 @@ package talk.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +10,17 @@ import android.widget.AdapterView;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import org.apache.http.NameValuePair;
+
+import java.util.List;
+
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.activity.util.ListViewActivity;
 import talk.adapter.TaskAdapter;
 import talk.model.Group;
 import talk.model.Task;
+import talk.util.MyHandler;
 
 /**
  * Created by asus on 2015/11/15.
@@ -22,6 +28,7 @@ import talk.model.Task;
 public class GroupTask extends BasicFragment{
     private Group mGroup;
     private int whichActivity;
+    private List<NameValuePair>  formparams;
     public GroupTask() {
         super();
     }
@@ -40,15 +47,15 @@ public class GroupTask extends BasicFragment{
     }
     protected void init(LayoutInflater inflater) {
         super.init(inflater);
-        mData=mTalkApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
-        mAdapter=new TaskAdapter(mTalkApplication,R.layout.task_item,mData);
+        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
+        mAdapter=new TaskAdapter(mApplication,R.layout.task_item,mData);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Task task = (Task) (mListView.getItemAtPosition(position));
                 if (whichActivity==1){
-                    mTalkApplication.map.put("nowTask", task);
+                    mApplication.map.put("nowTask", task);
                     Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
                     getActivity().startActivity(intent);
                 }else if (whichActivity==2){
@@ -59,8 +66,23 @@ public class GroupTask extends BasicFragment{
     }
 
     @Override
+    protected void upData() {
+        super.upData();
+
+//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupName()));
+//        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
+    }
+
+    @Override
     public void flash() {
-        mData=mTalkApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
+        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
         super.flash();
     }
+
+    MyHandler handler=new MyHandler(getActivity()){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
 }

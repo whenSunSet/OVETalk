@@ -72,6 +72,7 @@ public class GlobleData {
     public static final String MESSAGE="message";
     public static final String DATE="date";
     public static final String GROUP_NAME="groupName";
+    public static final String GROUP_NICK_NAME="groupNickName";
     public static final String USER_NAME="userName";
     public static final String MESSAGE_STATU="messageStatu";
     public static final String MESSAGE_IMAGE="messageImage";
@@ -98,13 +99,13 @@ public class GlobleData {
     public static final int IS_MUSIC=1;
     public static final int IS_VIDEO =2;
 
-    public static final int SEND_MESSAGE_FILE =0;
+    public static final int SEND_MESSAGE_FAIL =0;
     public static final int SEND_MESSAGE_SUCCESS=1;
     public static final int NET_ERROR=2;
     public static final int CAN_NOT_CONNECT_SERVER=3;
     public static final int NO_SUCH_GROUP=4;
 
-    public static final int SEND_FILE_FILE =0;
+    public static final int SEND_FILE_FAIL=0;
     public static final int SEND_FILE_SUCCESS=1;
 
     public static final int CHOOSE_TASK =1;

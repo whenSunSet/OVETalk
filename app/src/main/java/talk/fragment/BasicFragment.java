@@ -26,7 +26,7 @@ import talk.model.GroupChatMessage;
  * Created by heshixiyang on 2016/2/3.
  */
 public class BasicFragment extends Fragment {
-    protected TalkApplication mTalkApplication;
+    protected TalkApplication mApplication;
     protected ViewGroup view;
     protected ArrayList mData;
     protected BaseAdapter mAdapter;
@@ -46,7 +46,7 @@ public class BasicFragment extends Fragment {
         }else {
             view= (ViewGroup) inflater.inflate(R.layout.basic_fragment_layout,null);
         }
-        mTalkApplication=(TalkApplication)(getActivity().getApplication());
+        mApplication =(TalkApplication)(getActivity().getApplication());
         mListView=(ListView)view.findViewById(R.id.listView);
 
 

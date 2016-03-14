@@ -83,7 +83,7 @@ public class GlobleMethod {
                 j[0] = i;
             }
         });
-
+!
         if (j[0]==0){
             return true;
         }else {
