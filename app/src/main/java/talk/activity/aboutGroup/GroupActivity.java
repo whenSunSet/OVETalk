@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
@@ -29,7 +28,7 @@ import talk.util.DialogUtil;
 import talk.util.MyHandler;
 import talk.util.MyJsonObjectRequest;
 import talk.util.MyPreferenceManager;
-import talk.util.MyResponseErrorListener;
+import talk.util.MyResponseErrorListenerAndListener;
 import talk.util.MyRunnable;
 
 
@@ -104,23 +103,22 @@ public class GroupActivity extends Activity {
         }
 
     }
-    private void sendMessage(String url,int messageStatu){
+    private void sendMessage(String url, final int messageStatu){
         JSONObject jsonObject = new JSONObject();
         MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
                 Request.Method.POST,
                 url,
                 jsonObject,
-                new MyResponseErrorListener(GroupActivity.this,messageStatu),
                 makeMap(),
-                new Response.Listener<JSONObject>() {
+                new MyResponseErrorListenerAndListener(GroupActivity.this,messageStatu){
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        DialogUtil.showToast(mApplication, "操作成功");
-                        mApplication.getGroupDB().delGroup(mGroup.getGroupName());
-                        groupActivity.finish();
-
-                        Groups.isFlash=true;
-
+                        super.onResponse(jsonObject);
+                        if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
+                            mApplication.getGroupDB().delGroup(mGroup.getGroupName());
+                            groupActivity.finish();
+                            Groups.isFlash=true;
+                        }
                     }
                 }
         );
@@ -133,6 +131,8 @@ public class GroupActivity extends Activity {
         map.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
         return map;
     }
+
+
     private void setRequest(String url,int messageStatu){
         formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
         formparams.add(new BasicNameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));
@@ -146,10 +146,6 @@ public class GroupActivity extends Activity {
             switch (msg.what){
                 case GlobleData.SEND_MESSAGE_SUCCESS:
                     DialogUtil.showToast(mApplication, "操作成功");
-                    mApplication.getGroupDB().delGroup(mGroup.getGroupName());
-                    groupActivity.finish();
-
-                    Groups.isFlash=true;
                     break;
                 default:
                     break;

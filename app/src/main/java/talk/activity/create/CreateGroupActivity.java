@@ -30,7 +30,7 @@ import talk.model.Group;
 import talk.util.DialogUtil;
 import talk.util.MyHandler;
 import talk.util.MyJsonObjectRequest;
-import talk.util.MyResponseErrorListener;
+import talk.util.MyResponseErrorListenerAndListener;
 import talk.util.MyRunnable;
 
 public class CreateGroupActivity extends BasicActivity{
@@ -73,7 +73,7 @@ public class CreateGroupActivity extends BasicActivity{
                 Request.Method.POST,
                 url,
                 jsonObject,
-                new MyResponseErrorListener(CreateGroupActivity.this,GlobleData.DEFAULT),
+                new MyResponseErrorListenerAndListener(CreateGroupActivity.this,GlobleData.DEFAULT),
                 makeMap(),
                 new Response.Listener<JSONObject>() {
                     @Override

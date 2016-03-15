@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
@@ -29,7 +28,7 @@ import talk.util.DialogUtil;
 import talk.util.MyHandler;
 import talk.util.MyJsonObjectRequest;
 import talk.util.MyPreferenceManager;
-import talk.util.MyResponseErrorListener;
+import talk.util.MyResponseErrorListenerAndListener;
 import talk.util.MyRunnable;
 
 public class GroupsFind extends Fragment {
@@ -75,14 +74,8 @@ public class GroupsFind extends Fragment {
                 Request.Method.POST,
                 url,
                 jsonObject,
-                new MyResponseErrorListener(getActivity(),GlobleData.DEFAULT),
                 makeMap(),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-
-                    }
-                }
+                new MyResponseErrorListenerAndListener(getActivity(),GlobleData.DEFAULT)
         );
         mApplication.getRequestQueue().add(jsonObjectRequest);
     }

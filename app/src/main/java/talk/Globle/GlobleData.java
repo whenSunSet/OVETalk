@@ -119,5 +119,7 @@ public class GlobleData {
     public static final int START_MAKE_HOMEWORK_ACTIVITY=2;
 
     public static final int DEFAULT=-999;
+
+    public static int res=-999;
 }
 

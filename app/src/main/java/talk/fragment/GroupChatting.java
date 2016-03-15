@@ -19,12 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -46,7 +44,7 @@ import talk.util.DialogUtil;
 import talk.util.MyHandler;
 import talk.util.MyJsonObjectRequest;
 import talk.util.MyPreferenceManager;
-import talk.util.MyResponseErrorListener;
+import talk.util.MyResponseErrorListenerAndListener;
 import talk.util.MyRunnable;
 
 public class GroupChatting extends BasicFragment {
@@ -325,24 +323,8 @@ public class GroupChatting extends BasicFragment {
                     Request.Method.POST,
                     url,
                     jsonObject,
-                    new MyResponseErrorListener(getActivity(),statu),
                     makeMap(message,isImage,statu,work,task),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jsonObject) {
-                            int res=-999;
-                            try {
-                                res=jsonObject.getInt("res");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            if (res==GlobleData.SEND_MESSAGE_FAIL){
-                                DialogUtil.showToast(getActivity(),"消息发送失败");
-                            }else if (res==GlobleData.SEND_MESSAGE_SUCCESS){
-                                DialogUtil.showToast(getActivity(),"消息发送成功");
-                            }
-                        }
-                    }
+                    new MyResponseErrorListenerAndListener(getActivity(),statu)
             );
             mApplication.getRequestQueue().add(jsonObjectRequest);
     }
