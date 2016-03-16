@@ -40,7 +40,6 @@ public class GroupsFind extends Fragment {
     private List<NameValuePair> formparams;
     private String mGroupName;
 
-    public GroupsFind() {}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         init(inflater);

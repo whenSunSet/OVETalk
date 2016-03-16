@@ -219,7 +219,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
         formparams.add(new BasicNameValuePair(GlobleData.DATE, mWork.getDate()));
         new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
     }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case GlobleData.CHOOSE_TASK:

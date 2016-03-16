@@ -1,6 +1,7 @@
 package talk.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
 import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
@@ -21,13 +25,12 @@ import talk.model.GroupChatMessage;
 public class ChatMessageAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<GroupChatMessage> mDatas;
-
+	private Context mContext;
 	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas) {
 		mInflater = LayoutInflater.from(context);
 		mDatas = datas;
-
+		mContext=context;
     }
-
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final GroupChatMessage chatMessage = mDatas.get(position);
@@ -44,12 +47,14 @@ public class ChatMessageAdapter extends BaseAdapter {
 						.findViewById(R.id.chat_from_content);
 				viewHolder.nickname = (TextView) convertView
 						.findViewById(R.id.chat_from_name);
-				viewHolder.img=(ImageView)convertView
+				viewHolder.img=(NetworkImageView)convertView
 						.findViewById(R.id.img);
 				viewHolder.agree=(Button)convertView
 						.findViewById(R.id.agree);
 				viewHolder.disagree=(Button)convertView
 						.findViewById(R.id.disagree);
+				viewHolder.userIcon=(ImageView)convertView
+						.findViewById(R.id.chat_from_icon);
 
 				convertView.setTag(viewHolder);
 
@@ -63,8 +68,11 @@ public class ChatMessageAdapter extends BaseAdapter {
 						.findViewById(R.id.chat_send_content);
 				viewHolder.nickname = (TextView) convertView
 						.findViewById(R.id.chat_send_name);
-				viewHolder.img=(ImageView)convertView
+				viewHolder.img=(NetworkImageView)convertView
 						.findViewById(R.id.img);
+				viewHolder.userIcon=(ImageView)convertView
+						.findViewById(R.id.chat_send_icon);
+
 				convertView.setTag(viewHolder);
 
 				viewHolder.isFrom=false;
@@ -87,6 +95,13 @@ public class ChatMessageAdapter extends BaseAdapter {
 		viewHolder.img.setVisibility(View.GONE);
 		viewHolder.createDate.setText(chatMessage.getDateStr());
 
+		if (chatMessage.getUserIcon().matches("http")){
+			//没有获取成功的userIcon
+			viewHolder.userIcon.setImageResource(R.drawable.icon);
+		}else {
+			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getUserIcon()));
+		}
+
 		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_PUT_HOMEWORK 只能在普通群组里使用
 		if (messageStatu<=3||messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
 			viewHolder.nickname.setText(chatMessage.getUserNickName());
@@ -95,29 +110,39 @@ public class ChatMessageAdapter extends BaseAdapter {
 			viewHolder.nickname.setText("OVEsystem");
 		}
 
-
 		if (messageStatu==GlobleData.PHOTO_MESSAGE){
-			//发送图片
-			viewHolder.img.setVisibility(View.VISIBLE);
-			viewHolder.img.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
+			setImage(viewHolder,chatMessage);
 		}else if (messageStatu==GlobleData.EMOJI_MESSAGE){
-			//发送表情
 
 		}else {
 			//将消息内容显示
 			viewHolder.content.setText(chatMessage.getMessage());
 			if (messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
 				//如果是 任务或者作品 将附上一张图
-				viewHolder.img.setVisibility(View.VISIBLE);
-				viewHolder.img.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
-
+				setImage(viewHolder,chatMessage);
 			}else if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
 				//如果是请求加入群里 则显示两个按钮
 				viewHolder.agree.setVisibility(View.VISIBLE);
 				viewHolder.disagree.setVisibility(View.VISIBLE);
 			}
 		}
+	}
 
+	private void setImage(ViewHolder viewHolder,GroupChatMessage chatMessage){
+		viewHolder.img.setVisibility(View.VISIBLE);
+		viewHolder.img.setDefaultImageResId(R.drawable.icon);
+		viewHolder.img.setErrorImageResId(R.drawable.error);
+		viewHolder.img.setImageUrl(chatMessage.getMessageImage(),new ImageLoader(Volley.newRequestQueue(mContext), new ImageLoader.ImageCache() {
+			@Override
+			public Bitmap getBitmap(String s) {
+				return null;
+			}
+
+			@Override
+			public void putBitmap(String s, Bitmap bitmap) {
+
+			}
+		}));
 	}
 	@Override
 	public int getCount()
@@ -146,11 +171,11 @@ public class ChatMessageAdapter extends BaseAdapter {
 		public TextView createDate;
 		public TextView nickname;
 		public TextView content;
-		public ImageView img;
+		public NetworkImageView img;
 		public Button agree;
 		public Button disagree;
 		public boolean isFrom;
+		public ImageView userIcon;
 	}
-
 
 }

@@ -1,16 +1,21 @@
 package talk.Globle;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Environment;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 import talk.TalkApplication;
@@ -38,7 +43,7 @@ public class GlobleMethod {
         joinGroup.setDate(message.getDate());
 
         user.setUserID(message.getUserName());
-        user.setUserIcon(message.getUserIcon());
+        user.setUserIcon(savaImage(talkApplication,message));
         user.setUserNickName(message.getUserNickName());
 
         userDB.add(user);
@@ -83,7 +88,7 @@ public class GlobleMethod {
                 j[0] = i;
             }
         });
-!
+
         if (j[0]==0){
             return true;
         }else {
@@ -113,26 +118,84 @@ public class GlobleMethod {
         }
         return list;
     }
-    public static String GetResult(String url, List<org.apache.http.NameValuePair> formparams) {
 
-        HttpResponse response2;// 创建一个可关闭的response对象
-        HttpClient client = new DefaultHttpClient();// 创建一个http客户端，用于发送http请求
-        HttpPost post = new HttpPost(url);// 创建一个post请求对象
-        String result = "";
-        try {
-            // 将参数放入post
-            post.setEntity(new UrlEncodedFormEntity(formparams,"utf-8"));
-            response2 = client.execute(post);// 执行请求
-
-            if (response2.getStatusLine().getStatusCode() != 200) {
-                result = Const.methodString;
-                return result;
-            }
-            HttpEntity entity2 = response2.getEntity();
-            result = EntityUtils.toString(entity2);// 打印出entity2的内容
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static String savaImage(TalkApplication talkApplication, final Message message){
+        final String[] userIcon = new String[1];
+        final File file = new File(GlobleData.SD_CACHE+"/"+message.getUserName()+".jpg");
+        if (file.exists()){
+            file.delete();
         }
-        return result;
+        ImageRequest imageRequest=new ImageRequest(message.getUserIcon(), new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap bitmap) {
+                try {
+                    file.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                userIcon[0] =file.getName();
+            }
+        }, 0, 0, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                userIcon[0]=message.getUserIcon();
+            }
+        });
+        talkApplication.getRequestQueue().add(imageRequest);
+        return userIcon[0];
     }
+
+    //一些重要性不高的cache或者大文件放到这里，比如图片缓存
+    public static String getCacheDir(Context context){
+        String cachePath ;
+        //Environment.getExtemalStorageState() 获取SDcard的状态
+        //Environment.MEDIA_MOUNTED 手机装有SDCard,并且可以进行读写
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                ||!Environment.isExternalStorageRemovable()){
+            cachePath=context.getExternalCacheDir().getPath();
+        }else{
+            cachePath=context.getCacheDir().getPath();
+        }
+        return cachePath;
+    }
+
+    //一些重要性不高的file cache或者大文件放到这里
+    public static String getFileDir(Context context){
+        String filePath;
+        //Environment.getExtemalStorageState() 获取SDcard的状态
+        //Environment.MEDIA_MOUNTED 手机装有SDCard,并且可以进行读写
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                ||!Environment.isExternalStorageRemovable()){
+            filePath=context.getExternalCacheDir().getPath();
+        }else{
+            filePath=context.getCacheDir().getPath();
+        }
+        return filePath;
+    }
+//    public static String GetResult(String url, List<org.apache.http.NameValuePair> formparams) {
+//
+//        HttpResponse response2;// 创建一个可关闭的response对象
+//        HttpClient client = new DefaultHttpClient();// 创建一个http客户端，用于发送http请求
+//        HttpPost post = new HttpPost(url);// 创建一个post请求对象
+//        String result = "";
+//        try {
+//            // 将参数放入post
+//            post.setEntity(new UrlEncodedFormEntity(formparams,"utf-8"));
+//            response2 = client.execute(post);// 执行请求
+//
+//            if (response2.getStatusLine().getStatusCode() != 200) {
+//                result = Const.methodString;
+//                return result;
+//            }
+//            HttpEntity entity2 = response2.getEntity();
+//            result = EntityUtils.toString(entity2);// 打印出entity2的内容
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 }

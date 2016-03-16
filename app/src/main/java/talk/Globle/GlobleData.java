@@ -39,6 +39,9 @@ public class GlobleData {
     //获得小组信息 的URL
     public static final String GET_GROUP_INFO=groupRequestUrl +"group/getGroupInfo.do";
 
+    public static String SD_CACHE;
+    public static String SD_FILE;
+
 
     //视频数据加载显示每页个数
     public static final int pageCount = 10;

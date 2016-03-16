@@ -8,6 +8,8 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 import cn.jpush.android.api.JPushInterface;
+import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.datebase.ClickTaskDB;
 import talk.datebase.ClickWorkDB;
 import talk.datebase.GroupDB;
@@ -61,6 +63,8 @@ public class TalkApplication extends Application {
 
         map.put("my", new User(getSpUtil().getUserName(),getSpUtil().getUsreNickName(),getSpUtil().getUserIcon()));
 
+        GlobleData.SD_CACHE= GlobleMethod.getCacheDir(this);
+        GlobleData.SD_FILE= GlobleMethod.getFileDir(this);
     }
 
     public NotificationManager getNotificationManager() {

@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 
 import com.android.volley.Request;
 import com.example.heshixiyang.ovetalk.R;
@@ -110,7 +109,7 @@ public class GroupChatting extends BasicFragment {
             mEmoji=(ImageView) view.findViewById(R.id.btn_emoji);
 
             mContainer=(LinearLayout)view.findViewById(R.id.ll_btn_container);
-            formparams = new ArrayList<NameValuePair>();
+            formparams = new ArrayList<>();
         }
 
         //将本group的所有消息设置为已读
@@ -120,7 +119,7 @@ public class GroupChatting extends BasicFragment {
         // 获取10条聊天记录
         mData = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
         mAdapter = new ChatMessageAdapter(getActivity(), mData);
-        mListView.setAdapter((ListAdapter) mAdapter);
+        mListView.setAdapter(mAdapter);
         mListView.setSelection(mData.size() - 1);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

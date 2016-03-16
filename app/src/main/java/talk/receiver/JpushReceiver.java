@@ -21,7 +21,6 @@ import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
-import talk.datebase.UserDB;
 import talk.model.GroupChatMessage;
 import talk.model.Message;
 import talk.util.MyPreferenceManager;
@@ -40,22 +39,18 @@ public class JpushReceiver extends BroadcastReceiver {
         }
     };
     private TalkApplication mApplication;
-    private UserDB mUserDB;
     private MyPreferenceManager myPreferenceManager;
     private List<NameValuePair> formparams;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         mApplication=(TalkApplication)context.getApplicationContext();
-        mUserDB =mApplication.getUserDB();
         myPreferenceManager=mApplication.getSpUtil();
-        formparams= new ArrayList<NameValuePair>();
+        formparams= new ArrayList<>();
         Bundle bundle = intent.getExtras();
         Message message;
         String groupName;
         String msg=null;
         String groupNickName;
-
 
         if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
             if ((message=getMessage(bundle))==null){
@@ -139,7 +134,6 @@ public class JpushReceiver extends BroadcastReceiver {
              sendMessageToActivity(context, message);
         }
     }
-
     private Message getMessage(Bundle bundle){
         JSONObject object;
         Message message= null;
@@ -166,7 +160,6 @@ public class JpushReceiver extends BroadcastReceiver {
         }
         return message;
     }
-
     private void sendMessageToActivity(Context context, Message message) {
         if (GroupAll.isForeground|| Groups.isForeground) {
             Bundle bundle=new Bundle();
@@ -176,11 +169,9 @@ public class JpushReceiver extends BroadcastReceiver {
             context.sendBroadcast(msgIntent);
         }
     }
-
     private void makeAndSaveMessage(Message message, String groupName){
         makeAndSaveMessage("", message, groupName, "");
     }
-
     private  void makeAndSaveMessage(String s, Message message, String groupName, String groupNickName){
         String msg;
 
@@ -189,7 +180,6 @@ public class JpushReceiver extends BroadcastReceiver {
         }else {
             msg=message.getUserNickName()+"("+message.getUserName()+")"+ s+"："+groupNickName+"("+message.getGroupName()+")群";
         }
-
         message.setMessage(msg);
         GroupChatMessage groupChatMessage=new GroupChatMessage(
                 msg,
@@ -203,6 +193,5 @@ public class JpushReceiver extends BroadcastReceiver {
                 message.getMessageImage(),
                 message.getMessageStatu());
         mApplication.getGroupMessageDB().add(groupName, groupChatMessage);
-
     }
 }

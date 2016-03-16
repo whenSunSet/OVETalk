@@ -59,7 +59,7 @@
                         android:text="呵呵呵呵"
                         android:textColor="#000"
                         android:textSize="14sp" />
-                    <ImageView
+                    <com.android.volley.toolbox.NetworkImageView
                         android:id="@+id/img"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
