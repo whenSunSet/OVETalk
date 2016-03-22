@@ -19,20 +19,22 @@ import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
 import talk.TalkApplication;
+import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
+import talk.adapter.ViewPagerAdapter;
 import talk.model.GroupChatMessage;
 
 /**
  * Created by heshixiyang on 2016/2/3.
  */
-public class BasicFragment extends Fragment {
+public  class BasicFragment extends Fragment {
     protected TalkApplication mApplication;
     protected ViewGroup view;
     protected ArrayList mData;
     protected BaseAdapter mAdapter;
     protected ListView mListView;
     protected PtrClassicFrameLayout mPtrFrame;
-
+    protected ViewPagerAdapter myAdapter;
     protected boolean isChattingFragment=false;
 
     @Nullable
@@ -48,7 +50,11 @@ public class BasicFragment extends Fragment {
         }
         mApplication =(TalkApplication)(getActivity().getApplication());
         mListView=(ListView)view.findViewById(R.id.listView);
-
+        if (getActivity() instanceof Groups){
+            myAdapter=((Groups)getActivity()).myAdapter;
+        }else if (getActivity() instanceof GroupAll){
+            myAdapter=((GroupAll)getActivity()).myAdapter;
+        }
 
         mPtrFrame = (PtrClassicFrameLayout) view.findViewById(R.id.view_pager_ptr_frame);
         mPtrFrame.disableWhenHorizontalMove(true);
@@ -71,7 +77,6 @@ public class BasicFragment extends Fragment {
 
     public void flash(){
         mListView.setSelection(0);
-        mAdapter.notifyDataSetChanged();
         Groups.isFlash=false;
     }
     public void flash(GroupChatMessage chatMessage){}

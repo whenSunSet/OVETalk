@@ -11,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.heshixiyang.ovetalk.R;
+
 import java.util.List;
+
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.aboutGroup.GroupActivity;
@@ -47,16 +50,16 @@ public class  GroupAll extends IndicatorFragmentActivity {
     //--------------Activity是否重新Resume过
     private Boolean isResume=false;
     private Boolean isMaster=false;
-
+    public static boolean isChattingFlash=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Groups.isFlash=true;
         GroupAll.isFlash=false;
+        GroupAll.isChattingFlash=false;
 
         initView();
     }
-
     public void initView() {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
@@ -111,7 +114,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
         ((GroupChatting) (mTabs.get(0).fragment)).flash(chatMessage);
     }
 
-
     //----------------动态添加一个控件
     public void addView(){
 
@@ -125,7 +127,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         mMakeTask=new ImageView(this);
         mMakeTask.setImageResource(R.drawable.ic_launcher);
-        mMakeWork.setId(R.drawable.ic_launcher + 2);
+        mMakeTask.setId(R.drawable.ic_launcher + 2);
 
         mMakeWork=new ImageView(this);
         mMakeWork.setImageResource(R.drawable.ic_launcher);
@@ -142,14 +144,11 @@ public class  GroupAll extends IndicatorFragmentActivity {
             }
         });
 
-
         mMakeTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GroupAll.this, MakeTaskActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("group", mGroup);
-                intent.putExtra("group", mGroup);
+                intent.putExtra("groupName", mGroup.getGroupName());
                 startActivityForResult(intent,GlobleData.START_MAKE_TASK_ACTIVITY);
             }
         });
@@ -158,7 +157,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GroupAll.this, MakeHomeWorkActivity.class);
-                intent.putExtra("group",mGroup.getGroupName());
+                intent.putExtra("groupName", mGroup.getGroupName());
                 startActivityForResult(intent, GlobleData.START_MAKE_HOMEWORK_ACTIVITY);
             }
         });
@@ -173,15 +172,13 @@ public class  GroupAll extends IndicatorFragmentActivity {
         mMakeTask.setVisibility(View.GONE);
         mMakeWork.setVisibility(View.GONE);
     }
-
     @Override
     public void onPageScrollStateChanged(int state) {
         super.onPageScrollStateChanged(state);
-        if (GroupAll.isFlash){
+        if (GroupAll.isFlash||GroupAll.isChattingFlash){
             flashFragment();
         }
     }
-
     @Override
     public void onPageSelected(int position) {
         super.onPageSelected(position);
@@ -199,7 +196,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
             mMakeWork.setVisibility(View.VISIBLE);
         }
     }
-
     @Override
     protected int supplyTabs(List<TabInfo> tabs) {
         //如果是SystemGroup群
@@ -218,17 +214,17 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 , GroupWork.class));
         return 0;
     }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode==GlobleData.START_MAKE_TASK_ACTIVITY){
             ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
                     "我发布了一个任务，快来看看吧",
                     null,
-                    11,
+                    10,
                     null,
                     new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",GlobleData.DEFAULT)));
+            GroupAll.isChattingFlash=true;
+            Groups.isFlash=true;
         }else if (resultCode==GlobleData.START_MAKE_HOMEWORK_ACTIVITY){
             ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
                     "我发布了一个作业，快来看看吧",
@@ -239,25 +235,21 @@ public class  GroupAll extends IndicatorFragmentActivity {
                             data.getStringExtra("path"),
                             resultCode),
                     null);
+            GroupAll.isChattingFlash=true;
+            Groups.isFlash=true;
         }
     }
-
-    //-------------------生命周期函数，负责对 isForeground 的判断
     @Override
     protected void onResume() {
         super.onResume();
         isForeground=true;
-
         if (mApplication.getGroupDB().getGroup(mGroup.getGroupName())==null){
             finish();
             return;
         }
-
         if (isResume&& GroupAll.isFlash) {
             flashFragment();
         }
-
         isResume=true;
     }
-
 }

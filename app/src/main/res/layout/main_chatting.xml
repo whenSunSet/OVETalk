@@ -16,7 +16,7 @@
             android:id="@+id/ly_chat_bottom"
             android:layout_width="fill_parent"
             android:layout_height="55dp"
-            android:background="@drawable/icon" >
+            android:background="@color/white">
 
 
 
@@ -33,7 +33,6 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_weight="10"
-                    android:background="@drawable/icon"
                     android:singleLine="true"
                     android:textSize="18sp" />
                 <ImageView
@@ -54,7 +53,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:layout_weight="3"
-                    android:background="@drawable/icon"
                     android:text="发送"
                     android:visibility="gone" />
 
@@ -67,7 +65,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:visibility="gone"
-            android:weightSum="4">
+            android:weightSum="3">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -137,33 +135,6 @@
                     android:layout_height="64dp" >
                     <ImageView
                         android:id="@+id/btn_emoji"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_centerInParent="true"
-                        android:clickable="true"
-                        android:onClick="onClick"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/icon" />
-                </RelativeLayout>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="表情"
-                    android:textColor="#727171" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical" >
-                <RelativeLayout
-                    android:layout_width="64dp"
-                    android:layout_height="64dp" >
-                    <ImageView
-                        android:id="@+id/btn_video"
                         android:layout_width="56dp"
                         android:layout_height="56dp"
                         android:layout_centerInParent="true"

@@ -29,6 +29,14 @@ public class Message implements Parcelable {
 
     public Message() {}
 
+    public Message(String userName, String groupName, String date, String userIcon, String userNickName) {
+        this.userName = userName;
+        this.groupName = groupName;
+        this.date = date;
+        this.userIcon = userIcon;
+        this.userNickName = userNickName;
+    }
+
     public Message(String message, String groupName, String userIcon, String date, String userNickName, String userName, int messageStatu, String messageImage) {
         this.message = message;
         this.groupName = groupName;

@@ -56,7 +56,7 @@ public class WorkDB {
                         + DATE + ","
                         + PATH + ","
                         + MASTER + ","
-                        + CLICK_NUMBER + ") values(?,?,?,?,?,?)",
+                        + CLICK_NUMBER + ") values(?,?,?,?,?,?,?,?)",
                 new Object[]{
                         work.getTaskId(),
                         work.getGroupName(),
@@ -176,7 +176,7 @@ public class WorkDB {
     }
     public ArrayList<Work> getGroupWork(String groupName) {
         ArrayList<Work> list=new ArrayList<>();
-        Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+"where "+GROUP_NAME+"=?",new String []{groupName});
+        Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
 
         while (c.moveToNext()) {list.add(makeWork(c));}
         Collections.reverse(list);

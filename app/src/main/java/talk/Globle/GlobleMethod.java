@@ -7,10 +7,13 @@ import android.os.Environment;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
+import com.loopj.android.http.RequestParams;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +28,11 @@ import talk.datebase.JoinGroupDB;
 import talk.datebase.UserDB;
 import talk.model.JoinGroup;
 import talk.model.Message;
+import talk.model.Task;
 import talk.model.User;
+import talk.model.Work;
+import talk.util.AsyncHttpClientUtil;
+import talk.util.MyAsyncHttpResponseHandler;
 
 /**
  * Created by heshixiyang on 2016/1/22.
@@ -48,7 +55,6 @@ public class GlobleMethod {
 
         userDB.add(user);
         joinGroupDB.add(joinGroup);
-
     }
 
     public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,String groupName){
@@ -118,7 +124,6 @@ public class GlobleMethod {
         }
         return list;
     }
-
     public static String savaImage(TalkApplication talkApplication, final Message message){
         final String[] userIcon = new String[1];
         final File file = new File(GlobleData.SD_CACHE+"/"+message.getUserName()+".jpg");
@@ -176,6 +181,63 @@ public class GlobleMethod {
         }
         return filePath;
     }
+
+    //判断文件是否已经被下载过
+    public static boolean isDownLoad(String path){
+        boolean isDownLoad=false;
+        if (path.matches("http")){
+            isDownLoad=false;
+        }else {
+            isDownLoad=true;
+        }
+        return isDownLoad;
+    }
+
+    public static String downLoadFile(){
+        String path=null;
+
+        return path;
+    }
+    public static String  getNowDate() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        String date=df.format(new java.util.Date());// new Date()为获取当前系统时间
+        return date;
+    }
+    public static boolean upLoadFile(Object object,String name,String url, final Context context) throws FileNotFoundException {
+        final boolean[] b=new boolean[1];
+        AsyncHttpClientUtil asyncHttpClientUtil=new AsyncHttpClientUtil();
+        RequestParams requestParams=new RequestParams();
+        MyAsyncHttpResponseHandler myAsyncHttpResponseHandler=new MyAsyncHttpResponseHandler(context);
+        if (name.equals("task")){
+            Task mTask=(Task)object;
+            File file=new File(mTask.getPath());
+            requestParams.put(GlobleData.ID_IN_GROUP, mTask.getIdInGroup());
+            requestParams.put(GlobleData.GROUP_NAME,mTask.getGroupName());
+            requestParams.put(GlobleData.TYPE, mTask.getType());
+            requestParams.put(GlobleData.TARGET, mTask.getTarget());
+            requestParams.put(GlobleData.CLICK_NUMBER, mTask.getClickNumber());
+            requestParams.put(GlobleData.DATE, mTask.getDate());
+            requestParams.put(GlobleData.FILE, file);
+
+            asyncHttpClientUtil.post(url, requestParams,myAsyncHttpResponseHandler);
+        }else if (name.equals("work")){
+            Work mWork=(Work)object;
+            File file=new File(mWork.getPath());
+
+            requestParams.put(GlobleData.GROUP_NAME, mWork.getGroupName());
+            requestParams.put(GlobleData.MASTER, mWork.getMaster());
+            requestParams.put(GlobleData.TYPE, mWork.getType());
+            requestParams.put(GlobleData.ID_IN_TASK, mWork.getIdInTask());
+            requestParams.put(GlobleData.TASK_ID,mWork.getTaskId());
+            requestParams.put(GlobleData.CLICK_NUMBER, mWork.getClickNumber());
+            requestParams.put(GlobleData.DATE, mWork.getDate());
+            requestParams.put(GlobleData.FILE, file);
+
+            asyncHttpClientUtil.post(url, requestParams,myAsyncHttpResponseHandler);
+        }
+        return myAsyncHttpResponseHandler.isSuccess();
+    }
+
 //    public static String GetResult(String url, List<org.apache.http.NameValuePair> formparams) {
 //
 //        HttpResponse response2;// 创建一个可关闭的response对象

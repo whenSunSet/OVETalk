@@ -90,7 +90,19 @@ public class TaskDB {
                         idInGroup,
                         groupName});
     }
-
+    public void update(String path,int idInGroup ,String groupName){
+        mDb.execSQL("update "
+                        + TASK_TABLE_NAME
+                        + " set "
+                        + PATH + " =?"
+                        + " where "
+                        + ID + "=? AND "
+                        + GROUP_NAME + "=?",
+                new Object[]{
+                        path,
+                        idInGroup,
+                        groupName});
+    }
     public Task getTask(String groupName,int idInGroup){
         Task task=new Task();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ ID + "=? AND " + GROUP_NAME +"=?",
@@ -129,10 +141,7 @@ public class TaskDB {
         c.close();
         return tasks;
     }
-
-
     public int getGroupTaskNum(String groupName) {
-        ArrayList<Task> tasks= new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
         int a=0;
         while (c.moveToNext()) {
@@ -144,5 +153,4 @@ public class TaskDB {
     public void delTable(String groupName) {
         mDb.execSQL("DROP TABLE " + TASK_TABLE_NAME);
     }
-
 }

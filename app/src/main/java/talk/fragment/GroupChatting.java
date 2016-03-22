@@ -1,6 +1,7 @@
 package talk.fragment;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +35,7 @@ import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.fragment.GroupAll;
+import talk.activity.fragment.Groups;
 import talk.adapter.ChatMessageAdapter;
 import talk.datebase.GroupMessageDB;
 import talk.model.Group;
@@ -47,7 +50,6 @@ import talk.util.MyResponseErrorListenerAndListener;
 import talk.util.MyRunnable;
 
 public class GroupChatting extends BasicFragment {
-
     public ImageView mMore;
     private Button mMsgSend;
     private EditText mMsgInput;
@@ -55,7 +57,7 @@ public class GroupChatting extends BasicFragment {
     private ImageView mHomeWork;
     private ImageView mPicture;
     private ImageView mEmoji;
-    private LinearLayout mContainer;
+    public LinearLayout mContainer;
 
     private String mGroupName;
     private GroupAll mActivity;
@@ -74,14 +76,10 @@ public class GroupChatting extends BasicFragment {
     //---------------------每次加载消息10个为阶梯
     private int mMessageNum=10;
     private int mMessageMax;
-    public LinearLayout getmContan() {
-        return mContainer;
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         isChattingFragment=true;
         init(inflater);
-
         initEvent();
         return view;
     }
@@ -148,7 +146,7 @@ public class GroupChatting extends BasicFragment {
                     builder.create().show();
                 }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
                     mTask= mApplication.getTaskDB().getTask(chatMessage.getGroupName(),Integer.parseInt(chatMessage.getUserIcon()));
-                    mApplication.map.put("task",mTask);
+                    mApplication.map.put("nowTask",mTask);
                     Intent intent=new Intent(getActivity(), TaskAndWorkActivity.class);
                     intent.putExtra("which", GlobleData.IS_TASK);
                     startActivity(intent);
@@ -156,7 +154,7 @@ public class GroupChatting extends BasicFragment {
                     mWork= mApplication.getWorkDB().getWork(chatMessage.getGroupName(),
                             Integer.parseInt(chatMessage.getUserIcon()),
                             Integer.parseInt(chatMessage.getUserNickName()));
-                    mApplication.map.put("work",mWork);
+                    mApplication.map.put("nowWork",mWork);
                     Intent intent=new Intent(getActivity(),TaskAndWorkActivity.class);
                     intent.putExtra("which", GlobleData.IS_WORK);
                     startActivity(intent);
@@ -189,7 +187,7 @@ public class GroupChatting extends BasicFragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MakeHomeWorkActivity.class);
-                intent.putExtra("group", mGroup.getGroupName());
+                intent.putExtra("groupName", mGroup.getGroupName());
                 startActivityForResult(intent, GlobleData.START_MAKE_HOMEWORK_ACTIVITY);
             }
         });
@@ -200,6 +198,10 @@ public class GroupChatting extends BasicFragment {
         mMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mMsgInput.getWindowToken()!=null){
+                    InputMethodManager im = (InputMethodManager) mApplication.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    im.hideSoftInputFromWindow(mMsgInput.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                }
                 if (!isVisble) {
                     mContainer.setVisibility(View.VISIBLE);
                     isVisble = true;
@@ -231,7 +233,6 @@ public class GroupChatting extends BasicFragment {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!TextUtils.isEmpty(s)) {
@@ -243,7 +244,6 @@ public class GroupChatting extends BasicFragment {
                     mMsgSend.setVisibility(View.GONE);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -257,7 +257,6 @@ public class GroupChatting extends BasicFragment {
         });
     }
 
-    //-----------------------添加自己的信息 并开启线程发送信息---------------------------
     public void addMessage(String message,String messageImage,int statu,Work work,Task task) {
         GroupChatMessage chatMessage =makeChatMessage(message,messageImage,statu,null);
         if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
@@ -294,27 +293,31 @@ public class GroupChatting extends BasicFragment {
         return chatMessage;
     }
     //刷新chat界面
+//    public void flash(GroupChatMessage chatMessage) {
+//        ArrayList<GroupChatMessage> list;
+//        if (chatMessage==null){
+//            list=null;
+//        }else {
+//            mData.add(chatMessage);
+//            list=mData;
+//        }
+//        flash(list,myAdapter);
+//    }
+
+    @Override
     public void flash(GroupChatMessage chatMessage) {
-        ArrayList<GroupChatMessage> list;
         if (chatMessage==null){
-            list=null;
+            mData=mGroupMessageDB.find(mGroup.getGroupName(), 1,mMessageNum);
+            mAdapter=new ChatMessageAdapter(mApplication,mData);
+            mListView.setAdapter(mAdapter);
         }else {
             mData.add(chatMessage);
-            list=mData;
-        }
-        flash(list);
-    }
-    public void flash(ArrayList<GroupChatMessage> list) {
-        if (list.isEmpty()){
-            mData=mGroupMessageDB.find(mGroup.getGroupName(), 1, mGroupMessageDB.getUnreadedMsgsCountByGroupId(mGroup.getGroupName()));
-        }else {
-            mData=list;
+            mAdapter.notifyDataSetChanged();
         }
         mGroupMessageDB.updateReaded(mGroup.getGroupName());
-        mAdapter.notifyDataSetChanged();
         mListView.setSelection(mData.size() - 1);
-
-        GroupAll.isFlash=false;
+        GroupAll.isChattingFlash=false;
+        Groups.isFlash=true;
     }
     private void sendMessage(String url, String message, String isImage, int statu, Work work, Task task){
             JSONObject jsonObject = new JSONObject();
@@ -368,13 +371,15 @@ public class GroupChatting extends BasicFragment {
     @Override
     protected void upData() {
         super.upData();
+        if (mMessageMax==0){
+            mMessageMax=mGroupMessageDB.getMessageNum(mGroup.getGroupName());
+        }
         mMessageNum+=10;
         if (mMessageNum>=mMessageMax){
             mMessageNum=mMessageMax;
             DialogUtil.showToast(getActivity(), "消息已经显示完毕");
         }
-        ArrayList<GroupChatMessage> list = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
-        flash(list);
+        flash(null);
     }
     private void openThread(String message, String isImage, int statu, Work work, Task task){
         formparams.clear();

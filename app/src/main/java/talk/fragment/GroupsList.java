@@ -19,7 +19,10 @@ public class GroupsList extends BasicFragment{
 
     public void init(LayoutInflater inflater) {
         super.init(inflater);
+        makeListView();
+    }
 
+    private void makeListView(){
         mData = mApplication.getGroupDB().getGroups();
         mAdapter = new GroupListAdapter(mApplication, R.layout.group_list_adapter, mData);
         mListView.setAdapter(mAdapter);
@@ -32,9 +35,8 @@ public class GroupsList extends BasicFragment{
     }
 
     public void flash(){
-        mData = mApplication.getGroupDB().getGroups();
+        makeListView();
         super.flash();
     }
-
 
 }

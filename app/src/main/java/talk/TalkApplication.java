@@ -41,7 +41,6 @@ public class TalkApplication extends Application {
         JPushInterface.init(this);     		// 初始化 JPush
 
         initData();
-
     }
 
     private void initData() {

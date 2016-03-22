@@ -12,14 +12,18 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import com.example.heshixiyang.ovetalk.R;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
@@ -32,7 +36,6 @@ import talk.util.MyHandler;
 import talk.util.MyRunnable;
 
 public class MakeHomeWorkActivity extends BasicActivity {
-
     private Button mLastStep;
     private Button mNextStep;
     private int nowStep=GlobleData.STEP_ONE;
@@ -51,7 +54,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private Animation mAnimationPullBack;//收缩listView
     private List<NameValuePair> formparams;
     private boolean isListViewVisible=false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,12 +73,11 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mAnimationExpand.setDuration(500);
         mAnimationPullBack.setDuration(500);
         mAdapter=new ArrayAdapter<>(mApplication,R.layout.text,mDate);
-        mAll=(LinearLayout)findViewById(R.id.all);
+        mAll=(LinearLayout)findViewById(R.id.al);
         mLastStep=(Button)findViewById(R.id.lastStep);
         mNextStep=(Button)findViewById(R.id.nextStep);
         layoutParams=new LinearLayout.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT,GridLayout.LayoutParams.WRAP_CONTENT);
         initStep();
-
         mLastStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,18 +105,23 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         mWork.setMaster(mApplication.getSpUtil().getUserName());
                         mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupName(), mWork.getTaskId()) + 1);
                         mWork.setClickNumber(0);
-                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
                         simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
                         mWork.setDate(simpleDateFormat.format(new Date()));
 
                         mApplication.getWorkDB().add(mWork);
-                        GroupAll.isFlash=true;
-                        sendWork();
+                        GroupAll.isFlash = true;
 
-                        Intent intent=new Intent();
-                        intent.putExtra("taskId",mWork.getTaskId());
-                        intent.putExtra("idInTask",mWork.getIdInTask());
-                        intent.putExtra("path",mWork.getPath());
+//                        try {
+//                            GlobleMethod.upLoadFile(mWork,"work","",mApplication);
+//                        } catch (FileNotFoundException e) {
+//                            e.printStackTrace();
+//                        }
+
+                        Intent intent = new Intent();
+                        intent.putExtra("taskId", mWork.getTaskId());
+                        intent.putExtra("idInTask", mWork.getIdInTask());
+                        intent.putExtra("path", mWork.getPath());
                         setResult(GlobleData.START_MAKE_HOMEWORK_ACTIVITY, intent);
                         finish();
                         break;
@@ -129,7 +135,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private void initStep(){
         //stepOne
         mItem=new ListView(mApplication);
-        mItem.setId(R.id.all + 2);
+        mItem.setId(R.id.all + 12);
         mItem.setAdapter(mAdapter);
         mItem.setVisibility(View.GONE);
         mItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -156,10 +162,8 @@ public class MakeHomeWorkActivity extends BasicActivity {
                 isListViewVisible = false;
             }
         });
-
-
         mChooseType =new Button(mApplication);
-        mChooseType.setId(R.id.all + 1);
+        mChooseType.setId(R.id.all + 11);
         mChooseType.setText("选择发布文件类型：文档");
         mChooseType.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,13 +184,14 @@ public class MakeHomeWorkActivity extends BasicActivity {
 
         //stepTwo
         mChooseTask=new Button(mApplication);
-        mChooseType.setId(R.id.all + 2);
-        mChooseType.setText("请选择任务");
+        mChooseTask.setId(R.id.all + 13);
+        mChooseTask.setText("请选择任务");
         mChooseTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(MakeHomeWorkActivity.this, ListViewActivity.class);
                 intent.putExtra("which",GlobleData.GROUP_TASK_LIST);
+                intent.putExtra("groupName",mWork.getGroupName());
                 startActivityForResult(intent,GlobleData.CHOOSE_TASK);
             }
         });
@@ -194,30 +199,18 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private void stepOne(){
         nowStep=GlobleData.STEP_ONE;
 
+        mChooseType.setVisibility(View.VISIBLE);
         mAll.addView(mChooseType, layoutParams);
         mAll.addView(mItem, layoutParams);
 
     }
-
     private void stepTwo(){
         nowStep=GlobleData.STEP_TWO;
 
         mAll.removeView(mChooseType);
         mAll.removeView(mItem);
-        mAll.addView(mChooseTask,layoutParams);
+        mAll.addView(mChooseTask, layoutParams);
 
-    }
-
-    private void sendWork(){
-        formparams.clear();
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mWork.getGroupName()));
-        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
-        formparams.add(new BasicNameValuePair(GlobleData.MASTER, mWork.getMaster()));
-        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));
-        formparams.add(new BasicNameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
-        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
-        formparams.add(new BasicNameValuePair(GlobleData.DATE, mWork.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
@@ -231,6 +224,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
                 break;
         }
     }
+
     MyHandler handler=new MyHandler(MakeHomeWorkActivity.this) {
         @Override
         public void handleMessage(Message msg) {
@@ -242,5 +236,15 @@ public class MakeHomeWorkActivity extends BasicActivity {
             }
         }
     };
-
+    private void sendWork(){
+        formparams.clear();
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mWork.getGroupName()));
+        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
+        formparams.add(new BasicNameValuePair(GlobleData.MASTER, mWork.getMaster()));
+        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));
+        formparams.add(new BasicNameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
+        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
+        formparams.add(new BasicNameValuePair(GlobleData.DATE, mWork.getDate()));
+        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
+    }
 }

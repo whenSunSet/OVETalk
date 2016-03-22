@@ -55,7 +55,7 @@ public class ClickWorkDB {
                         + TASK_ID + ","
                         + DATE + ","
                         + WORK_ID + ","
-                        + USER_ID + ") values(?,?,?,?)",
+                        + USER_ID + ") values(?,?,?,?,?)",
                 new Object[]{
                         clickWork.getGroupName(),
                         clickWork.getTaskId(),
@@ -78,7 +78,7 @@ public class ClickWorkDB {
 
 
     public ClickWork getClick(String groupName,String userId,int taskId,int workId){
-        Cursor c=mDb.rawQuery("select from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ WORK_ID + "=? AND" + GROUP_NAME + "=? AND"+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ WORK_ID + "=? AND " + GROUP_NAME + "=? AND "+TASK_ID + "=?",
                 new String []{userId,String.valueOf(workId),groupName,String.valueOf(taskId)});
         ClickWork clickWork=null;
         if (c.moveToFirst()){
@@ -91,7 +91,7 @@ public class ClickWorkDB {
 
     public ArrayList<ClickWork> getClicks(String groupName,int taskId,int workId){
         ArrayList<ClickWork> list=new ArrayList<>();
-        Cursor c=mDb.rawQuery("select from " + CLICK_WORK_TABLE_NAME + " where " + WORK_ID + "=? AND" + GROUP_NAME + "=? AND"+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + WORK_ID + "=? AND " + GROUP_NAME + "=? AND "+TASK_ID + "=?",
                 new String []{String.valueOf(workId),groupName,String.valueOf(taskId)});
         while (c.moveToFirst()){
             list.add(makeClickWork(c));

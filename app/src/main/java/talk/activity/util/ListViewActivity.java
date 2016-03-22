@@ -1,9 +1,8 @@
 package talk.activity.util;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import com.example.heshixiyang.ovetalk.R;
 import talk.Globle.GlobleData;
@@ -13,7 +12,6 @@ import talk.fragment.MemberFragment;
 import talk.model.Group;
 import talk.model.Task;
 import talk.model.Work;
-
 public class ListViewActivity extends AppCompatActivity {
     public TalkApplication mApplication;
     public Group mGroup;
@@ -22,19 +20,17 @@ public class ListViewActivity extends AppCompatActivity {
     public Task mTask;
     public Work mWork;
     private Fragment mFragment;
-    private FragmentManager mFragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_view);
-        mFragmentManager=getSupportFragmentManager();
+        fragmentTransaction=getSupportFragmentManager().beginTransaction();
         mApplication=(TalkApplication)getApplication();
         mGroup=mApplication.getGroupDB().getGroup(getIntent().getStringExtra("groupName"));
         initWhich(getIntent().getIntExtra("which",GlobleData.DEFAULT));
     }
-
-
     private void initWhich(int which){
         switch (which){
             case GlobleData.GROUP_TASK_LIST:
@@ -47,18 +43,19 @@ public class ListViewActivity extends AppCompatActivity {
                 break;
             case GlobleData.TASK_CLICK_MEMBER_LIST:
                 isTaskClick=true;
-                mTask=getIntent().getParcelableExtra("task");
+                mTask=((Task)(mApplication.map.get("nowTask")));
                 mFragment=new MemberFragment();
                 break;
             case GlobleData.WORK_CLICK_MEMBER_LIST:
                 isWorkClick=true;
-                mTask=getIntent().getParcelableExtra("work");
+                mWork=((Work)(mApplication.map.get("nowWork")));
                 mFragment=new MemberFragment();
                 break;
             default:
                 break;
         }
-        mFragmentManager.beginTransaction().add(R.id.fragment_container,mFragment);
+        fragmentTransaction.replace(R.id.fragment_container, mFragment);
+        fragmentTransaction.commit();
     }
 
 

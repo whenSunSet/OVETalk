@@ -3,10 +3,12 @@ package talk.util;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
 import org.apache.http.NameValuePair;
+
 import java.util.List;
+
 import talk.Globle.GlobleData;
-import talk.Globle.GlobleMethod;
 
 /**
  * Created by asus on 2015/12/1.
@@ -28,7 +30,7 @@ public class MyRunnable implements Runnable {
     public void run() {
         Looper.prepare();
         Message msg = new Message();
-        msg.obj = GlobleMethod.GetResult(url, formparams);
+//        msg.obj = GlobleMethod.GetResult(url, formparams);
         if (msg.obj.equals("")) {
             //网络错误
             msg.what = GlobleData.NET_ERROR;

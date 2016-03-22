@@ -49,7 +49,7 @@ public class JoinGroupDB {
                         + JOIN_TABLE_NAME
                         + " (" + GROUP_NAME + ","
                         + DATE + ","
-                        + USER_ID + ") values(?,?,?,?)",
+                        + USER_ID + ") values(?,?,?)",
                 new Object[]{
                         joinGroup.getGroupName(),
                         joinGroup.getDate(),
@@ -64,7 +64,7 @@ public class JoinGroupDB {
 
 
     public JoinGroup getMember(String groupName,String userId){
-        Cursor c=mDb.rawQuery("select from " + JOIN_TABLE_NAME + " where "+ USER_ID + "=? AND " + GROUP_NAME +"=?",
+        Cursor c=mDb.rawQuery("select * from " + JOIN_TABLE_NAME + " where "+ USER_ID + "=? AND " + GROUP_NAME +"=?",
                 new String []{userId,groupName});
         JoinGroup joinGroup=new JoinGroup();
         if (c.moveToFirst()){
@@ -72,14 +72,17 @@ public class JoinGroupDB {
             joinGroup.setMemberId(c.getString(c.getColumnIndex(USER_ID)));
             joinGroup.setDate(c.getString(c.getColumnIndex(DATE)));
 
+            c.close();
+            return joinGroup;
+        }else{
+            c.close();
+            return null;
         }
 
-        c.close();
-        return joinGroup;
     }
 
     public ArrayList<String> getMembersName(String groupName){
-        Cursor c=mDb.rawQuery("select from " + JOIN_TABLE_NAME + " where "+ GROUP_NAME +"=?",
+        Cursor c=mDb.rawQuery("select "+USER_ID+" from " + JOIN_TABLE_NAME + " where "+ GROUP_NAME +"=?",
                 new String []{groupName});
         ArrayList<String> list=new ArrayList<String>();
         if (c.moveToFirst()){

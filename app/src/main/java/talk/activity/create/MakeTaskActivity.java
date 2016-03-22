@@ -15,12 +15,16 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import com.example.heshixiyang.ovetalk.R;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
@@ -31,12 +35,6 @@ import talk.util.DialogUtil;
 import talk.util.MyRunnable;
 
 public class MakeTaskActivity extends BasicActivity {
-    Handler handler=new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
     private Task mTask;
     private TalkApplication mApplication;
     private String[] mDate;
@@ -127,7 +125,12 @@ public class MakeTaskActivity extends BasicActivity {
 
                             mApplication.getTaskDB().add(mTask);
                             GroupAll.isFlash=true;
-                            sendMessage();
+
+//                            try {
+//                                GlobleMethod.upLoadFile(mTask,"task","",mApplication);
+//                            } catch (FileNotFoundException e) {
+//                                e.printStackTrace();
+//                            }
 
                             Intent intent=new Intent();
                             intent.putExtra("idInGroup",mTask.getIdInGroup());
@@ -175,7 +178,6 @@ public class MakeTaskActivity extends BasicActivity {
             }
         });
 
-
         mChoose=new Button(mApplication);
         mChoose.setId(R.id.all + 1);
         mChoose.setText("选择发布文件类型：文档");
@@ -198,14 +200,14 @@ public class MakeTaskActivity extends BasicActivity {
 
         //stepTwo
         mName=new EditText(mApplication);
-        mName.setBackgroundColor(R.color.titlebar2);
+        mName.setBackgroundColor(getResources().getColor(R.color.titlebar2));
         mName.setMinLines(1);
         mName.setHint("请输入任务名字");
         mName.setId(R.id.all+3);
 
         //stepThree
         mConent=new EditText(mApplication);
-        mConent.setBackgroundColor(R.color.black);
+        mConent.setBackgroundColor(getResources().getColor(R.color.black));
         mName.setMinLines(1);
         mConent.setHint("请输入任务的要求和目标");
         mConent.setId(R.id.all + 4);
@@ -233,17 +235,6 @@ public class MakeTaskActivity extends BasicActivity {
         mAll.addView(mConent,layoutParams);
     }
 
-    private void sendMessage(){
-        formparams.clear();
-        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroupName));
-        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
-        formparams.add(new BasicNameValuePair(GlobleData.TARGET, mTask.getTarget()));
-        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
-        formparams.add(new BasicNameValuePair(GlobleData.DATE, mTask.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
             case 2:
@@ -254,4 +245,21 @@ public class MakeTaskActivity extends BasicActivity {
         }
     }
 
+
+    private void sendMessage(){
+        formparams.clear();
+        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroupName));
+        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
+        formparams.add(new BasicNameValuePair(GlobleData.TARGET, mTask.getTarget()));
+        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
+        formparams.add(new BasicNameValuePair(GlobleData.DATE, mTask.getDate()));
+        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
+    }
+    Handler handler=new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
 }

@@ -10,17 +10,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.example.heshixiyang.ovetalk.R;
-
 import java.util.List;
-
 import talk.Globle.GlobleData;
 import talk.model.GroupChatMessage;
-
 
 public class ChatMessageAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;

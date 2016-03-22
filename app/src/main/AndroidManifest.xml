@@ -15,6 +15,7 @@
 
     <!-- Required -->
     <uses-permission android:name="com.example.heshixiyang.ovetalk.permission.JPUSH_MESSAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>

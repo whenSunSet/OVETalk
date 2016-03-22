@@ -74,7 +74,7 @@ public class ClickTaskDB {
 
 
     public ClickTask getClick(String groupName,String userId,int taskId){
-        Cursor c=mDb.rawQuery("select from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_NAME + "=? AND"+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_NAME + "=? AND"+TASK_ID + "=?",
                 new String []{userId,groupName,String.valueOf(taskId)});
         ClickTask clickTask=null;
         if (c.moveToFirst()){
@@ -87,7 +87,7 @@ public class ClickTaskDB {
 
     public ArrayList<ClickTask> getClicks(String groupName,int taskId){
         ArrayList<ClickTask> list=new ArrayList<>();
-        Cursor c=mDb.rawQuery("select from " + CLICK_TASK_TABLE_NAME+ " where " + GROUP_NAME + "=? AND"+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME+ " where " + GROUP_NAME + "=? AND "+TASK_ID + "=?",
                 new String []{groupName,String.valueOf(taskId)});
         while (c.moveToFirst()){
             list.add(makeClickTask(c));

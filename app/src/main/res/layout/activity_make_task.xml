@@ -6,29 +6,24 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingBottom="@dimen/activity_vertical_margin"
-              android:id="@+id/all"
+                android:id="@+id/all"
                 tools:context="talk.activity.create.MakeTaskActivity"
-              android:orientation="vertical">
+                android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/lastStep"
-        android:text="lastStep"
-        />
-
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/lastStep"
+            android:text="lastStep"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/nextStep"
             android:layout_alignParentRight="true"
-            android:text="nextStep"
-            />
+            android:text="nextStep"/>
     </RelativeLayout>
-
 </LinearLayout>

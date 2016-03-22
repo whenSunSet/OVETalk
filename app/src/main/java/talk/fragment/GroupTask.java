@@ -14,6 +14,7 @@ import org.apache.http.NameValuePair;
 
 import java.util.List;
 
+import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.activity.util.ListViewActivity;
@@ -45,11 +46,9 @@ public class GroupTask extends BasicFragment{
         init(inflater);
         return view;
     }
-    protected void init(LayoutInflater inflater) {
+    protected void init(final LayoutInflater inflater) {
         super.init(inflater);
-        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
-        mAdapter=new TaskAdapter(mApplication,R.layout.task_item,mData);
-        mListView.setAdapter(mAdapter);
+        makeListView();
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -57,12 +56,19 @@ public class GroupTask extends BasicFragment{
                 if (whichActivity==1){
                     mApplication.map.put("nowTask", task);
                     Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
+                    intent.putExtra("which", GlobleData.IS_TASK);
                     getActivity().startActivity(intent);
                 }else if (whichActivity==2){
                     ((ListViewActivity)getActivity()).finish(task.getGroupName(),task.getIdInGroup());
                 }
             }
         });
+    }
+
+    private void makeListView(){
+        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
+        mAdapter=new TaskAdapter(mApplication,R.layout.task_item,mData);
+        mListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -75,7 +81,7 @@ public class GroupTask extends BasicFragment{
 
     @Override
     public void flash() {
-        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
+        makeListView();
         super.flash();
     }
 

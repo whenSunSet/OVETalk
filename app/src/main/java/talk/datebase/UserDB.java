@@ -50,7 +50,7 @@ public class UserDB {
                         + USER_TABLE_NAME
                         + " (" + USER_ICON + ","
                         + USER_NICK_NAME + ","
-                        + USER_ID + ") values(?,?,?,?)",
+                        + USER_ID + ") values(?,?,?)",
                 new Object[]{
                         user.getUserIcon(),
                         user.getUserNickName(),
@@ -64,7 +64,7 @@ public class UserDB {
     }
 
     public User getMember(String userId){
-        Cursor c=mDb.rawQuery("select from " +USER_TABLE_NAME+ " where " + USER_ID+ "=?",
+        Cursor c=mDb.rawQuery("select * from " +USER_TABLE_NAME+ " where " + USER_ID+ "=?",
                 new String[]{userId});
         User user =null;
         if (c.moveToFirst()){

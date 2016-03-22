@@ -89,6 +89,7 @@ public class GlobleData {
     public static final String TYPE="type";
     public static final String CLICK_NUMBER="clickNumber";
     public static final String TARGET="target";
+    public static final String FILE="file";
 
     public static final int GROUP_TASK_LIST=1;
     public static final int GROUP_MEMBER_LIST=2;

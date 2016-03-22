@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.example.heshixiyang.ovetalk.R;
@@ -22,6 +21,8 @@ import java.util.List;
 
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
+import talk.activity.fragment.GroupAll;
+import talk.activity.fragment.Groups;
 import talk.adapter.ViewPagerAdapter;
 import talk.fragment.BasicFragment;
 import talk.fragment.GroupChatting;
@@ -105,14 +106,24 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_UP) {
-
+        View isEdit = getCurrentFocus();
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             // 获得当前得到焦点的View，一般情况下就是EditText（特殊情况就是轨迹求或者实体案件会移动焦点）
-            View isEdit = getCurrentFocus();
-            View isImage = ((GroupChatting) (mTabs.get(0).fragment)).mMore;
-
-            hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,isImage,ev),isImage);
-
+            if (isEdit!=null){
+                hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,null,ev));
+            }
+        }else if (ev.getAction()==MotionEvent.ACTION_UP){
+            View isImage;
+            if (this instanceof Groups){
+                return  super.dispatchTouchEvent(ev);
+            }else{
+                isImage= ((GroupChatting) (mTabs.get(0).fragment)).mMore;
+                if (isEdit!=null){
+                    hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,null,ev));
+                }else {
+                    hideSoftInput(null,isShouldHideInput(isEdit,null,ev));
+                }
+            }
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -125,60 +136,57 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
      * @return
      */
     protected int isShouldHideInput(View isEdit,View isImage, MotionEvent event) {
-        int[] i = { 0, 0 };
-        isImage.getLocationInWindow(i);
-        int iLeft = i[0], iTop = i[1], iBottom = iTop + isImage.getHeight(), iRight = iLeft + isImage.getWidth();
-
-        if (isEdit != null&&isEdit instanceof EditText){
-            //如果Edit存在
+        if (event.getAction()==MotionEvent.ACTION_DOWN){
             int[] e = { 0, 0 };
             isEdit.getLocationInWindow(e);
             int eLeft = e[0], eTop = e[1], eBottom = eTop + isEdit.getHeight(), eRight = eLeft + isEdit.getWidth();
+
             if((event.getX() > eLeft && event.getX() < eRight
-                    && event.getY() > eTop && event.getY() < eBottom)||
-                    (event.getX() > iLeft && event.getX() < iRight
-                            && event.getY() > iTop && event.getY() < iBottom)) {
-                //如果点击了more或者Edit
-                return 0;
+                    && event.getY() > eTop && event.getY() < eBottom)) {
+                //点击了Edit
+                return 2;
             }else {
                 //点击了其他地方
-                return 1;
+                return 3;
             }
-        }else{
-            //如果Edit不存在
+        }else if (event.getAction()==MotionEvent.ACTION_UP){
+            int[] i = { 0, 0 };
+            isImage.getLocationInWindow(i);
+            int iLeft = i[0], iTop = i[1], iBottom = iTop + isImage.getHeight(), iRight = iLeft + isImage.getWidth();
             if(event.getX() > iLeft && event.getX() < iRight
                     && event.getY() > iTop && event.getY() < iBottom){
                 //点击了more
                 return 0;
             }else {
-                return 3;
+                return 1;
             }
         }
+        return -999;
     }
-
     /**
      * 多种隐藏软件盘方法的其中一种
      *
      * @param token
      */
-    protected void hideSoftInput(IBinder token,int statu,View image) {
-        if (token != null&&statu==1) {
-            InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            im.hideSoftInputFromWindow(token,
-                    InputMethodManager.HIDE_NOT_ALWAYS);
-            image.setVisibility(View.GONE);
-
-        }else if (statu==3){
-            image.setVisibility(View.GONE);
+    protected void hideSoftInput(IBinder token,int statu) {
+        switch (statu){
+            case 1:
+                ((GroupChatting) (mTabs.get(0).fragment)).mContainer.setVisibility(View.GONE);
+                break;
+            case 3:
+                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                im.hideSoftInputFromWindow(token,InputMethodManager.HIDE_NOT_ALWAYS);
+                break;
+            default:
+                break;
         }
-
         return;
     }
 
     protected abstract int supplyTabs(List<TabInfo> tabs);
 
     protected void flashFragment(){
-        if (mCurrentTab==0){
+        if (mCurrentTab==0&&(this instanceof GroupAll)){
             ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash(null);
         }else {
             ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash();

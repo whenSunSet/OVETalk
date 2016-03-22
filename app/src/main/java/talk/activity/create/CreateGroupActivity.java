@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
@@ -40,14 +39,12 @@ public class CreateGroupActivity extends BasicActivity{
     private String groupName=null;
     private String groupNickName=null;
     private List<NameValuePair> formparams ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
         init();
     }
-
     private void init(){
         create=(Button)findViewById(R.id.create);
         mApplication=(TalkApplication)getApplication();
@@ -61,7 +58,10 @@ public class CreateGroupActivity extends BasicActivity{
                     DialogUtil.showToast(CreateGroupActivity.this, "请输入群组的名字");
                 } else {
 //                    makeF();
-                    sendMessage("");
+//                    sendMessage("");
+                    groupName=groupNickName+1;
+                    Groups.isFlash=true;
+                    addGroup();
                 }
             }
         });
@@ -73,11 +73,11 @@ public class CreateGroupActivity extends BasicActivity{
                 Request.Method.POST,
                 url,
                 jsonObject,
-                new MyResponseErrorListenerAndListener(CreateGroupActivity.this,GlobleData.DEFAULT),
                 makeMap(),
-                new Response.Listener<JSONObject>() {
+                new MyResponseErrorListenerAndListener(mApplication,GlobleData.DEFAULT){
                     @Override
                     public void onResponse(JSONObject jsonObject) {
+                        super.onResponse(jsonObject);
                         try {
                             groupName = jsonObject.getString(GlobleData.GROUP_NAME);
                         } catch (JSONException e) {
@@ -102,12 +102,21 @@ public class CreateGroupActivity extends BasicActivity{
         Group group=new Group(groupName,groupNickName,"",mApplication.getSpUtil().getUserName(),0,0);
         mApplication.getGroupDB().addGroup(group);
         GlobleMethod.setTag(mApplication);
+        GlobleMethod.addUserToGroup(mApplication
+                ,new talk.model.Message(
+                mApplication.getSpUtil().getUserName()
+                ,groupName
+                ,GlobleMethod.getNowDate()
+                , mApplication.getSpUtil().getUserIcon()
+                ,mApplication.getSpUtil().getUsreNickName()));
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //从当前Activity回到GroupAll的时候将其设置为需要刷新
         Groups.isFlash=true;
+
     }
     private void makeF(){
         formparams = new ArrayList<>();

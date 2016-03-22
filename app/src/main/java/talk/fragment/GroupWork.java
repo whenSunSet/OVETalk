@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.util.List;
 
@@ -20,9 +19,8 @@ import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.adapter.WorkAdapter;
 import talk.model.Group;
-import talk.model.Task;
+import talk.model.Work;
 import talk.util.MyHandler;
-import talk.util.MyRunnable;
 
 /**
  * Created by asus on 2015/11/15.
@@ -37,35 +35,38 @@ public class GroupWork extends BasicFragment{
 
         return view;
     }
-    protected void init(LayoutInflater inflater) {
+    protected void init(final LayoutInflater inflater) {
         super.init(inflater);
         mGroup=((GroupAll)getActivity()).mGroup;
-
+        makeListView();
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Work work = (Work) (mListView.getItemAtPosition(position));
+                mApplication.map.put("nowWork", work);
+                Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
+                intent.putExtra("which", GlobleData.IS_WORK);
+                getActivity().startActivity(intent);
+            }
+        });
+    }
+    private void makeListView(){
         mData= mApplication.getWorkDB().getGroupWork(mGroup.getGroupName());
         mAdapter=new WorkAdapter(mApplication, R.layout.work_item,mData);
         mListView.setAdapter(mAdapter);
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task = (Task) (mListView.getItemAtPosition(position));
-                mApplication.map.put("nowTask", task);
-                Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
-                getActivity().startActivity(intent);
-            }
-        });
     }
 
     @Override
     protected void upData() {
         super.upData();
-        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupName()));
-        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
+//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupName()));
+//        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }
 
     @Override
     public void flash() {
-        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
+        makeListView();
         super.flash();
     }
     MyHandler handler=new MyHandler(getActivity()){

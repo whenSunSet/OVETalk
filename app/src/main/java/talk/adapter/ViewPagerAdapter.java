@@ -3,7 +3,7 @@ package talk.adapter;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import talk.model.TabInfo;
 /**
  * Created by heshixiyang on 2016/1/24.
  */
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         ArrayList<TabInfo> tabs;
         Context context;
     
