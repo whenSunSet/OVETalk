@@ -9,27 +9,39 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.example.heshixiyang.ovetalk.R;
-import java.util.List;
-import talk.Globle.GlobleData;
-import talk.model.GroupChatMessage;
 
-public class ChatMessageAdapter extends BaseAdapter {
+import java.util.List;
+
+import talk.Globle.GlobleData;
+import talk.TalkApplication;
+import talk.model.GroupChatMessage;
+import talk.model.User;
+
+public class ChatMessageAdapter extends BaseAdapter{
 	private LayoutInflater mInflater;
 	private List<GroupChatMessage> mDatas;
-	private Context mContext;
-	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas) {
+	private TalkApplication mApplication;
+	private AdapterClickLisener mAdapterClickLisener;
+	private User user;
+	private ListView mListView;
+
+	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas,AdapterClickLisener mAdapterClickLisener,ListView listView) {
 		mInflater = LayoutInflater.from(context);
 		mDatas = datas;
-		mContext=context;
-    }
+		mApplication =(TalkApplication)context;
+		mListView=listView;
+		this.mAdapterClickLisener=mAdapterClickLisener;
+	}
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final GroupChatMessage chatMessage = mDatas.get(position);
+		GroupChatMessage chatMessage = mDatas.get(position);
 		ViewHolder viewHolder ;
 
 		if (convertView == null) {
@@ -76,13 +88,13 @@ public class ChatMessageAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-
-		setView(viewHolder,chatMessage);
+		user= mApplication.getUserDB().getMember(chatMessage.getUserName());
+		setView(viewHolder,chatMessage,position);
 		return convertView;
 	}
-
-	public void setView(ViewHolder viewHolder,GroupChatMessage chatMessage){
+	public void setView(ViewHolder viewHolder,GroupChatMessage chatMessage, final int position){
 		int messageStatu=chatMessage.getMessageStatu();
+
 		// 初始化View状态
 		if (viewHolder.isFrom){
 			viewHolder.disagree.setVisibility(View.GONE);
@@ -91,16 +103,16 @@ public class ChatMessageAdapter extends BaseAdapter {
 		viewHolder.img.setVisibility(View.GONE);
 		viewHolder.createDate.setText(chatMessage.getDateStr());
 
-		if (chatMessage.getUserIcon().matches("http")){
+		if (user.getUserIcon().matches("http")){
 			//没有获取成功的userIcon
 			viewHolder.userIcon.setImageResource(R.drawable.icon);
 		}else {
-			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getUserIcon()));
+			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(user.getUserIcon()));
 		}
 
 		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_PUT_HOMEWORK 只能在普通群组里使用
 		if (messageStatu<=3||messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
-			viewHolder.nickname.setText(chatMessage.getUserNickName());
+			viewHolder.nickname.setText(user.getUserNickName());
 		}else {
 			//其他的消息只能在system里使用
 			viewHolder.nickname.setText("OVEsystem");
@@ -116,19 +128,36 @@ public class ChatMessageAdapter extends BaseAdapter {
 			if (messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
 				//如果是 任务或者作品 将附上一张图
 				setImage(viewHolder,chatMessage);
+				viewHolder.img.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mAdapterClickLisener.onClick((GroupChatMessage)getItem(position));
+					}
+				});
 			}else if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
 				//如果是请求加入群里 则显示两个按钮
 				viewHolder.agree.setVisibility(View.VISIBLE);
 				viewHolder.disagree.setVisibility(View.VISIBLE);
+				viewHolder.agree.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mAdapterClickLisener.onClick((GroupChatMessage)getItem(position));
+					}
+				});
+				viewHolder.disagree.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mAdapterClickLisener.onClick((GroupChatMessage)getItem(position));
+					}
+				});
 			}
 		}
 	}
-
 	private void setImage(ViewHolder viewHolder,GroupChatMessage chatMessage){
 		viewHolder.img.setVisibility(View.VISIBLE);
 		viewHolder.img.setDefaultImageResId(R.drawable.icon);
 		viewHolder.img.setErrorImageResId(R.drawable.error);
-		viewHolder.img.setImageUrl(chatMessage.getMessageImage(),new ImageLoader(Volley.newRequestQueue(mContext), new ImageLoader.ImageCache() {
+		viewHolder.img.setImageUrl(chatMessage.getMessageImage(), new ImageLoader(Volley.newRequestQueue(mApplication), new ImageLoader.ImageCache() {
 			@Override
 			public Bitmap getBitmap(String s) {
 				return null;
@@ -140,6 +169,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 			}
 		}));
 	}
+
 	@Override
 	public int getCount()
 	{
@@ -147,8 +177,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position)
-	{
+	public Object getItem(int position) {
 		return mDatas.get(position);
 	}
 
@@ -163,6 +192,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 		return msg.isComing() ? 1 : 0;
 	}
 
+
 	private class ViewHolder {
 		public TextView createDate;
 		public TextView nickname;
@@ -173,5 +203,9 @@ public class ChatMessageAdapter extends BaseAdapter {
 		public boolean isFrom;
 		public ImageView userIcon;
 	}
+
+	public interface AdapterClickLisener{
+		public void onClick(GroupChatMessage groupChatMessage);
+	};
 
 }

@@ -125,5 +125,13 @@ public class GlobleData {
     public static final int DEFAULT=-999;
 
     public static int res=-999;
+
+    public static final int CHAT_ADAPTER_AGREE=0;
+    public static final int CHAT_ADAPTER_DISAGREE=1;
+    public static final int CHAT_ADAPTER_TASK_IAMGE=2;
+    public static final int CHAT_ADAPTER_WORK_IAMGE=3;
+
+    public static final int HIDE_SOFT_INPUT=0;
+    public static final int HIDE_MORE=1;
 }
 

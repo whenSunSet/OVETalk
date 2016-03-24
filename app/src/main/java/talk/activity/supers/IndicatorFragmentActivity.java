@@ -12,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.example.heshixiyang.ovetalk.R;
@@ -101,33 +103,33 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
         }
 
     }
-    //---------------------------------------------------
-
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
         View isEdit = getCurrentFocus();
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            // 获得当前得到焦点的View，一般情况下就是EditText（特殊情况就是轨迹求或者实体案件会移动焦点）
-            if (isEdit!=null){
-                hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,null,ev));
-            }
-        }else if (ev.getAction()==MotionEvent.ACTION_UP){
-            View isImage;
-            if (this instanceof Groups){
-                return  super.dispatchTouchEvent(ev);
-            }else{
-                isImage= ((GroupChatting) (mTabs.get(0).fragment)).mMore;
-                if (isEdit!=null){
-                    hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,null,ev));
-                }else {
-                    hideSoftInput(null,isShouldHideInput(isEdit,null,ev));
-                }
-            }
-        }
-        return super.dispatchTouchEvent(ev);
-    }
+        ImageView isImage;
+        Button button;
 
+        if (isEdit==null){
+            return super.dispatchTouchEvent(event);
+        }
+
+        if (this instanceof Groups){
+            if (!isInView(getViewLocation(isEdit),event)) {
+                hideSoftInput(isEdit.getWindowToken(), 3);
+            }
+            return super.dispatchTouchEvent(event);
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            button=((GroupChatting) (mTabs.get(0).fragment)).getmMsgSend();
+            hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,null,button,event));
+        }else if (event.getAction()==MotionEvent.ACTION_UP){
+            isImage= ((GroupChatting) (mTabs.get(0).fragment)).getmMore();
+            hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,isImage,null,event));
+        }
+        return super.dispatchTouchEvent(event);
+    }
     /**
      * 根据EditText所在坐标和用户点击的坐标相对比，来判断是否隐藏键盘，因为当用户点击EditText时没必要隐藏
      *
@@ -135,33 +137,46 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
      * @param event
      * @return
      */
-    protected int isShouldHideInput(View isEdit,View isImage, MotionEvent event) {
+    protected int isShouldHideInput(View isEdit,ImageView isImage,Button button,MotionEvent event) {
         if (event.getAction()==MotionEvent.ACTION_DOWN){
-            int[] e = { 0, 0 };
-            isEdit.getLocationInWindow(e);
-            int eLeft = e[0], eTop = e[1], eBottom = eTop + isEdit.getHeight(), eRight = eLeft + isEdit.getWidth();
-
-            if((event.getX() > eLeft && event.getX() < eRight
-                    && event.getY() > eTop && event.getY() < eBottom)) {
-                //点击了Edit
-                return 2;
-            }else {
-                //点击了其他地方
-                return 3;
+            int[] e=getViewLocation(isEdit);
+            int[] b=getViewLocation(button);
+            if (!(isInView(e,event)||isInView(b,event))){
+                return GlobleData.HIDE_SOFT_INPUT;
             }
         }else if (event.getAction()==MotionEvent.ACTION_UP){
-            int[] i = { 0, 0 };
-            isImage.getLocationInWindow(i);
-            int iLeft = i[0], iTop = i[1], iBottom = iTop + isImage.getHeight(), iRight = iLeft + isImage.getWidth();
-            if(event.getX() > iLeft && event.getX() < iRight
-                    && event.getY() > iTop && event.getY() < iBottom){
-                //点击了more
-                return 0;
-            }else {
-                return 1;
+            int[] i=getViewLocation(isImage);
+            if(!isInView(i,event)){
+                return GlobleData.HIDE_MORE;
             }
         }
-        return -999;
+        return GlobleData.DEFAULT;
+    }
+
+    protected int[] getViewLocation(View view){
+        //上下左右
+        int[] location={0,0,0,0};
+        int[] a={0,0};
+
+        if (view!=null){
+            view.getLocationInWindow(a);
+            location[0]=a[1];
+            location[1]=location[0]+view.getHeight();
+            location[2]=a[0];
+            location[3]=location[2]+view.getWidth();
+            return location;
+        }else {
+            return null;
+        }
+    }
+
+    protected boolean isInView(int[] i,MotionEvent event){
+        boolean isInView=false;
+        if (i[0]<event.getY()&&i[1]>event.getY()
+                &&i[2]<event.getX()&&i[3]>event.getX()){
+            isInView=true;
+        }
+        return isInView;
     }
     /**
      * 多种隐藏软件盘方法的其中一种
@@ -170,10 +185,10 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
      */
     protected void hideSoftInput(IBinder token,int statu) {
         switch (statu){
-            case 1:
+            case GlobleData.HIDE_MORE:
                 ((GroupChatting) (mTabs.get(0).fragment)).mContainer.setVisibility(View.GONE);
                 break;
-            case 3:
+            case GlobleData.HIDE_SOFT_INPUT:
                 InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 im.hideSoftInputFromWindow(token,InputMethodManager.HIDE_NOT_ALWAYS);
                 break;

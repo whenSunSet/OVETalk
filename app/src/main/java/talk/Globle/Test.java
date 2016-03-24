@@ -2,6 +2,7 @@ package talk.Globle;
 
 import talk.TalkApplication;
 import talk.model.Group;
+import talk.model.User;
 import talk.util.MyPreferenceManager;
 
 /**
@@ -19,15 +20,12 @@ public class Test {
 
             myPreferenceManager.setIsCreatSystemGroup(true);
         }
-
+        talkApplication.getUserDB().add(new User("13588197967","薛克林顿","http"));
     }
-
-
     public static void createSystemGroup(TalkApplication talkApplication) {
         MyPreferenceManager myPreferenceManager= talkApplication.getSpUtil();
         Group group = new Group(myPreferenceManager.getUserName(), "SystemMessage", " ", myPreferenceManager.getUserName(),0,0);
         talkApplication.getGroupDB().addGroup(group);
 
     }
-
 }

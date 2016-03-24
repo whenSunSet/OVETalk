@@ -164,15 +164,12 @@
             android:layout_weight="1">
             <ListView
                 android:id="@+id/listView"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:cacheColorHint="@color/common_white"
+                android:divider="@null"
                 android:clickable="true"
-
-                android:divider="#00000000"
-                android:dividerHeight="0dp"
-                android:scrollbarStyle="outsideOverlay" >
-            </ListView>
+                android:scrollbarStyle="outsideOverlay" />
         </in.srain.cube.views.ptr.PtrClassicFrameLayout>
     </LinearLayout>
 

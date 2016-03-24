@@ -80,4 +80,8 @@ public  class BasicFragment extends Fragment {
         Groups.isFlash=false;
     }
     public void flash(GroupChatMessage chatMessage){}
+
+    public TalkApplication getmApplication() {
+        return mApplication;
+    }
 }

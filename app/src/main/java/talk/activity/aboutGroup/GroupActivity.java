@@ -43,7 +43,12 @@ public class GroupActivity extends Activity {
     private TalkApplication mApplication;
     private MyPreferenceManager myPreferenceManager;
     private List<NameValuePair> formparams ;
-    private GroupActivity groupActivity;
+    private GroupActivity mGroupActivity;
+
+    @Override
+    public void finish() {
+        super.finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +60,7 @@ public class GroupActivity extends Activity {
     private void init(){
         mApplication=(TalkApplication)getApplication();
         mGroup=getIntent().getParcelableExtra("group");
-        groupActivity =this;
+        mGroupActivity =this;
 
         mGroupIcon=(ImageView)findViewById(R.id.icon);
         mGroupName=(TextView)findViewById(R.id.groupName);
@@ -116,7 +121,7 @@ public class GroupActivity extends Activity {
                         super.onResponse(jsonObject);
                         if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
                             mApplication.getGroupDB().delGroup(mGroup.getGroupName());
-                            groupActivity.finish();
+                            mGroupActivity.finish();
                             Groups.isFlash=true;
                         }
                     }

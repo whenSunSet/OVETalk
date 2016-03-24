@@ -223,7 +223,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
                     10,
                     null,
                     new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",GlobleData.DEFAULT)));
-            GroupAll.isChattingFlash=true;
             Groups.isFlash=true;
         }else if (resultCode==GlobleData.START_MAKE_HOMEWORK_ACTIVITY){
             ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
@@ -235,7 +234,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
                             data.getStringExtra("path"),
                             resultCode),
                     null);
-            GroupAll.isChattingFlash=true;
             Groups.isFlash=true;
         }
     }
@@ -249,6 +247,8 @@ public class  GroupAll extends IndicatorFragmentActivity {
         }
         if (isResume&& GroupAll.isFlash) {
             flashFragment();
+        }else if(isResume&& GroupAll.isChattingFlash){
+            ((GroupChatting) (mTabs.get(0).fragment)).flash(null);
         }
         isResume=true;
     }
