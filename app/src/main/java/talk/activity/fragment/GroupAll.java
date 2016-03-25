@@ -40,7 +40,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
     private static final String TAG="GroupAll";
     //-------------当前的Group
     public Group mGroup;
-    public boolean isSystemGroup;
+    public boolean mIsSystemGroup;
     public GroupMessageDB mGroupMessageDB;
         //-------------view控件
     private TextView textView;
@@ -48,15 +48,15 @@ public class  GroupAll extends IndicatorFragmentActivity {
     private ImageView mMakeTask;
     private ImageView mMakeWork;
     //--------------Activity是否重新Resume过
-    private Boolean isResume=false;
-    private Boolean isMaster=false;
-    public static boolean isChattingFlash=false;
+    private Boolean mIsResume =false;
+    private Boolean mIsMaster =false;
+    public static boolean mIsChattingFlash =false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Groups.isFlash=true;
-        GroupAll.isFlash=false;
-        GroupAll.isChattingFlash=false;
+        Groups.mIsFlash =true;
+        GroupAll.mIsFlash =false;
+        GroupAll.mIsChattingFlash =false;
 
         initView();
     }
@@ -67,14 +67,14 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 receive(context, intent);
             }
         });
-        isSystemGroup=getIntent().getStringExtra("groupName").equals("-1");
+        mIsSystemGroup =getIntent().getStringExtra("groupName").equals("-1");
         mGroupMessageDB=mApplication.getGroupMessageDB();
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
         //判断当前的用户是不是当前群的master
         if (mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserName())){
-            isMaster=true;
+            mIsMaster =true;
         }else {
-            isMaster=false;
+            mIsMaster =false;
         }
 
         if (mTitle.getVisibility()!=View.GONE){
@@ -92,7 +92,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         int messageStatu=message.getMessageStatu();
 
-        if (!isSystemGroup&&message.getGroupName().equals(mGroup.getGroupName())){
+        if (!mIsSystemGroup &&message.getGroupName().equals(mGroup.getGroupName())){
             //不是System但是是该group 并且不在chat或者group被解散
             if (messageStatu==GlobleData.USER_CANCEL_GROUP){
                 //如果群被注销，则finish
@@ -106,12 +106,12 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 return;
             }else if (mCurrentTab==1||mCurrentTab==2){
                 //如果不在chat 且消息类型不匹配
-                GroupAll.isFlash=true;
+                GroupAll.mIsFlash =true;
                 return;
             }
         }
         //其他情况 添加一个消息item 然后刷新
-        ((GroupChatting) (mTabs.get(0).fragment)).flash(chatMessage);
+        ((GroupChatting) (mTabs.get(0).fragment)).flash(GlobleData.SELECT_LAST,chatMessage);
     }
 
     //----------------动态添加一个控件
@@ -175,7 +175,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
     @Override
     public void onPageScrollStateChanged(int state) {
         super.onPageScrollStateChanged(state);
-        if (GroupAll.isFlash||GroupAll.isChattingFlash){
+        if (GroupAll.mIsFlash ||GroupAll.mIsChattingFlash){
             flashFragment();
         }
     }
@@ -186,7 +186,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
             myGroup.setVisibility(View.VISIBLE);
             mMakeTask.setVisibility(View.GONE);
             mMakeWork.setVisibility(View.GONE);
-        }else if (position==1&&isMaster){
+        }else if (position==1&& mIsMaster){
                 myGroup.setVisibility(View.GONE);
                 mMakeTask.setVisibility(View.VISIBLE);
                 mMakeWork.setVisibility(View.GONE);
@@ -223,7 +223,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
                     10,
                     null,
                     new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",GlobleData.DEFAULT)));
-            Groups.isFlash=true;
         }else if (resultCode==GlobleData.START_MAKE_HOMEWORK_ACTIVITY){
             ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
                     "我发布了一个作业，快来看看吧",
@@ -234,22 +233,21 @@ public class  GroupAll extends IndicatorFragmentActivity {
                             data.getStringExtra("path"),
                             resultCode),
                     null);
-            Groups.isFlash=true;
         }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        isForeground=true;
+        mIsForeground =true;
         if (mApplication.getGroupDB().getGroup(mGroup.getGroupName())==null){
             finish();
             return;
         }
-        if (isResume&& GroupAll.isFlash) {
+        if (mIsResume && GroupAll.mIsFlash) {
             flashFragment();
-        }else if(isResume&& GroupAll.isChattingFlash){
-            ((GroupChatting) (mTabs.get(0).fragment)).flash(null);
+        }else if(mIsResume && GroupAll.mIsChattingFlash){
+            ((GroupChatting) (mTabs.get(0).fragment)).flash(GlobleData.SELECT_LAST,null);
         }
-        isResume=true;
+        mIsResume =true;
     }
 }

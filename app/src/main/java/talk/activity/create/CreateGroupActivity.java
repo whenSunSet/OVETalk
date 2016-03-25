@@ -33,11 +33,11 @@ import talk.util.MyResponseErrorListenerAndListener;
 import talk.util.MyRunnable;
 
 public class CreateGroupActivity extends BasicActivity{
-    private EditText groupNickNameText;
-    private Button create;
+    private EditText mGroupNickNameText;
+    private Button mCreate;
     private TalkApplication mApplication;
-    private String groupName=null;
-    private String groupNickName=null;
+    private String mGroupName =null;
+    private String mGroupNickName =null;
     private List<NameValuePair> formparams ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,21 +46,21 @@ public class CreateGroupActivity extends BasicActivity{
         init();
     }
     private void init(){
-        create=(Button)findViewById(R.id.create);
+        mCreate =(Button)findViewById(R.id.create);
         mApplication=(TalkApplication)getApplication();
-        groupNickNameText=(EditText)findViewById(R.id.groupName);
+        mGroupNickNameText =(EditText)findViewById(R.id.groupName);
 
-        create.setOnClickListener(new View.OnClickListener() {
+        mCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                groupNickName = groupNickNameText.getText().toString();
-                if (TextUtils.isEmpty(groupNickName)) {
+                mGroupNickName = mGroupNickNameText.getText().toString();
+                if (TextUtils.isEmpty(mGroupNickName)) {
                     DialogUtil.showToast(CreateGroupActivity.this, "请输入群组的名字");
                 } else {
 //                    makeF();
 //                    sendMessage("");
-                    groupName=groupNickName+1;
-                    Groups.isFlash=true;
+                    mGroupName = mGroupNickName + 1;
+                    Groups.mIsFlash = true;
                     addGroup();
                 }
             }
@@ -79,11 +79,11 @@ public class CreateGroupActivity extends BasicActivity{
                     public void onResponse(JSONObject jsonObject) {
                         super.onResponse(jsonObject);
                         try {
-                            groupName = jsonObject.getString(GlobleData.GROUP_NAME);
+                            mGroupName = jsonObject.getString(GlobleData.GROUP_NAME);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Groups.isFlash=true;
+                        Groups.mIsFlash =true;
                         addGroup();
                     }
                 }
@@ -94,34 +94,35 @@ public class CreateGroupActivity extends BasicActivity{
     private HashMap makeMap(){
         Map map=new HashMap();
         map.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName());
-        map.put(GlobleData.GROUP_NICK_NAME,groupNickName);
+        map.put(GlobleData.GROUP_NICK_NAME, mGroupNickName);
         return makeMap();
     }
 
     public void addGroup(){
-        Group group=new Group(groupName,groupNickName,"",mApplication.getSpUtil().getUserName(),0,0);
+        Group group=new Group(mGroupName, mGroupNickName,"",mApplication.getSpUtil().getUserName(),0,0);
         mApplication.getGroupDB().addGroup(group);
         GlobleMethod.setTag(mApplication);
         GlobleMethod.addUserToGroup(mApplication
                 ,new talk.model.Message(
                 mApplication.getSpUtil().getUserName()
-                ,groupName
+                , mGroupName
                 ,GlobleMethod.getNowDate()
                 , mApplication.getSpUtil().getUserIcon()
-                ,mApplication.getSpUtil().getUsreNickName()));
+                ,mApplication.getSpUtil().getUsreNickName()),
+                GlobleData.ADD_MASTER);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //从当前Activity回到GroupAll的时候将其设置为需要刷新
-        Groups.isFlash=true;
+        Groups.mIsFlash =true;
 
     }
     private void makeF(){
         formparams = new ArrayList<>();
         formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, mApplication.getSpUtil().getUserName()));
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NICK_NAME, groupNickName));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NICK_NAME, mGroupNickName));
         new Thread(new MyRunnable(formparams, "", handler, GlobleData.DEFAULT));
 
     }
@@ -132,8 +133,8 @@ public class CreateGroupActivity extends BasicActivity{
             super.handleMessage(msg);
             switch (msg.what){
                 case GlobleData.SEND_MESSAGE_SUCCESS:
-                    groupName=(String)msg.obj;
-                    Groups.isFlash=true;
+                    mGroupName =(String)msg.obj;
+                    Groups.mIsFlash =true;
                     addGroup();
 
                     break;

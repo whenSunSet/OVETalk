@@ -1,0 +1,22 @@
+<LinearLayout
+    android:id="@+id/all"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/LinearLayout_match_vertical"
+    tools:context="talk.activity.create.MakeHomeWorkActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            style="@style/Button_wrap_monospace_center_10"
+            android:id="@+id/lastStep"
+            android:layout_alignParentLeft="true"
+            android:text="@string/lastStep"/>
+
+        <Button
+            style="@style/Button_wrap_monospace_center_10"
+            android:id="@+id/nextStep"
+            android:layout_alignParentRight="true"
+            android:text="@string/nextStep"/>
+    </RelativeLayout>
+</LinearLayout>

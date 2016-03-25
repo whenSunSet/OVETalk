@@ -30,7 +30,6 @@ import talk.util.MyRunnable;
  * Created by asus on 2015/11/5.o
  */
 public class JpushReceiver extends BroadcastReceiver {
-    private static final String TAG = "JPush";
     Handler handler=new Handler(){
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -89,7 +88,7 @@ public class JpushReceiver extends BroadcastReceiver {
                 switch (messageStatu) {
                     case GlobleData.USER_JOIN_GROUP:
                         msg="加入了";
-                        GlobleMethod.addUserToGroup(mApplication, message);
+                        GlobleMethod.addUserToGroup(mApplication, message,GlobleData.ADD_MEMBER);
                         //groupname:加入的群组，date：服务器发送的时间，nickname：加入人的昵称，username：加入人的id userIcon: 加入人的头像
 
                         break;
@@ -161,7 +160,7 @@ public class JpushReceiver extends BroadcastReceiver {
         return message;
     }
     private void sendMessageToActivity(Context context, Message message) {
-        if (GroupAll.isForeground|| Groups.isForeground) {
+        if (GroupAll.mIsForeground || Groups.mIsForeground) {
             Bundle bundle=new Bundle();
             bundle.putParcelable(GlobleData.KEY_MESSAGE,message);
             Intent msgIntent = new Intent(GlobleData.MESSAGE_RECEIVED_ACTION);

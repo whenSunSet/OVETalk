@@ -19,11 +19,11 @@ import talk.model.Task;
  * Created by asus on 2015/12/21.
  */
 public class TaskAdapter extends ArrayAdapter<Task> {
-    private int resourceId;
-    private View view;
-    public TaskAdapter(Context context, int resourceId, List objects) {
-        super(context, resourceId, objects);
-        this.resourceId=resourceId;
+    private int mResource;
+    private View mView;
+    public TaskAdapter(Context context, int mResource, List objects) {
+        super(context, mResource, objects);
+        this.mResource = mResource;
     }
 
     @Override
@@ -31,21 +31,21 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         Task task=getItem(position);
         ViewHolder holder;
         if (convertView==null){
-            view= LayoutInflater.from(getContext()).inflate(resourceId,null);
+            mView = LayoutInflater.from(getContext()).inflate(mResource,null);
             holder=new ViewHolder();
-            holder.name=(TextView)view.findViewById(R.id.name);
-            holder.typeImage=(ImageView)view.findViewById(R.id.typeImage);
-            holder.content=(TextView)view.findViewById(R.id.content);
-            holder.date=(TextView)view.findViewById(R.id.date);
-            view.setTag(holder);
+            holder.name=(TextView) mView.findViewById(R.id.name);
+            holder.typeImage=(ImageView) mView.findViewById(R.id.typeImage);
+            holder.content=(TextView) mView.findViewById(R.id.target);
+            holder.date=(TextView) mView.findViewById(R.id.date);
+            mView.setTag(holder);
         }else {
-            view=convertView;
+            mView =convertView;
             holder=(ViewHolder)convertView.getTag();
         }
 
         setResource(task,holder);
 
-        return view;
+        return mView;
     }
 
     private void setResource(Task task,ViewHolder holder){

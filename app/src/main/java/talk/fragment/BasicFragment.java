@@ -18,11 +18,11 @@ import in.srain.cube.views.ptr.PtrClassicFrameLayout;
 import in.srain.cube.views.ptr.PtrDefaultHandler;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrHandler;
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
 import talk.adapter.ViewPagerAdapter;
-import talk.model.GroupChatMessage;
 
 /**
  * Created by heshixiyang on 2016/2/3.
@@ -35,7 +35,7 @@ public  class BasicFragment extends Fragment {
     protected ListView mListView;
     protected PtrClassicFrameLayout mPtrFrame;
     protected ViewPagerAdapter myAdapter;
-    protected boolean isChattingFragment=false;
+    protected boolean mIsChattingFragment =false;
 
     @Nullable
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public  class BasicFragment extends Fragment {
     }
 
     protected void init(LayoutInflater inflater){
-        if (isChattingFragment){
+        if (mIsChattingFragment){
             view= (ViewGroup) inflater.inflate(R.layout.main_chatting,null);
         }else {
             view= (ViewGroup) inflater.inflate(R.layout.basic_fragment_layout,null);
@@ -63,6 +63,7 @@ public  class BasicFragment extends Fragment {
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
                 return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
             }
+
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
                 upData();
@@ -74,12 +75,13 @@ public  class BasicFragment extends Fragment {
     protected void upData(){
         mPtrFrame.refreshComplete();
     }
-
-    public void flash(){
-        mListView.setSelection(0);
-        Groups.isFlash=false;
+    public void flash(int which){
+        if (which== GlobleData.SELECT_FRIST){
+            mListView.setSelection(0);
+        }else if (which==GlobleData.SELECT_LAST){
+            mListView.setSelection(mData.size() - 1);
+        }
     }
-    public void flash(GroupChatMessage chatMessage){}
 
     public TalkApplication getmApplication() {
         return mApplication;

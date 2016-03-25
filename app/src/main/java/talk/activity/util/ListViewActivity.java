@@ -15,18 +15,18 @@ import talk.model.Work;
 public class ListViewActivity extends AppCompatActivity {
     public TalkApplication mApplication;
     public Group mGroup;
-    public Boolean isTaskClick=false;
-    public Boolean isWorkClick=false;
+    public Boolean mIsTaskClick =false;
+    public Boolean mIsWorkClick =false;
     public Task mTask;
     public Work mWork;
     private Fragment mFragment;
-    private FragmentTransaction fragmentTransaction;
+    private FragmentTransaction mFragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_view);
-        fragmentTransaction=getSupportFragmentManager().beginTransaction();
+        mFragmentTransaction =getSupportFragmentManager().beginTransaction();
         mApplication=(TalkApplication)getApplication();
         mGroup=mApplication.getGroupDB().getGroup(getIntent().getStringExtra("groupName"));
         initWhich(getIntent().getIntExtra("which",GlobleData.DEFAULT));
@@ -37,25 +37,25 @@ public class ListViewActivity extends AppCompatActivity {
                 mFragment=new GroupTask();
                 break;
             case GlobleData.GROUP_MEMBER_LIST:
-                isTaskClick=false;
-                isWorkClick=false;
+                mIsTaskClick =false;
+                mIsWorkClick =false;
                 mFragment=new MemberFragment();
                 break;
             case GlobleData.TASK_CLICK_MEMBER_LIST:
-                isTaskClick=true;
+                mIsTaskClick =true;
                 mTask=((Task)(mApplication.map.get("nowTask")));
                 mFragment=new MemberFragment();
                 break;
             case GlobleData.WORK_CLICK_MEMBER_LIST:
-                isWorkClick=true;
+                mIsWorkClick =true;
                 mWork=((Work)(mApplication.map.get("nowWork")));
                 mFragment=new MemberFragment();
                 break;
             default:
                 break;
         }
-        fragmentTransaction.replace(R.id.fragment_container, mFragment);
-        fragmentTransaction.commit();
+        mFragmentTransaction.replace(R.id.fragment_container, mFragment);
+        mFragmentTransaction.commit();
     }
 
 

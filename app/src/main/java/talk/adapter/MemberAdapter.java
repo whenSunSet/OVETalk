@@ -20,11 +20,11 @@ import talk.model.User;
  * Created by asus on 2015/12/20.
  */
 public class MemberAdapter extends ArrayAdapter<User> {
-    private int resource;
+    private int mResource;
 
-    public MemberAdapter(Context context, int resource, List<User> objects) {
-        super(context, resource, objects);
-        this.resource=resource;
+    public MemberAdapter(Context context, int mResource, List<User> objects) {
+        super(context, mResource, objects);
+        this.mResource = mResource;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class MemberAdapter extends ArrayAdapter<User> {
         View view;
         ViewHolder holder;
         if (convertView==null){
-            view= LayoutInflater.from(getContext()).inflate(resource,null);
+            view= LayoutInflater.from(getContext()).inflate(mResource,null);
             holder=new ViewHolder();
             holder.name=(TextView)view.findViewById(R.id.name);
             holder.icon=(ImageView)view.findViewById(R.id.icon);

@@ -1,63 +1,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="talk.activity.aboutGroup.TaskAndWorkActivity">
+              style="@style/LinearLayout_match_vertical"
+              tools:context="talk.activity.aboutGroup.TaskAndWorkActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+        <ImageView
+            style="@style/Image_icon_60"
+            android:id="@+id/type"/>
+
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <ImageView
-                android:id="@+id/type"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/icon"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:orientation="vertical">
-        <TextView
-            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="name"
-            android:textSize="20dp"/>
+            android:orientation="vertical">
             <TextView
-                android:id="@+id/time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="time"/>
+                style="@style/Text_wrap_monospace_20"
+                android:layout_height="30dp"
+                android:id="@+id/name"
+                android:text="@string/userName"/>
 
+            <TextView
+                style="@style/Text_wrap_monospace_20"
+                android:layout_height="30dp"
+                android:id="@+id/time"
+                android:text="time"/>
             </LinearLayout>
         </LinearLayout>
+
     <TextView
-        android:id="@+id/target"
+        style="@style/Text_wrap_monospace_15"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/target"
         android:background="@color/gray"
         android:minLines="5"
-        android:text="target:"
+        android:text="@string/target"
         android:textColor="@color/white"/>
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="button"/>
-    <Button
-        android:id="@+id/clickMember"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="clickMember"/>
 
+    <Button
+        style="@style/Button_wmatch_monospace_10"
+        android:id="@+id/button"
+        android:text="button"/>
+
+    <Button
+        style="@style/Button_wmatch_monospace_10"
+        android:id="@+id/clickMember"
+        android:text="@string/clickMember"/>
 </LinearLayout>

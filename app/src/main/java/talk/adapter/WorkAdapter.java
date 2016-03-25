@@ -18,11 +18,11 @@ import talk.model.Work;
  * Created by heshixiyang on 2016/2/22.
  */
 public class WorkAdapter extends ArrayAdapter<Work> {
-    private int resourceId;
-    private View view;
-    public WorkAdapter(Context context, int resourceId, List objects) {
-        super(context, resourceId, objects);
-        this.resourceId=resourceId;
+    private int mResource;
+    private View mView;
+    public WorkAdapter(Context context, int mResource, List objects) {
+        super(context, mResource, objects);
+        this.mResource = mResource;
     }
 
     @Override
@@ -30,20 +30,20 @@ public class WorkAdapter extends ArrayAdapter<Work> {
         Work work=getItem(position);
         ViewHolder holder;
         if (convertView==null){
-            view= LayoutInflater.from(getContext()).inflate(resourceId,null);
+            mView = LayoutInflater.from(getContext()).inflate(mResource,null);
             holder=new ViewHolder();
-            holder.name=(TextView)view.findViewById(R.id.name);
-            holder.typeImage=(ImageView)view.findViewById(R.id.typeImage);
-            holder.date=(TextView)view.findViewById(R.id.date);
-            view.setTag(holder);
+            holder.name=(TextView) mView.findViewById(R.id.name);
+            holder.typeImage=(ImageView) mView.findViewById(R.id.typeImage);
+            holder.date=(TextView) mView.findViewById(R.id.date);
+            mView.setTag(holder);
         }else {
-            view=convertView;
+            mView =convertView;
             holder=(ViewHolder)convertView.getTag();
         }
 
         setResource(work,holder);
 
-        return view;
+        return mView;
     }
 
     private void setResource(Work work,ViewHolder holder){

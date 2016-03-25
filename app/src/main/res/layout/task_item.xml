@@ -1,60 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              >
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:id="@+id/typeImage"
-        android:src="@drawable/icon"
-        />
+              style="@style/LinearLayout_wmatch_vertical">
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="5"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:lines="1"
-            android:textSize="20dp"
-            android:id="@+id/name"
-            android:text="name"
-            android:textColor="@color/black"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:lines="1"
-            android:id="@+id/content"
-            android:text="content"
-            android:textColor="@color/black"
+        style="@style/LinearLayout_wmatch_vertical"
+        android:id="@+id/chat_all"
+        android:orientation="horizontal">
+            <ImageView
+                style="@style/Image_icon_60"
+                android:id="@+id/typeImage"/>
+        <LinearLayout
+            style="@style/LinearLayout_wmatch_vertical"
+            android:orientation="horizontal"
+            android:layout_height="60dp">
+            <LinearLayout
+                style="@style/LinearLayout_wmatch_vertical"
+                android:layout_gravity="center">
+                <LinearLayout
+                    style="@style/LinearLayout_wmatch_vertical"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/Text_wrap_monospace_30"
+                        android:textSize="20dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_gravity="left"
+                        android:id="@+id/name"
+                        android:maxLines="1"
+                        android:text="@string/groupName"/>
 
-            />
+                    <TextView
+                        style="@style/Text_wrap_monospace_15"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_gravity="bottom"
+                        android:maxLines="1"
+                        android:id="@+id/date"
+                        android:text="@string/date"/>
+                </LinearLayout>
 
-
-        </LinearLayout>
-    <LinearLayout
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10dp"
-            android:id="@+id/date"
-            android:text="date"
-            android:layout_gravity="center"
-            android:textColor="@color/black"
-
-            />
-
+                <TextView
+                    style="@style/Text_wrap_monospace_15"
+                    android:id="@+id/target"
+                    android:text="@string/target"
+                    android:maxLines="1"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+</LinearLayout>

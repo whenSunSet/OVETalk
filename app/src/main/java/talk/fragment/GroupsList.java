@@ -6,14 +6,14 @@ import android.view.ViewGroup;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import talk.Globle.GlobleData;
+import talk.activity.fragment.Groups;
 import talk.adapter.GroupListAdapter;
 
 public class GroupsList extends BasicFragment{
-
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         init(inflater);
-
         return view;
     }
 
@@ -28,15 +28,16 @@ public class GroupsList extends BasicFragment{
         mListView.setAdapter(mAdapter);
     }
 
+    public void flash(int which){
+        makeListView();
+        super.flash(which);
+        Groups.mIsFlash =false;
+    }
+
     @Override
     protected void upData() {
         super.upData();
-        flash();
-    }
-
-    public void flash(){
-        makeListView();
-        super.flash();
+        flash(GlobleData.SELECT_FRIST);
     }
 
 }

@@ -34,7 +34,7 @@ import talk.util.MyRunnable;
 public class GroupsFind extends Fragment {
     private MyPreferenceManager myPreferenceManager;
     private TalkApplication mApplication;
-    private View view;
+    private View mView;
     private EditText mGroupNameEdit;
     private Button mAddGroup;
     private List<NameValuePair> formparams;
@@ -43,14 +43,14 @@ public class GroupsFind extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         init(inflater);
-        return view;
+        return mView;
     }
 
     public View init(LayoutInflater inflater){
         mApplication=(TalkApplication)getActivity().getApplication();
-        view=inflater.inflate(R.layout.find_into_group_layout,null);
-        mGroupNameEdit=(EditText)view.findViewById(R.id.groupName);
-        mAddGroup=(Button)view.findViewById(R.id.send_button);
+        mView =inflater.inflate(R.layout.find_into_group_layout,null);
+        mGroupNameEdit=(EditText) mView.findViewById(R.id.groupName);
+        mAddGroup=(Button) mView.findViewById(R.id.send_button);
         myPreferenceManager=mApplication.getSpUtil();
 
         mAddGroup.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +65,7 @@ public class GroupsFind extends Fragment {
                 sendMessage("");
             }
         });
-        return view;
+        return mView;
     }
     private void sendMessage(String url){
         JSONObject jsonObject = new JSONObject();

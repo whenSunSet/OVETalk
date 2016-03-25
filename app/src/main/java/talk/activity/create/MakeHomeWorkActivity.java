@@ -38,13 +38,13 @@ import talk.util.MyRunnable;
 public class MakeHomeWorkActivity extends BasicActivity {
     private Button mLastStep;
     private Button mNextStep;
-    private int nowStep=GlobleData.STEP_ONE;
+    private int mNowStep =GlobleData.STEP_ONE;
 
     private Work mWork;
     private TalkApplication mApplication;
     private String[] mDate;
     private LinearLayout mAll;
-    private LinearLayout.LayoutParams layoutParams;
+    private LinearLayout.LayoutParams mLayoutParams;
 
     private Button mChooseType;
     private Button mChooseTask;
@@ -53,11 +53,11 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private Animation mAnimationExpand;//显示listView
     private Animation mAnimationPullBack;//收缩listView
     private List<NameValuePair> formparams;
-    private boolean isListViewVisible=false;
+    private boolean mIsListViewVisible =false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_make_home_work);
+        setContentView(R.layout.activity_make_task_and_home_work);
         init();
     }
 
@@ -73,15 +73,15 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mAnimationExpand.setDuration(500);
         mAnimationPullBack.setDuration(500);
         mAdapter=new ArrayAdapter<>(mApplication,R.layout.text,mDate);
-        mAll=(LinearLayout)findViewById(R.id.al);
+        mAll=(LinearLayout)findViewById(R.id.all);
         mLastStep=(Button)findViewById(R.id.lastStep);
         mNextStep=(Button)findViewById(R.id.nextStep);
-        layoutParams=new LinearLayout.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT,GridLayout.LayoutParams.WRAP_CONTENT);
+        mLayoutParams =new LinearLayout.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT,GridLayout.LayoutParams.WRAP_CONTENT);
         initStep();
         mLastStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (nowStep) {
+                switch (mNowStep) {
                     case GlobleData.STEP_ONE:
                         finish();
                         break;
@@ -97,7 +97,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (nowStep) {
+                switch (mNowStep) {
                     case GlobleData.STEP_ONE:
                         stepTwo();
                         break;
@@ -110,7 +110,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         mWork.setDate(simpleDateFormat.format(new Date()));
 
                         mApplication.getWorkDB().add(mWork);
-                        GroupAll.isFlash = true;
+                        GroupAll.mIsFlash = true;
 
 //                        try {
 //                            GlobleMethod.upLoadFile(mWork,"work","",mApplication);
@@ -159,7 +159,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);
-                isListViewVisible = false;
+                mIsListViewVisible = false;
             }
         });
         mChooseType =new Button(mApplication);
@@ -169,7 +169,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 Animation animation;
-                if (isListViewVisible) {
+                if (mIsListViewVisible) {
                     animation = mAnimationPullBack;
                     mItem.setVisibility(View.GONE);
                 } else {
@@ -177,7 +177,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
                     mItem.setVisibility(View.VISIBLE);
                 }
 
-                isListViewVisible = !isListViewVisible;
+                mIsListViewVisible = !mIsListViewVisible;
                 mItem.startAnimation(animation);
             }
         });
@@ -197,19 +197,19 @@ public class MakeHomeWorkActivity extends BasicActivity {
         });
     }
     private void stepOne(){
-        nowStep=GlobleData.STEP_ONE;
+        mNowStep =GlobleData.STEP_ONE;
 
         mChooseType.setVisibility(View.VISIBLE);
-        mAll.addView(mChooseType, layoutParams);
-        mAll.addView(mItem, layoutParams);
+        mAll.addView(mChooseType, mLayoutParams);
+        mAll.addView(mItem, mLayoutParams);
 
     }
     private void stepTwo(){
-        nowStep=GlobleData.STEP_TWO;
+        mNowStep =GlobleData.STEP_TWO;
 
         mAll.removeView(mChooseType);
         mAll.removeView(mItem);
-        mAll.addView(mChooseTask, layoutParams);
+        mAll.addView(mChooseTask, mLayoutParams);
 
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

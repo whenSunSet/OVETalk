@@ -39,22 +39,23 @@ import talk.util.MyAsyncHttpResponseHandler;
  */
 public class GlobleMethod {
 
-    public static final void addUserToGroup(TalkApplication talkApplication,Message message){
+    public static final void addUserToGroup(TalkApplication talkApplication,Message message,int statu){
         UserDB userDB=talkApplication.getUserDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
         JoinGroup joinGroup=new JoinGroup();
-        User user=new User();
 
         joinGroup.setGroupName(message.getGroupName());
         joinGroup.setMemberId(message.getUserName());
         joinGroup.setDate(message.getDate());
 
-        user.setUserID(message.getUserName());
-        user.setUserIcon(savaImage(talkApplication,message));
-        user.setUserNickName(message.getUserNickName());
-
-        userDB.add(user);
         joinGroupDB.add(joinGroup);
+        if (statu==GlobleData.ADD_MEMBER){
+            User user=new User();
+            user.setUserID(message.getUserName());
+            user.setUserIcon(savaImage(talkApplication, message));
+            user.setUserNickName(message.getUserNickName());
+            userDB.add(user);
+        }
     }
 
     public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,String groupName){

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -29,14 +28,12 @@ public class ChatMessageAdapter extends BaseAdapter{
 	private List<GroupChatMessage> mDatas;
 	private TalkApplication mApplication;
 	private AdapterClickLisener mAdapterClickLisener;
-	private User user;
-	private ListView mListView;
+	private User mUser;
 
-	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas,AdapterClickLisener mAdapterClickLisener,ListView listView) {
+	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas,AdapterClickLisener mAdapterClickLisener) {
 		mInflater = LayoutInflater.from(context);
 		mDatas = datas;
 		mApplication =(TalkApplication)context;
-		mListView=listView;
 		this.mAdapterClickLisener=mAdapterClickLisener;
 	}
 	@Override
@@ -88,7 +85,7 @@ public class ChatMessageAdapter extends BaseAdapter{
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		user= mApplication.getUserDB().getMember(chatMessage.getUserName());
+		mUser = mApplication.getUserDB().getMember(chatMessage.getUserName());
 		setView(viewHolder,chatMessage,position);
 		return convertView;
 	}
@@ -103,16 +100,16 @@ public class ChatMessageAdapter extends BaseAdapter{
 		viewHolder.img.setVisibility(View.GONE);
 		viewHolder.createDate.setText(chatMessage.getDateStr());
 
-		if (user.getUserIcon().matches("http")){
+		if (mUser.getUserIcon().matches("http")){
 			//没有获取成功的userIcon
 			viewHolder.userIcon.setImageResource(R.drawable.icon);
 		}else {
-			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(user.getUserIcon()));
+			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
 		}
 
 		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_PUT_HOMEWORK 只能在普通群组里使用
 		if (messageStatu<=3||messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
-			viewHolder.nickname.setText(user.getUserNickName());
+			viewHolder.nickname.setText(mUser.getUserNickName());
 		}else {
 			//其他的消息只能在system里使用
 			viewHolder.nickname.setText("OVEsystem");

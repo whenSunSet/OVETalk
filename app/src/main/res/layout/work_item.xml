@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-                android:orientation="horizontal">
-    <ImageView
-        android:id="@+id/typeImage"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:src="@drawable/icon"/>
+              style="@style/LinearLayout_wmatch_vertical">
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:orientation="vertical"
-        >
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:lines="1"
-            android:text="name"
-            android:textColor="@color/black"
-            android:textSize="20dp"
-            />
+        style="@style/LinearLayout_wmatch_vertical"
+        android:id="@+id/chat_all"
+        android:orientation="horizontal">
+        <ImageView
+            style="@style/Image_icon_60"
+            android:id="@+id/typeImage"/>
+        <LinearLayout
+            style="@style/LinearLayout_wmatch_vertical"
+            android:orientation="horizontal"
+            android:layout_height="60dp">
+            <LinearLayout
+                style="@style/LinearLayout_wmatch_vertical"
+                android:layout_gravity="center">
+                <LinearLayout
+                    style="@style/LinearLayout_wmatch_vertical"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/Text_wrap_monospace_30"
+                        android:textSize="20dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_gravity="left"
+                        android:id="@+id/name"
+                        android:maxLines="1"
+                        android:text="@string/groupName"/>
+                </LinearLayout>
 
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="date"
-            android:textColor="@color/black"
-
-            />
-
+                <TextView
+                    style="@style/Text_wrap_monospace_15"
+                    android:id="@+id/date"
+                    android:text="@string/userName"
+                    android:maxLines="1"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

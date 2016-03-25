@@ -77,7 +77,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     private int mMessageMax;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        isChattingFragment=true;
+        mIsChattingFragment =true;
         init(inflater);
         initEvent();
         return view;
@@ -92,7 +92,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         mGroup = mActivity.mGroup;
         mGroupName= mGroup.getGroupName();
 
-        if (mActivity.isSystemGroup){
+        if (mActivity.mIsSystemGroup){
             //如果是SystemGroup的话就把输入框去掉
             mGroupName= mApplication.getSpUtil().getUserName();
             view.findViewById(R.id.contant).setVisibility(View.GONE);
@@ -115,20 +115,23 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
 
         // 获取10条聊天记录
         mData = mGroupMessageDB.find(mGroup.getGroupName(), 1, mMessageNum);
-        mAdapter = new ChatMessageAdapter(mApplication, mData,this,mListView);
+        mAdapter = new ChatMessageAdapter(mApplication, mData,this);
         mListView.setAdapter(mAdapter);
         mListView.setSelection(mData.size() - 1);
         mListView.setClickable(true);
         mListView.getSelectedItem();
 
     }
+
     private void initEvent(){
-        if (!mActivity.isSystemGroup){
+        if (!mActivity.mIsSystemGroup){
             initPrintEvent();
             initMoreEvent();
         }
     }
+
     private void initMoreEvent(){
+
         mEmoji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,6 +155,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             }
         });
     }
+
     private void initPrintEvent() {
         //通过点击mMore这个按钮让mContan显示或者消失
         mMore.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +165,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
                     InputMethodManager im = (InputMethodManager) mApplication.getSystemService(Context.INPUT_METHOD_SERVICE);
                     im.hideSoftInputFromWindow(mMsgInput.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
                 }
+
                 if (!isVisble) {
                     mContainer.setVisibility(View.VISIBLE);
                     isVisble = true;
@@ -186,7 +191,6 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
                 mMsgInput.setText("");
             }
         });
-
         //当输入框中有文字的时候，让send显示，否则则让mMore显示
         mMsgInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -227,7 +231,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
             sendMessage("",chatMessage.getMessage(), null, statu, null, task);
         }
-        flash(chatMessage);
+        flash(GlobleData.SELECT_LAST,chatMessage);
         return;
     }
 
@@ -252,21 +256,19 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         return chatMessage;
     }
 
-    @Override
-    public void flash(GroupChatMessage chatMessage) {
+    public void flash(int which,GroupChatMessage chatMessage) {
         if (chatMessage==null){
             mData=mGroupMessageDB.find(mGroup.getGroupName(), 1,mMessageNum);
-            mAdapter=new ChatMessageAdapter(mApplication,mData,this,mListView);
+            mAdapter=new ChatMessageAdapter(mApplication,mData,this);
             mListView.setAdapter(mAdapter);
-            mListView.setSelection(0);
         }else {
             mData.add(chatMessage);
             mAdapter.notifyDataSetChanged();
-            mListView.setSelection(mData.size() - 1);
         }
         mGroupMessageDB.updateReaded(mGroup.getGroupName());
-        GroupAll.isChattingFlash=false;
-        Groups.isFlash=true;
+        GroupAll.mIsChattingFlash =false;
+        super.flash(which);
+        Groups.mIsFlash =true;
     }
 
     public void sendMessage(String url, String message, String isImage, int statu, Work work, Task task){
@@ -329,7 +331,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             mMessageNum=mMessageMax;
             DialogUtil.showToast(getActivity(), "消息已经显示完毕");
         }
-        flash(null);
+        flash(GlobleData.SELECT_FRIST,null);
     }
 
     @Override
@@ -438,6 +440,5 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             }
         }
     };
-
 
 }

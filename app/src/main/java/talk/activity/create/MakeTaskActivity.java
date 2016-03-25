@@ -42,7 +42,7 @@ public class MakeTaskActivity extends BasicActivity {
     private Button mLastStep;
     private Button mNextStep;
     private int nowStep=1;
-    private LinearLayout.LayoutParams layoutParams;
+    private LinearLayout.LayoutParams mLayoutParams;
     private String mGroupName;
     private Button mChoose;
     private ListView mItem;
@@ -52,12 +52,12 @@ public class MakeTaskActivity extends BasicActivity {
     private EditText mName;
     private EditText mConent;
     private List<NameValuePair> formparams;
-    private boolean isListViewVisible=false;
+    private boolean mIsListViewVisible =false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_make_task);
+        setContentView(R.layout.activity_make_task_and_home_work);
         init();
 
     }
@@ -75,7 +75,7 @@ public class MakeTaskActivity extends BasicActivity {
         mAll=(LinearLayout)findViewById(R.id.all);
         mLastStep=(Button)findViewById(R.id.lastStep);
         mNextStep=(Button)findViewById(R.id.nextStep);
-        layoutParams=new LinearLayout.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT,GridLayout.LayoutParams.WRAP_CONTENT);
+        mLayoutParams =new LinearLayout.LayoutParams(GridLayout.LayoutParams.MATCH_PARENT,GridLayout.LayoutParams.WRAP_CONTENT);
         initStep();
 
         mLastStep.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +124,7 @@ public class MakeTaskActivity extends BasicActivity {
                             mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupName) + 1);
 
                             mApplication.getTaskDB().add(mTask);
-                            GroupAll.isFlash=true;
+                            GroupAll.mIsFlash =true;
 
 //                            try {
 //                                GlobleMethod.upLoadFile(mTask,"task","",mApplication);
@@ -174,7 +174,7 @@ public class MakeTaskActivity extends BasicActivity {
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);
-                isListViewVisible = false;
+                mIsListViewVisible = false;
             }
         });
 
@@ -185,7 +185,7 @@ public class MakeTaskActivity extends BasicActivity {
             @Override
             public void onClick(View v) {
                 Animation animation;
-                if (isListViewVisible) {
+                if (mIsListViewVisible) {
                     animation = mAnimationPullBack;
                     mItem.setVisibility(View.GONE);
                 } else {
@@ -193,7 +193,7 @@ public class MakeTaskActivity extends BasicActivity {
                     mItem.setVisibility(View.VISIBLE);
                 }
 
-                isListViewVisible = !isListViewVisible;
+                mIsListViewVisible = !mIsListViewVisible;
                 mItem.startAnimation(animation);
             }
         });
@@ -215,8 +215,8 @@ public class MakeTaskActivity extends BasicActivity {
     private void stepOne(){
         nowStep=GlobleData.STEP_ONE;
 
-        mAll.addView(mChoose, layoutParams);
-        mAll.addView(mItem, layoutParams);
+        mAll.addView(mChoose, mLayoutParams);
+        mAll.addView(mItem, mLayoutParams);
     }
 
     private void stepTwo(){
@@ -224,7 +224,7 @@ public class MakeTaskActivity extends BasicActivity {
 
         mAll.removeView(mChoose);
         mAll.removeView(mItem);
-        mAll.addView(mName,layoutParams);
+        mAll.addView(mName, mLayoutParams);
 
     }
 
@@ -232,7 +232,7 @@ public class MakeTaskActivity extends BasicActivity {
         nowStep=GlobleData.STEP_THREE;
 
         mAll.removeView(mName);
-        mAll.addView(mConent,layoutParams);
+        mAll.addView(mConent, mLayoutParams);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

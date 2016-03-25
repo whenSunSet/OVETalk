@@ -25,8 +25,8 @@ import talk.model.TabInfo;
 public class Groups extends IndicatorFragmentActivity {
     private static final String TAG="Groups";
 
-    private TextView makeGroup;
-    private Boolean isResume=false;
+    private TextView mMakeGroup;
+    private Boolean mIsResume =false;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +47,11 @@ public class Groups extends IndicatorFragmentActivity {
         int width = metric.widthPixels;     // 屏幕宽度（像素）
 
         RelativeLayout layout= (RelativeLayout)findViewById(R.id.titlebar);
-        makeGroup=new TextView(this);
-        makeGroup.setText("创建群组");
-        makeGroup.setTextSize(15);
-        makeGroup.setId(R.id.titlebar+1);
-        makeGroup.setOnClickListener(new View.OnClickListener() {
+        mMakeGroup =new TextView(this);
+        mMakeGroup.setText("创建群组");
+        mMakeGroup.setTextSize(15);
+        mMakeGroup.setId(R.id.titlebar + 1);
+        mMakeGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Groups.this, CreateGroupActivity.class);
@@ -61,7 +61,7 @@ public class Groups extends IndicatorFragmentActivity {
         RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(GridLayout.LayoutParams.WRAP_CONTENT, GridLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.leftMargin=width-200;
         layoutParams.topMargin=20;
-        layout.addView(makeGroup, layoutParams);
+        layout.addView(mMakeGroup, layoutParams);
     }
 
 
@@ -79,7 +79,7 @@ public class Groups extends IndicatorFragmentActivity {
     public void onPageSelected(int position) {
         super.onPageSelected(position);
 
-        if (mCurrentTab==0&& Groups.isFlash) {
+        if (mCurrentTab==0&& Groups.mIsFlash) {
             flashFragment();
         }
     }
@@ -87,12 +87,12 @@ public class Groups extends IndicatorFragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        isForeground=true;
+        mIsForeground =true;
 
-        if (isResume&&mCurrentTab==0&&Groups.isFlash) {
+        if (mIsResume &&mCurrentTab==0&&Groups.mIsFlash) {
             flashFragment();
         }
 
-        isResume=true;
+        mIsResume =true;
     }
 }

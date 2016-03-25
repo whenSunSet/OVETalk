@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
@@ -20,19 +19,19 @@ import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.model.Group;
 import talk.model.GroupChatMessage;
-import talk.model.User;
 
 
 /**
  * Created by asus on 2015/11/5.
  */
 public class GroupListAdapter extends ArrayAdapter<Group> {
-    private int resource;
+    private int mResource;
+
     private TalkApplication mApplication;
-    private User mUser;
+
     public GroupListAdapter(Context context, int textViewResourceId, List<Group> objects) {
         super(context, textViewResourceId, objects);
-        resource=textViewResourceId;
+        mResource =textViewResourceId;
         mApplication =(TalkApplication)context;
     }
 
@@ -42,7 +41,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         View view;
         ViewHolder holder;
         if (convertView==null){
-            view= LayoutInflater.from(getContext()).inflate(resource,null);
+            view= LayoutInflater.from(getContext()).inflate(mResource,null);
             holder=new ViewHolder();
             holder.name=(TextView)view.findViewById(R.id.name);
             holder.chat=(TextView)view.findViewById(R.id.chat);
@@ -103,12 +102,10 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             }
         }
 
-
         //判断当前是不是系统群
         if (isSystemGroup){
             //若是，则把向下一个Activity传递的groupName设置为-1
             setClick(holder.chatAll,"-1",group);
-
         }else {
             //若不是，则直接传递groupName
             setClick(holder.chatAll,group.getGroupName(),group);
@@ -134,7 +131,6 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             }
         });
     }
-
 
     class ViewHolder {
         TextView name;

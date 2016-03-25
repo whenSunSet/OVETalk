@@ -17,6 +17,7 @@ import java.util.List;
 import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
+import talk.activity.fragment.Groups;
 import talk.activity.util.ListViewActivity;
 import talk.adapter.TaskAdapter;
 import talk.model.Group;
@@ -28,7 +29,7 @@ import talk.util.MyHandler;
  */
 public class GroupTask extends BasicFragment{
     private Group mGroup;
-    private int whichActivity;
+    private int mWhichActivity;
     private List<NameValuePair>  formparams;
     public GroupTask() {
         super();
@@ -37,10 +38,10 @@ public class GroupTask extends BasicFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (getActivity() instanceof GroupAll){
-            whichActivity=1;
+            mWhichActivity =1;
             mGroup=((GroupAll)getActivity()).mGroup;
         }else if (getActivity() instanceof ListViewActivity){
-            whichActivity=2;
+            mWhichActivity =2;
             mGroup=((ListViewActivity)getActivity()).mGroup;
         }
         init(inflater);
@@ -53,36 +54,37 @@ public class GroupTask extends BasicFragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Task task = (Task) (mListView.getItemAtPosition(position));
-                if (whichActivity==1){
+                if (mWhichActivity == 1) {
                     mApplication.map.put("nowTask", task);
                     Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
                     intent.putExtra("which", GlobleData.IS_TASK);
                     getActivity().startActivity(intent);
-                }else if (whichActivity==2){
-                    ((ListViewActivity)getActivity()).finish(task.getGroupName(),task.getIdInGroup());
+                } else if (mWhichActivity == 2) {
+                    ((ListViewActivity) getActivity()).finish(task.getGroupName(), task.getIdInGroup());
                 }
             }
         });
     }
 
-    private void makeListView(){
+    protected void makeListView(){
         mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
         mAdapter=new TaskAdapter(mApplication,R.layout.task_item,mData);
         mListView.setAdapter(mAdapter);
     }
 
     @Override
+    public void flash(int which) {
+        makeListView();
+        super.flash(which);
+        Groups.mIsFlash =true;
+    }
+    @Override
+
     protected void upData() {
         super.upData();
 
 //        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupName()));
 //        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
-    }
-
-    @Override
-    public void flash() {
-        makeListView();
-        super.flash();
     }
 
     MyHandler handler=new MyHandler(getActivity()){

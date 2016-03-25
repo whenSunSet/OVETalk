@@ -1,37 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              >
+              style="@style/LinearLayout_wmatch_vertical">
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
+        style="@style/LinearLayout_wmatch_vertical"
         android:id="@+id/chat_all"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
         <FrameLayout
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            >
+            android:layout_width="60dp"
+            android:layout_height="60dp">
 
             <ImageView
-                android:id="@+id/icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/icon"/>
+                style="@style/Image_icon_60"
+                android:id="@+id/icon"/>
+
             <ImageView
                 android:id="@+id/unReadIcon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/find_erweima"
-                />
+                android:src="@drawable/find_erweima"/>
+
             <RelativeLayout
                 android:layout_width="20dp"
-                android:layout_height="20dp"
-
-                >
+                android:layout_height="20dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -40,61 +30,46 @@
                     android:textSize="10dp"
                     android:id="@+id/unReadNum"
                     android:textColor="@color/white"
-                    android:text="0"
-                    />
-
+                    android:text="0"/>
             </RelativeLayout>
         </FrameLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            >
+            style="@style/LinearLayout_wmatch_vertical"
+            android:orientation="horizontal"
+            android:layout_height="60dp">
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2.5"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:layout_gravity="left"
-                    android:id="@+id/name"
-                    android:textSize="20dp"
-                    android:maxLines="1"
-                    android:text="name"
+                style="@style/LinearLayout_wmatch_vertical"
+                android:layout_gravity="center">
+                <LinearLayout
+                    style="@style/LinearLayout_wmatch_vertical"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/Text_wrap_monospace_30"
+                        android:textSize="20dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_gravity="left"
+                        android:id="@+id/name"
+                        android:maxLines="1"
+                        android:text="@string/groupName"/>
 
-                    />
+                    <TextView
+                        style="@style/Text_wrap_monospace_15"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_gravity="bottom"
+                        android:maxLines="1"
+                        android:id="@+id/data"
+                        android:text="@string/date"/>
+                </LinearLayout>
+
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:maxLines="1"
-                    android:textColor="@color/black"
-                    android:id="@+id/data"
-                    android:textSize="14dp"
-                    android:text="data"
-                    />
+                    style="@style/Text_wrap_monospace_15"
+                    android:id="@+id/chat"
+                    android:text="chat"
+                    android:maxLines="1"/>
             </LinearLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-
-                android:textSize="14dp"
-                android:id="@+id/chat"
-                android:text="chat"
-                android:maxLines="1"
-                />
-
         </LinearLayout>
-
-</LinearLayout>
-
+    </LinearLayout>
 </LinearLayout>

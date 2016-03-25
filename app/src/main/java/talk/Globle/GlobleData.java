@@ -133,5 +133,11 @@ public class GlobleData {
 
     public static final int HIDE_SOFT_INPUT=0;
     public static final int HIDE_MORE=1;
+
+    public static final int SELECT_FRIST=0;
+    public static final int SELECT_LAST=1;
+
+    public static final int ADD_MASTER=0;
+    public static final int ADD_MEMBER=1;
 }
 

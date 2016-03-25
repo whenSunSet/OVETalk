@@ -37,7 +37,7 @@ public class MemberFragment extends BasicFragment {
         mGroup=activity.mGroup;
         mTask=activity.mTask;
         mWork=activity.mWork;
-        if (activity.isWorkClick){
+        if (activity.mIsWorkClick){
             mData=GlobleMethod.findClickWorkMembers(
                     mGroup.getGroupName(),
                     mWork.getTaskId(),
@@ -45,7 +45,7 @@ public class MemberFragment extends BasicFragment {
                     activity.mApplication.getClickWorkDB(),
                     activity.mApplication.getUserDB());
 
-        }else if (activity.isTaskClick){
+        }else if (activity.mIsTaskClick){
             mData=GlobleMethod.findClickTaskMembers(
                     mGroup.getGroupName(),
                     mTask.getIdInGroup(),

@@ -10,42 +10,30 @@
         android:layout_height="42dp"
         android:background="@drawable/header_bg"
         android:gravity="center_vertical" >
-
-
         <TextView
+            style="@style/Text_wrap_monospace_30"
+            android:text="@string/group"
             android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-
-            android:layout_gravity="center"
-            android:text="小组"
             android:textColor="@color/common_white"
-            android:textSize="20dp"/>
-
+            android:textSize="30dp"/>
     </RelativeLayout>
-<talk.util.TitleIndicator
-    android:id="@+id/pagerindicator"
-    android:layout_width="fill_parent"
-    android:layout_height="34dp"
-    android:background="@drawable/tab_bg"
-    app:footerColor="@color/tab_indicator_text_selected"
-    app:footerLineHeight="2dp"
-    app:footerTriangleHeight="3.0dp"
-    app:textColor="@color/white"
-    app:textSizeNormal="@dimen/common_text_size_middle_2"
-    app:textSizeSelected="@dimen/common_text_size_middle_2" />
 
-    <!-- Don't set background for ViewPager. It doesn't work because of page margin -->
-
-
-
+    <talk.util.TitleIndicator
+        android:id="@+id/pagerindicator"
+        android:layout_width="fill_parent"
+        android:layout_height="34dp"
+        android:background="@drawable/tab_bg"
+        app:footerColor="@color/tab_indicator_text_selected"
+        app:footerLineHeight="2dp"
+        app:footerTriangleHeight="3.0dp"
+        app:textColor="@color/white"
+        app:textSizeNormal="@dimen/common_text_size_middle_2"
+        app:textSizeSelected="@dimen/common_text_size_middle_2" />
 
     <talk.util.ViewPagerCompat
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:duplicateParentState="true" />
-
-
 </LinearLayout>

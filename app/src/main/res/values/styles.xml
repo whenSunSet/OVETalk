@@ -17,4 +17,60 @@
         <item name="android:ellipsize">marquee</item>
     </style>
 
+    <style name="Text_wrap_monospace_20">
+        <item name="android:textSize">20dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="Text_wrap_monospace_30" parent="@style/Text_wrap_monospace_20">
+        <item name="android:textSize">30dp</item>
+    </style>
+
+    <style name="Text_wrap_monospace_60" parent="@style/Text_wrap_monospace_20">
+        <item name="android:textSize">60dp</item>
+    </style>
+
+    <style name="Text_wrap_monospace_15" parent="@style/Text_wrap_monospace_20">
+        <item name="android:textSize">15dp</item>
+    </style>
+
+
+    <style name="Button_wmatch_monospace_10">
+        <item name="android:textSize">15dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="Button_wrap_monospace_center_10" parent="@style/Button_wmatch_monospace_10">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="LinearLayout_match_vertical" parent="@style/LinearLayout_wmatch_vertical">
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+
+    <style name="LinearLayout_wmatch_vertical" parent="@style/Button_wmatch_monospace_10">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Image_icon_60" parent="@style/Button_wmatch_monospace_10">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:src">@drawable/icon</item>
+    </style>
+
 </resources>

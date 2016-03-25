@@ -122,7 +122,7 @@ public class GroupActivity extends Activity {
                         if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
                             mApplication.getGroupDB().delGroup(mGroup.getGroupName());
                             mGroupActivity.finish();
-                            Groups.isFlash=true;
+                            Groups.mIsFlash =true;
                         }
                     }
                 }

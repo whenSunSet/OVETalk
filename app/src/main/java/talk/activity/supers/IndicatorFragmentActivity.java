@@ -37,9 +37,9 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     protected static final int FRAGMENT_TWO = 1;
     protected static final int FRAGMENT_THREE = 2;
     //-------------当前fragement是否需要刷新
-    public static boolean isFlash=false;
+    public static boolean mIsFlash =false;
     //--------------当前Activity是否处于显示界面
-    public static boolean isForeground=false;
+    public static boolean mIsForeground =false;
     public TalkApplication mApplication;
     public ViewPagerAdapter myAdapter = null;
     protected int mCurrentTab = 0;
@@ -202,28 +202,28 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
 
     protected void flashFragment(){
         if (mCurrentTab==0&&(this instanceof GroupAll)){
-            ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash(null);
+            ((GroupChatting)mTabs.get(mCurrentTab).fragment).flash(GlobleData.SELECT_LAST, null);
         }else {
-            ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash();
+            ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash(GlobleData.SELECT_FRIST);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        isForeground=false;
+        mIsForeground =false;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        isForeground=true;
+        mIsForeground =true;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        isForeground=false;
+        mIsForeground =false;
     }
 
     @Override

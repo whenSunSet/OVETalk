@@ -17,6 +17,7 @@ import java.util.List;
 import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
+import talk.activity.fragment.Groups;
 import talk.adapter.WorkAdapter;
 import talk.model.Group;
 import talk.model.Work;
@@ -50,11 +51,17 @@ public class GroupWork extends BasicFragment{
             }
         });
     }
-    private void makeListView(){
+    protected void makeListView(){
         mData= mApplication.getWorkDB().getGroupWork(mGroup.getGroupName());
         mAdapter=new WorkAdapter(mApplication, R.layout.work_item,mData);
         mListView.setAdapter(mAdapter);
+    }
 
+    @Override
+    public void flash(int which) {
+        makeListView();
+        super.flash(which);
+        Groups.mIsFlash =true;
     }
 
     @Override
@@ -64,11 +71,6 @@ public class GroupWork extends BasicFragment{
 //        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }
 
-    @Override
-    public void flash() {
-        makeListView();
-        super.flash();
-    }
     MyHandler handler=new MyHandler(getActivity()){
         @Override
         public void handleMessage(Message msg) {
