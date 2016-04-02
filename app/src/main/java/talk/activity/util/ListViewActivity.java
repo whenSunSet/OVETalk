@@ -28,7 +28,7 @@ public class ListViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_view);
         mFragmentTransaction =getSupportFragmentManager().beginTransaction();
         mApplication=(TalkApplication)getApplication();
-        mGroup=mApplication.getGroupDB().getGroup(getIntent().getStringExtra("groupName"));
+        mGroup=mApplication.getGroupDB().getGroup(getIntent().getStringExtra(GlobleData.GROUP_ID));
         initWhich(getIntent().getIntExtra("which",GlobleData.DEFAULT));
     }
     private void initWhich(int which){
@@ -61,8 +61,8 @@ public class ListViewActivity extends AppCompatActivity {
 
     public void finish(String grouName,int idInGroup) {
         Intent intent=new Intent();
-        intent.putExtra("groupName",grouName);
-        intent.putExtra("idInGroup",idInGroup);
+        intent.putExtra(GlobleData.GROUP_ID,grouName);
+        intent.putExtra(GlobleData.ID_IN_GROUP,idInGroup);
         setResult(1, intent);
         super.finish();
     }

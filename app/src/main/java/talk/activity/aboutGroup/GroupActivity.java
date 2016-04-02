@@ -34,7 +34,7 @@ import talk.util.MyRunnable;
 
 public class GroupActivity extends Activity {
     private ImageView mGroupIcon;
-    private TextView mGroupName;
+    private TextView mGroupId;
     private TextView mGroupNickName;
     private Button mExit;
     private Button mDestroy;
@@ -63,21 +63,21 @@ public class GroupActivity extends Activity {
         mGroupActivity =this;
 
         mGroupIcon=(ImageView)findViewById(R.id.icon);
-        mGroupName=(TextView)findViewById(R.id.groupName);
-        mGroupNickName=(TextView)findViewById(R.id.name);
+        mGroupId =(TextView)findViewById(R.id.groupId);
+        mGroupNickName=(TextView)findViewById(R.id.groupNickName);
         mExit=(Button)findViewById(R.id.exit);
         mDestroy=(Button)findViewById(R.id.destroy);
         mMember=(Button)findViewById(R.id.member);
         myPreferenceManager=mApplication.getSpUtil();
 
 //      mGroupIcon.setImageResource(Integer.parseInt(mGroup.getGroupIcon()));
-        mGroupName.setText(mGroup.getGroupName());
-        mGroupNickName.setText(mGroup.getGroupNick());
+        mGroupId.setText(mGroup.getGroupId());
+        mGroupNickName.setText(mGroup.getGroupNickName());
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                setRequest(GlobleData.GROUP_EXIT,GlobleData.USER_OUT_GROUP);
-                sendMessage("",GlobleData.USER_OUT_GROUP);
+                sendMessage(GlobleData.joinOrExitGroup,GlobleData.USER_OUT_GROUP);
             }
         });
 
@@ -85,7 +85,7 @@ public class GroupActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                setRequest(GlobleData.GROUP_CANCEL,GlobleData.USER_CANCEL_GROUP);
-                sendMessage("",GlobleData.USER_CANCEL_GROUP);
+                sendMessage(GlobleData.logoutGroup,GlobleData.USER_CANCEL_GROUP);
             }
         });
 
@@ -93,13 +93,13 @@ public class GroupActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(GroupActivity.this,ListViewActivity.class);
-                intent.putExtra(GlobleData.GROUP_NAME,mGroup.getGroupName());
+                intent.putExtra(GlobleData.GROUP_ID,mGroup.getGroupId());
                 intent.putExtra("which",GlobleData.GROUP_MEMBER_LIST);
                 startActivity(intent);
             }
         });
 
-        if (mGroup.getGroupMaster().equals(myPreferenceManager.getUserName())){
+        if (mGroup.getGroupMaster().equals(myPreferenceManager.getUserId())){
             mExit.setVisibility(View.GONE);
             mDestroy.setVisibility(View.VISIBLE);
         }else {
@@ -120,7 +120,7 @@ public class GroupActivity extends Activity {
                     public void onResponse(JSONObject jsonObject) {
                         super.onResponse(jsonObject);
                         if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
-                            mApplication.getGroupDB().delGroup(mGroup.getGroupName());
+                            mApplication.getGroupDB().delGroup(mGroup.getGroupId());
                             mGroupActivity.finish();
                             Groups.mIsFlash =true;
                         }
@@ -131,16 +131,16 @@ public class GroupActivity extends Activity {
     }
     private HashMap<String ,String > makeMap(){
         HashMap<String ,String > map=new HashMap();
-        map.put(GlobleData.GROUP_NAME, mGroup.getGroupName());
-        map.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserName());
+        map.put(GlobleData.GROUP_ID, mGroup.getGroupId());
+        map.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
         map.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
         return map;
     }
 
 
     private void setRequest(String url,int messageStatu){
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroup.getGroupName()));
-        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName()));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID,mGroup.getGroupId()));
+        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId()));
         formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(messageStatu)));
         new Thread(new MyRunnable(formparams,url,handler,messageStatu)).start();
     }

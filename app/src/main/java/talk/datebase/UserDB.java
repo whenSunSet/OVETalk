@@ -17,7 +17,7 @@ import talk.model.User;
 public class UserDB {
     public static final String USER_TABLE_NAME ="user";
 
-    private static final String USER_ID="id";
+    private static final String USER_ID="userId";
     private static final String USER_ICON = "userIcon";
     private static final String USER_NICK_NAME = "userNickName";
 

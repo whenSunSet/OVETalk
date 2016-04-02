@@ -18,7 +18,7 @@
                 style="@style/Text_wrap_monospace_20"
                 android:layout_height="30dp"
                 android:id="@+id/name"
-                android:text="@string/userName"/>
+                android:text="@string/userId"/>
 
             <TextView
                 style="@style/Text_wrap_monospace_20"

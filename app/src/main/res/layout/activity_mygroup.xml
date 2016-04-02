@@ -21,14 +21,14 @@
         android:orientation="vertical">
         <TextView
             style="@style/Text_wrap_monospace_20"
-            android:id="@+id/name"
+            android:id="@+id/groupNickName"
             android:layout_height="30dp"
             android:text="@string/groupNickName"/>
         <TextView
             style="@style/Text_wrap_monospace_20"
-            android:id="@+id/groupName"
+            android:id="@+id/groupId"
             android:layout_height="30dp"
-            android:text="@string/groupName"/>
+            android:text="@string/groupId"/>
     </LinearLayout>
 
     <ImageView

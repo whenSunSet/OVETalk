@@ -4,12 +4,12 @@ package talk.model;
  * Created by heshixiyang on 2016/1/22.
  */
 public class JoinGroup {
-    private String groupName;
+    private String groupId;
     private String memberId;
     private String date;
 
-    public JoinGroup(String groupName, String memberId, String date) {
-        this.groupName = groupName;
+    public JoinGroup(String groupId, String memberId, String date) {
+        this.groupId = groupId;
         this.memberId = memberId;
         this.date = date;
     }
@@ -17,12 +17,12 @@ public class JoinGroup {
     public JoinGroup() {
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public String getMemberId() {

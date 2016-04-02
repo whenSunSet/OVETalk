@@ -17,7 +17,7 @@ public class Work implements Parcelable {
         }
     };
     private int taskId;
-    private String groupName;
+    private String groupId;
     private int idInTask;
     private int type;
     private String path;
@@ -25,9 +25,9 @@ public class Work implements Parcelable {
     private int clickNumber;
     private String date;
 
-    public Work(int taskId, String groupName, int idInTask, int type, String path, String master, int clickNumber, String date) {
+    public Work(int taskId, String groupId, int idInTask, int type, String path, String master, int clickNumber, String date) {
         this.taskId = taskId;
-        this.groupName = groupName;
+        this.groupId = groupId;
         this.idInTask = idInTask;
         this.type = type;
         this.path = path;
@@ -48,7 +48,7 @@ public class Work implements Parcelable {
 
     protected Work(Parcel in) {
         this.taskId = in.readInt();
-        this.groupName = in.readString();
+        this.groupId = in.readString();
         this.idInTask = in.readInt();
         this.type = in.readInt();
         this.path = in.readString();
@@ -65,12 +65,12 @@ public class Work implements Parcelable {
         this.taskId = taskId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public int getIdInTask() {
@@ -129,7 +129,7 @@ public class Work implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.taskId);
-        dest.writeString(this.groupName);
+        dest.writeString(this.groupId);
         dest.writeInt(this.idInTask);
         dest.writeInt(this.type);
         dest.writeString(this.path);

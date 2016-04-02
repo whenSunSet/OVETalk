@@ -43,7 +43,7 @@ public class MakeTaskActivity extends BasicActivity {
     private Button mNextStep;
     private int nowStep=1;
     private LinearLayout.LayoutParams mLayoutParams;
-    private String mGroupName;
+    private String mGroupId;
     private Button mChoose;
     private ListView mItem;
     private ArrayAdapter<String > mAdapter;
@@ -65,7 +65,7 @@ public class MakeTaskActivity extends BasicActivity {
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
         mTask=new Task();
-        mGroupName=getIntent().getStringExtra("groupName");
+        mGroupId =getIntent().getStringExtra(GlobleData.GROUP_ID);
         formparams = new ArrayList<>();
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
@@ -109,7 +109,7 @@ public class MakeTaskActivity extends BasicActivity {
                         if (TextUtils.isEmpty(mName.getText().toString())) {
                             DialogUtil.showToast(mApplication, "还没有输入任务的名字");
                         } else {
-                            mTask.setGroupName(mName.getText().toString());
+                            mTask.setGroupId(mName.getText().toString());
                             stepThree();
                         }
                         break;
@@ -120,8 +120,8 @@ public class MakeTaskActivity extends BasicActivity {
                             mTask.setTarget(mName.getText().toString());
                             mTask.setDate(new Date().toString());
                             mTask.setClickNumber(0);
-                            mTask.setGroupName(mGroupName);
-                            mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupName) + 1);
+                            mTask.setGroupId(mGroupId);
+                            mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupId) + 1);
 
                             mApplication.getTaskDB().add(mTask);
                             GroupAll.mIsFlash =true;
@@ -249,7 +249,7 @@ public class MakeTaskActivity extends BasicActivity {
     private void sendMessage(){
         formparams.clear();
         formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,mGroupName));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, mGroupId));
         formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
         formparams.add(new BasicNameValuePair(GlobleData.TARGET, mTask.getTarget()));
         formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));

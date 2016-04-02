@@ -15,7 +15,7 @@ import talk.model.JoinGroup;
 public class JoinGroupDB {
     public static final String JOIN_TABLE_NAME="joinGroup";
     
-    public static final String GROUP_NAME="groupName";
+    public static final String GROUP_Id ="groupId";
     public static final String USER_ID="memberId";
     public static final String DATE="date";
 
@@ -30,45 +30,45 @@ public class JoinGroupDB {
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + JOIN_TABLE_NAME
                 + " (" + USER_ID + " TEXT, " //
-                + GROUP_NAME + " TEXT, "//
+                + GROUP_Id + " TEXT, "//
                 + DATE + " TEXT,"
-                + "foreign key (" + GROUP_NAME + ") references " + "groups(groupName) "
-                + "PRIMARY KEY (" + USER_ID + "," + GROUP_NAME + "))");
+                + "foreign key (" + GROUP_Id + ") references " + "groups(groupId) "
+                + "PRIMARY KEY (" + USER_ID + "," + GROUP_Id + "))");
         
     }
 
 
 
     public void add(JoinGroup joinGroup) {
-        if (getMember(joinGroup.getGroupName(),joinGroup.getMemberId())!=null){
+        if (getMember(joinGroup.getGroupId(),joinGroup.getMemberId())!=null){
             update(joinGroup);
             return;
         }
         mDb.execSQL(
                 "insert into "
                         + JOIN_TABLE_NAME
-                        + " (" + GROUP_NAME + ","
+                        + " (" + GROUP_Id + ","
                         + DATE + ","
                         + USER_ID + ") values(?,?,?)",
                 new Object[]{
-                        joinGroup.getGroupName(),
+                        joinGroup.getGroupId(),
                         joinGroup.getDate(),
                         joinGroup.getMemberId()});
 
     }
 
-    public void deleteMember(String groupName,String userId) {
-        mDb.execSQL("delete from " + JOIN_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_NAME + "=?",
-                new Object[]{userId, groupName});
+    public void deleteMember(String groupId,String userId) {
+        mDb.execSQL("delete from " + JOIN_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_Id + "=?",
+                new Object[]{userId, groupId});
     }
 
 
-    public JoinGroup getMember(String groupName,String userId){
-        Cursor c=mDb.rawQuery("select * from " + JOIN_TABLE_NAME + " where "+ USER_ID + "=? AND " + GROUP_NAME +"=?",
-                new String []{userId,groupName});
+    public JoinGroup getMember(String groupId,String userId){
+        Cursor c=mDb.rawQuery("select * from " + JOIN_TABLE_NAME + " where "+ USER_ID + "=? AND " + GROUP_Id +"=?",
+                new String []{userId,groupId});
         JoinGroup joinGroup=new JoinGroup();
         if (c.moveToFirst()){
-            joinGroup.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+            joinGroup.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
             joinGroup.setMemberId(c.getString(c.getColumnIndex(USER_ID)));
             joinGroup.setDate(c.getString(c.getColumnIndex(DATE)));
 
@@ -81,9 +81,9 @@ public class JoinGroupDB {
 
     }
 
-    public ArrayList<String> getMembersName(String groupName){
-        Cursor c=mDb.rawQuery("select "+USER_ID+" from " + JOIN_TABLE_NAME + " where "+ GROUP_NAME +"=?",
-                new String []{groupName});
+    public ArrayList<String> getMembersName(String groupId){
+        Cursor c=mDb.rawQuery("select "+USER_ID+" from " + JOIN_TABLE_NAME + " where "+ GROUP_Id +"=?",
+                new String []{groupId});
         ArrayList<String> list=new ArrayList<String>();
         if (c.moveToFirst()){
             list.add(c.getString(c.getColumnIndex(USER_ID)));
@@ -96,7 +96,7 @@ public class JoinGroupDB {
 
 
     public void update(JoinGroup joinGroup){
-        deleteMember(joinGroup.getGroupName(),joinGroup.getMemberId());
+        deleteMember(joinGroup.getGroupId(),joinGroup.getMemberId());
         add(joinGroup);
 
     }

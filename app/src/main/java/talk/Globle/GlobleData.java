@@ -9,42 +9,43 @@ public class GlobleData {
     public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_MESSAGE = "message";
 
-    public static final String requestUrl1 = "http://139.129.23.72/OVE/";
+    public static final String baseUrl1 = "http://120.27.111.167:8080/OVE/server/group";
 
+    public static final String baseUrl11 = "http://192.168.199.198:8088/OVE/server/group";
 
-    public static final String groupRequestUrl="http://39.181.120.215:8080/OVE/";
+    public static final String jpush_sendMessage= baseUrl1+"/jpush_sendMessage.do";
 
-    //创建小组的URL
-    public static final String GROUP_CREATE=requestUrl1+"group/create.do";
+    public static final String jpush_sendImage= baseUrl1+"/jpush_sendImage.do";
 
-    //退出小组的URL
-    public static final String GROUP_EXIT=groupRequestUrl +"group/exit.do";
+    public static final String sendTaskMessage= baseUrl1+"/sendTaskMessage.do";
 
-    //注销小组的URL
-    public static final String GROUP_CANCEL=groupRequestUrl +"group/cancel.do";
+    public static final String sendWorkMessage= baseUrl1+"/sendWorkMessage.do";
 
-    //发送消息的URL
-    public static final String GROUP_SEND_MESSAGE=groupRequestUrl +"group/sendMessage.do";
-//	public static final String GROUP_SEND_MESSAGE="http://39.191.127.100:8080/OVE/group/sendMessage.do";
+    public static final String joinOrExitGroup= baseUrl1+"/joinOrExitGroup.do";
 
-    //加入小组的URL
-    public static final String GROUP_JOIN=requestUrl1 +"group/join.do";
+    public static final String logoutGroup= baseUrl1+"/logoutGroup.do";
 
-    //群主同意他人加入的URL
-    public static final String GROUP_MSATER_AGREE=groupRequestUrl +"group/master.do";
+    public static final String agreeOrDisAgree= baseUrl1+"/group/master.do";
 
-    //群主不同意他人加入的URL
-    public static final String GROUP_MSATER_DISAGREE=groupRequestUrl +"group/master.do";
+    public static final String pushWork= baseUrl1+"/pushWork.do";
 
-    //获得小组信息 的URL
-    public static final String GET_GROUP_INFO=groupRequestUrl +"group/getGroupInfo.do";
+    public static final String sendTask= baseUrl1+"/sendTask.do";
 
-    public static String SD_CACHE;
-    public static String SD_FILE;
+    public static final String getWorkFile= baseUrl1+"/getWorkFile.do";
 
+    public static final String getTaskFile= baseUrl1+"/getTaskFile.do";
 
-    //视频数据加载显示每页个数
-    public static final int pageCount = 10;
+    public static final String getGroupInfo= baseUrl1+"/getGroupInfo.do";
+
+    public static final String updateAllTaskClick= baseUrl1+"/updateAllTaskClick.do";
+
+    public static final String updateAllWorkClick= baseUrl1+"/updateAllWorkClick.do";
+
+    public static final String create= baseUrl1+"/create.do";
+
+    public static String SD_CACHE="";
+
+    public static String SD_FILE="";
 
     public static final int COMMOM_MESSAGE=1;
 
@@ -72,11 +73,13 @@ public class GlobleData {
 
     public static final int YOU_DISAGREE_TO_JOIN_GROUP=13;
 
+
     public static final String MESSAGE="message";
+    public static final String GROUP_ICON="groupIcon";
     public static final String DATE="date";
-    public static final String GROUP_NAME="groupName";
+    public static final String GROUP_ID="groupId";
     public static final String GROUP_NICK_NAME="groupNickName";
-    public static final String USER_NAME="userName";
+    public static final String USER_NAME ="userName";
     public static final String MESSAGE_STATU="messageStatu";
     public static final String MESSAGE_IMAGE="messageImage";
 
@@ -139,5 +142,10 @@ public class GlobleData {
 
     public static final int ADD_MASTER=0;
     public static final int ADD_MEMBER=1;
+
+    public static final int SEND_FILE=1;
+    public static final int MAKE_GROUP=2;
+
+
 }
 

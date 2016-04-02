@@ -4,14 +4,14 @@ package talk.model;
  * Created by heshixiyang on 2016/1/22.
  */
 public class ClickTask {
-    private String groupName;
+    private String groupId;
     private int taskId;
     private String userId;
     private String date;
 
 
-    public ClickTask(String groupName, int taskId, String userId, String date) {
-        this.groupName = groupName;
+    public ClickTask(String groupId, int taskId, String userId, String date) {
+        this.groupId = groupId;
         this.taskId = taskId;
         this.userId = userId;
         this.date = date;
@@ -20,12 +20,12 @@ public class ClickTask {
     public ClickTask() {
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public int getTaskId() {

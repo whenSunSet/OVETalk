@@ -30,7 +30,7 @@ public class TaskAndWorkActivity extends Activity {
     private Work mWork;
     private int which;
 
-    private String groupName;
+    private String groupId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +57,12 @@ public class TaskAndWorkActivity extends Activity {
         switch (which){
             case GlobleData.IS_TASK:
                 mTarget.setText(mTask.getTarget());
-                mName.setText(mTask.getGroupName());
+                mName.setText(mTask.getGroupId());
                 mTime.setText(mTask.getDate());
                 p=mTask.getPath();
                 type=mTask.getType();
                 w=GlobleData.TASK_CLICK_MEMBER_LIST;
-                groupName=mTask.getGroupName();
+                groupId =mTask.getGroupId();
                 break;
             case GlobleData.IS_WORK:
                 mTarget.setVisibility(View.GONE);
@@ -71,7 +71,7 @@ public class TaskAndWorkActivity extends Activity {
                 p=mWork.getPath();
                 type=mWork.getType();
                 w=GlobleData.WORK_CLICK_MEMBER_LIST;
-                groupName=mWork.getGroupName();
+                groupId =mWork.getGroupId();
                 break;
         }
         final String[] path = {p};
@@ -110,7 +110,7 @@ public class TaskAndWorkActivity extends Activity {
             public void onClick(View v) {
                 Intent intent=new Intent(TaskAndWorkActivity.this, ListViewActivity.class);
                 intent.putExtra("which", whichMember);
-                intent.putExtra("groupName",groupName);
+                intent.putExtra("groupId", groupId);
                 startActivity(intent);
             }
         });
@@ -122,7 +122,7 @@ public class TaskAndWorkActivity extends Activity {
         }else if (which==GlobleData.IS_WORK){
             if (!GlobleMethod.isDownLoad(path)) {
                 path= GlobleMethod.downLoadFile();
-//                mApplication.getTaskDB().update(path, mTask.getIdInGroup(), mTask.getGroupName());
+//                mApplication.getTaskDB().update(path, mTask.getIdInGroup(), mTask.getGroupId());
             }
             intent.putExtra("FILE_NAME", path);
         }

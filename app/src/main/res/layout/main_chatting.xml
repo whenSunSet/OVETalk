@@ -1,61 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-                android:background="@drawable/chat_bg_default"
-                android:clickable="true">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/chat_bg_default">
 
     <LinearLayout
+        style="@style/LinearLayout_wmatch_vertical"
         android:id="@+id/contant"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:layout_alignParentBottom="true">
 
         <RelativeLayout
             android:id="@+id/ly_chat_bottom"
             android:layout_width="fill_parent"
             android:layout_height="55dp"
             android:background="@color/white">
-
-
-
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/LinearLayout_wmatch_vertical"
                 android:layout_centerVertical="true"
                 android:orientation="horizontal">
                 <EditText
                     android:id="@+id/id_chat_msg"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_centerVertical="true"
+                    android:layout_height="50dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_weight="10"
                     android:singleLine="true"
                     android:textSize="18sp" />
+
                 <ImageView
                     android:id="@+id/more"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="50dp"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/id_chat_send"
                     android:layout_weight="3"
                     android:src="@drawable/icon_chattype_add"
                     android:visibility="visible"/>
+
                 <Button
                     android:id="@+id/id_chat_send"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="50dp"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:layout_weight="3"
                     android:text="发送"
                     android:visibility="gone" />
-
             </LinearLayout>
         </RelativeLayout>
 

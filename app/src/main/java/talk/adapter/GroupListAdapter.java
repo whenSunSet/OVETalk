@@ -15,6 +15,7 @@ import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
 
+import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.model.Group;
@@ -62,12 +63,12 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
     //-----------------------------布置每个item里面的布局
     private void setResource(ViewHolder holder,Group group){
         //获取该group的最后一条信息
-        GroupChatMessage chatMessage=mApplication.getGroupMessageDB().getLastChatMessage(group.getGroupName());
+        GroupChatMessage chatMessage=mApplication.getGroupMessageDB().getLastChatMessage(group.getGroupId());
         //放置该group的NickName和icon
-        holder.name.setText(group.getGroupNick());
+        holder.name.setText(group.getGroupNickName());
         holder.icon.setImageResource(R.drawable.ic_launcher);
         //判断该群的groupName是否和其userName相同，若相同则该群为系统群
-        boolean isSystemGroup=(group.getGroupName().equals(mApplication.getSpUtil().getUserName()));
+        boolean isSystemGroup=(group.getGroupId().equals(mApplication.getSpUtil().getUserId()));
 
         //判断当前group的消息是否为空
         if (chatMessage==null){
@@ -81,7 +82,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             //若不为空，则显示未阅读的信息条数，将data和chat都设置好
 
             //获取该群没有阅读的信息的数量
-            int unReadedMsgNum=mApplication.getGroupMessageDB().getUnreadedMsgsCountByGroupId(group.getGroupName());
+            int unReadedMsgNum=mApplication.getGroupMessageDB().getUnreadedMsgsCountByGroupId(group.getGroupId());
             //若为0则隐藏未阅读标志
             if (unReadedMsgNum==0){
                 holder.unReadNum.setVisibility(View.GONE);
@@ -95,7 +96,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             }
             holder.data.setText(chatMessage.getDateStr());
             //将发送过来user的姓名和聊天内容都写入
-            holder.chat.setText(mApplication.getUserDB().getMember(chatMessage.getUserName()).getUserNickName()+ ":" + chatMessage.getMessage());
+            holder.chat.setText(mApplication.getUserDB().getMember(chatMessage.getUserId()).getUserNickName()+ ":" + chatMessage.getMessage());
             if (isSystemGroup){
                 //如果是系统Group的话就把姓名去掉
                 holder.chat.setText(chatMessage.getMessage());
@@ -108,13 +109,13 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             setClick(holder.chatAll,"-1",group);
         }else {
             //若不是，则直接传递groupName
-            setClick(holder.chatAll,group.getGroupName(),group);
+            setClick(holder.chatAll,group.getGroupId(),group);
         }
 
     }
 
     private void setClick(LinearLayout chatAll, final String extraMessage, final Group group){
-        final Group group1=mApplication.getGroupDB().getGroup(group.getGroupName());
+        final Group group1=mApplication.getGroupDB().getGroup(group.getGroupId());
         if (group1==null) {
             Toast.makeText(mApplication, "该群组已经解散,请刷新列表", Toast.LENGTH_SHORT).show();
             return;
@@ -125,7 +126,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
                 (mApplication).map.put("nowGroup",group);
 
                 Intent intent = new Intent(mApplication, GroupAll.class);
-                intent.putExtra("groupName", extraMessage);
+                intent.putExtra(GlobleData.GROUP_ID, extraMessage);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mApplication.startActivity(intent);
             }

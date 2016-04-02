@@ -32,6 +32,8 @@ public class MyRunnable implements Runnable {
         Message msg = new Message();
 //        msg.obj = GlobleMethod.GetResult(url, formparams);
         if (msg.obj.equals("")) {
+
+
             //网络错误
             msg.what = GlobleData.NET_ERROR;
         }else if (msg.obj.equals("0")) {

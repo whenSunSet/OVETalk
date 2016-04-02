@@ -12,7 +12,7 @@ import talk.model.Task;
 
 public class TaskDB {
     public static final String TASK_TABLE_NAME="task";
-    public  static final String GROUP_NAME="groupName";
+    public  static final String GROUP_Id ="groupId";
     private static final String ID="idInGroup";
     private static final String TYPE = "type";
     private static final String PATH= "path";
@@ -29,14 +29,14 @@ public class TaskDB {
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + TASK_TABLE_NAME + " ( "
                 + ID + " INTEGER, "
-                + GROUP_NAME + " TEXT, "
+                + GROUP_Id + " TEXT, "
                 + TARGET + " TEXT, "
                 + TYPE + " INTEGER,"
                 + DATE + " TEXT, "
                 + PATH + " TEXT, "
                 + CLICK_NUMBER + " INTEGER,"
-                + "foreign key (" + GROUP_NAME + ") references " + "groups(groupName) "
-                + "PRIMARY KEY (" + ID + "," + GROUP_NAME + "))");
+                + "foreign key (" + GROUP_Id + ") references " + "groups(groupId) "
+                + "PRIMARY KEY (" + ID + "," + GROUP_Id + "))");
     }
 
 
@@ -44,7 +44,7 @@ public class TaskDB {
 
         mDb.execSQL("insert into " + TASK_TABLE_NAME + " ("
                         + ID + ","
-                        + GROUP_NAME + ","
+                        + GROUP_Id + ","
                         + TARGET + ","
                         + TYPE + ","
                         + DATE + ","
@@ -52,7 +52,7 @@ public class TaskDB {
                         + CLICK_NUMBER + ") values(?,?,?,?,?,?,?)",
                 new Object[]{
                         task.getIdInGroup(),
-                        task.getGroupName(),
+                        task.getGroupId(),
                         task.getTarget(),
                         task.getType(),
                         task.getDate(),
@@ -61,55 +61,55 @@ public class TaskDB {
         );
     }
 
-    public void deltask(String groupName,int idInGroup){
+    public void deltask(String groupId,int idInGroup){
             mDb.execSQL("delete from "
                     + TASK_TABLE_NAME
                     + " where "
                     + ID + "=? AND "
-                    + GROUP_NAME +"=?",
+                    + GROUP_Id +"=?",
                     new Object[]{
                             idInGroup,
-                            groupName});
+                            groupId});
     }
 
     public void update(Task task){
-        deltask(task.getGroupName(),task.getIdInGroup());
+        deltask(task.getGroupId(),task.getIdInGroup());
         add(task);
     }
 
-    public void update(int clickNum,int idInGroup ,String groupName){
+    public void update(int clickNum,int idInGroup ,String groupId){
         mDb.execSQL("update "
                         + TASK_TABLE_NAME
                         + " set "
                         + CLICK_NUMBER + " =?"
                         + " where "
                         + ID + "=? AND "
-                        + GROUP_NAME + "=?",
+                        + GROUP_Id + "=?",
                 new Object[]{
                         clickNum,
                         idInGroup,
-                        groupName});
+                        groupId});
     }
-    public void update(String path,int idInGroup ,String groupName){
+    public void update(String path,int idInGroup ,String groupId){
         mDb.execSQL("update "
                         + TASK_TABLE_NAME
                         + " set "
                         + PATH + " =?"
                         + " where "
                         + ID + "=? AND "
-                        + GROUP_NAME + "=?",
+                        + GROUP_Id + "=?",
                 new Object[]{
                         path,
                         idInGroup,
-                        groupName});
+                        groupId});
     }
-    public Task getTask(String groupName,int idInGroup){
+    public Task getTask(String groupId,int idInGroup){
         Task task=new Task();
-        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ ID + "=? AND " + GROUP_NAME +"=?",
-                new String []{String.valueOf(idInGroup),groupName});
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ ID + "=? AND " + GROUP_Id +"=?",
+                new String []{String.valueOf(idInGroup),groupId});
 
         if (c.moveToFirst()) {
-            task.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+            task.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
             task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
             task.setDate(c.getString(c.getColumnIndex(DATE)));
             task.setClickNumber(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
@@ -122,13 +122,13 @@ public class TaskDB {
 
     }
 
-    public ArrayList<Task> getGroupTask(String groupName) {
+    public ArrayList<Task> getGroupTask(String groupId) {
         ArrayList<Task> tasks= new ArrayList<>();
-        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{groupId});
 
         while (c.moveToNext()) {
             Task task=new Task();
-            task.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+            task.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
             task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
             task.setDate(c.getString(c.getColumnIndex(DATE)));
             task.setClickNumber(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
@@ -142,7 +142,7 @@ public class TaskDB {
         return tasks;
     }
     public int getGroupTaskNum(String groupName) {
-        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{groupName});
         int a=0;
         while (c.moveToNext()) {
             a++;

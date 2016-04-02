@@ -12,10 +12,11 @@ public class AsyncHttpClientUtil {
 
         public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
             client.get(url, params, responseHandler);
+            client.setConnectTimeout(500000);
+            client.setTimeout(500000);
         }
 
         public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
             client.post(url, params, responseHandler);
         }
-
 }

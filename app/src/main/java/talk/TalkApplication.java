@@ -1,4 +1,5 @@
 package talk;
+
 import android.app.Application;
 import android.app.NotificationManager;
 
@@ -7,6 +8,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import cn.jpush.android.api.JPushInterface;
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
@@ -60,10 +62,10 @@ public class TalkApplication extends Application {
         clickWorkDB=new ClickWorkDB(this);
 
 
-        map.put("my", new User(getSpUtil().getUserName(),getSpUtil().getUsreNickName(),getSpUtil().getUserIcon()));
+        map.put("my", new User(getSpUtil().getUserId(),getSpUtil().getUsreNickName(),getSpUtil().getUserIcon()));
 
         GlobleData.SD_CACHE= GlobleMethod.getCacheDir(this);
-        GlobleData.SD_FILE= GlobleMethod.getFileDir(this);
+       GlobleData.SD_FILE= GlobleMethod.getFileDir(this);
     }
 
     public NotificationManager getNotificationManager() {

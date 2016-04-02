@@ -60,14 +60,14 @@ public class GroupTask extends BasicFragment{
                     intent.putExtra("which", GlobleData.IS_TASK);
                     getActivity().startActivity(intent);
                 } else if (mWhichActivity == 2) {
-                    ((ListViewActivity) getActivity()).finish(task.getGroupName(), task.getIdInGroup());
+                    ((ListViewActivity) getActivity()).finish(task.getGroupId(), task.getIdInGroup());
                 }
             }
         });
     }
 
     protected void makeListView(){
-        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupName());
+        mData= mApplication.getTaskDB().getGroupTask(mGroup.getGroupId());
         mAdapter=new TaskAdapter(mApplication,R.layout.task_item,mData);
         mListView.setAdapter(mAdapter);
     }
@@ -83,7 +83,7 @@ public class GroupTask extends BasicFragment{
     protected void upData() {
         super.upData();
 
-//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupName()));
+//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupId()));
 //        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }
 

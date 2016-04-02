@@ -26,13 +26,13 @@
                         android:layout_gravity="left"
                         android:id="@+id/name"
                         android:maxLines="1"
-                        android:text="@string/groupName"/>
+                        android:text="@string/groupId"/>
                 </LinearLayout>
 
                 <TextView
                     style="@style/Text_wrap_monospace_15"
                     android:id="@+id/date"
-                    android:text="@string/userName"
+                    android:text="@string/userId"
                     android:maxLines="1"/>
             </LinearLayout>
         </LinearLayout>

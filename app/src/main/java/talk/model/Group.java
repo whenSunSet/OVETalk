@@ -7,8 +7,8 @@ import android.os.Parcelable;
  * Created by asus on 2015/11/3.
  */
 public class Group implements Parcelable {
-    private String groupName;
-    private String groupNick;
+    private String groupId;
+    private String groupNickName;
     private String groupIcon;
     private String groupMaster;
     private int taskNum;
@@ -17,29 +17,29 @@ public class Group implements Parcelable {
     public Group() {
     }
 
-    public Group(String groupName, String groupNick, String groupIcon, String groupMaster, int taskNum, int memberNum) {
-        this.groupName = groupName;
-        this.groupNick = groupNick;
+    public Group(String groupId, String groupNickName, String groupIcon, String groupMaster, int taskNum, int memberNum) {
+        this.groupId = groupId;
+        this.groupNickName = groupNickName;
         this.groupIcon = groupIcon;
         this.groupMaster = groupMaster;
         this.taskNum = taskNum;
         this.memberNum = memberNum;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
-    public String getGroupNick() {
-        return groupNick;
+    public String getGroupNickName() {
+        return groupNickName;
     }
 
-    public void setGroupNick(String groupNick) {
-        this.groupNick = groupNick;
+    public void setGroupNickName(String groupNickName) {
+        this.groupNickName = groupNickName;
     }
 
     public String getGroupIcon() {
@@ -81,8 +81,8 @@ public class Group implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.groupName);
-        dest.writeString(this.groupNick);
+        dest.writeString(this.groupId);
+        dest.writeString(this.groupNickName);
         dest.writeString(this.groupIcon);
         dest.writeString(this.groupMaster);
         dest.writeInt(this.taskNum);
@@ -90,8 +90,8 @@ public class Group implements Parcelable {
     }
 
     protected Group(Parcel in) {
-        this.groupName = in.readString();
-        this.groupNick = in.readString();
+        this.groupId = in.readString();
+        this.groupNickName = in.readString();
         this.groupIcon = in.readString();
         this.groupMaster = in.readString();
         this.taskNum = in.readInt();

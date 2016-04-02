@@ -52,7 +52,7 @@ public class GroupWork extends BasicFragment{
         });
     }
     protected void makeListView(){
-        mData= mApplication.getWorkDB().getGroupWork(mGroup.getGroupName());
+        mData= mApplication.getWorkDB().getGroupWork(mGroup.getGroupId());
         mAdapter=new WorkAdapter(mApplication, R.layout.work_item,mData);
         mListView.setAdapter(mAdapter);
     }
@@ -67,7 +67,7 @@ public class GroupWork extends BasicFragment{
     @Override
     protected void upData() {
         super.upData();
-//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupName()));
+//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupId()));
 //        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }
 

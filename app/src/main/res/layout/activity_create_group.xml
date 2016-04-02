@@ -12,11 +12,25 @@
             android:text="@string/printGroupNickName"/>
 
         <EditText
-            android:id="@+id/groupName"
+            android:id="@+id/groupId"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:singleLine="true"
             android:textSize="20dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LinearLayout_wmatch_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            style="@style/Image_icon_60"
+            android:id="@+id/groupIcon"/>
+
+        <Button
+            style="@style/Button_wmatch_monospace_10"
+            android:text="@string/getIcon"
+            android:layout_height="match_parent"
+            android:id="@+id/getIcon"/>
     </LinearLayout>
 
     <Button

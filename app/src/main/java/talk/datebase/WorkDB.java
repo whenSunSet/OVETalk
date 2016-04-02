@@ -16,7 +16,7 @@ import talk.model.Work;
  */
 public class WorkDB {
     public static final String WORK_TABLE_NAME="work";
-    public  static final String GROUP_NAME="groupName";
+    public  static final String GROUP_ID ="groupId";
     private static final String TASK_ID="idInGroup";
     private static final String ID="idInTask";
     private static final String TYPE = "type";
@@ -34,15 +34,15 @@ public class WorkDB {
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + WORK_TABLE_NAME + " ( "
                 + TASK_ID + " INTEGER, "
-                + GROUP_NAME + " TEXT, "
+                + GROUP_ID + " TEXT, "
                 + ID + " INTEGER, "
                 + TYPE + " INTEGER ,"
                 + DATE + " TEXT , "
                 + PATH + " TEXT , "
                 + MASTER + " TEXT , "
                 + CLICK_NUMBER + " INTEGER,"
-                + "foreign key (" + GROUP_NAME + "," + TASK_ID + ") references " + "task(groupName,idInGroup) "
-                + "PRIMARY KEY (" + ID + "," + GROUP_NAME + "," + TASK_ID + "))");
+                + "foreign key (" + GROUP_ID + "," + TASK_ID + ") references " + "task(groupId,idInGroup) "
+                + "PRIMARY KEY (" + ID + "," + GROUP_ID + "," + TASK_ID + "))");
     }
 
 
@@ -50,7 +50,7 @@ public class WorkDB {
 
         mDb.execSQL("insert into " + WORK_TABLE_NAME + " ("
                         + TASK_ID + ","
-                        + GROUP_NAME + ","
+                        + GROUP_ID + ","
                         + ID + ","
                         + TYPE + ","
                         + DATE + ","
@@ -59,7 +59,7 @@ public class WorkDB {
                         + CLICK_NUMBER + ") values(?,?,?,?,?,?,?,?)",
                 new Object[]{
                         work.getTaskId(),
-                        work.getGroupName(),
+                        work.getGroupId(),
                         work.getIdInTask(),
                         work.getType(),
                         work.getDate(),
@@ -69,25 +69,25 @@ public class WorkDB {
         );
     }
 
-    public void delWork(String groupName,int taskId,int idInTask ){
+    public void delWork(String groupId,int taskId,int idInTask ){
         mDb.execSQL("delete from "
                         + WORK_TABLE_NAME
                         + " where "
-                        + GROUP_NAME + "=? AND "
+                        + GROUP_ID + "=? AND "
                         + TASK_ID + "=? AND "
                         + ID +"=?",
                 new Object[]{
-                        groupName,
+                        groupId,
                         taskId,
                         idInTask});
     }
 
     public void update(Work work){
-        delWork(work.getGroupName(),work.getTaskId(),work.getIdInTask());
+        delWork(work.getGroupId(),work.getTaskId(),work.getIdInTask());
         add(work);
     }
 
-    public void update(int clickNum,int taskId,int idInTask,String groupName){
+    public void update(int clickNum,int taskId,int idInTask,String groupId){
         mDb.execSQL("update "
                         + WORK_TABLE_NAME
                         + " set "
@@ -95,23 +95,23 @@ public class WorkDB {
                         + " where "
                         + ID + "=? AND "
                         + TASK_ID + "=? AND "
-                        + GROUP_NAME + "=?",
+                        + GROUP_ID + "=?",
                 new Object[]{
                         clickNum,
                         idInTask,
                         taskId,
-                        groupName});
+                        groupId});
     }
 
-    public Work getWork(String groupName,int taskId,int idInTask){
+    public Work getWork(String groupId,int taskId,int idInTask){
         Work work=new Work();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
-                        + GROUP_NAME + "=? AND "
+                        + GROUP_ID + "=? AND "
                         + TASK_ID + "=? AND "
                         + ID +"=?",
                 new String []{
-                        groupName,
+                        groupId,
                         String.valueOf(taskId),
                         String.valueOf(idInTask)});
 
@@ -125,14 +125,14 @@ public class WorkDB {
 
 
 
-    public  List<Work> getTaskWorks(String groupName,int taskId){
+    public  List<Work> getTaskWorks(String groupId,int taskId){
         List<Work> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
-                        + GROUP_NAME + "=? AND "
+                        + GROUP_ID + "=? AND "
                         + TASK_ID +"=?",
                 new String []{
-                        groupName,
+                        groupId,
                         String.valueOf(taskId)});
 
         while (c.moveToNext()) {list.add(makeWork(c));}
@@ -140,15 +140,15 @@ public class WorkDB {
         c.close();
         return list;
     }
-    public  Work getTaskWork(String groupName,int taskId,int idInTask){
+    public  Work getTaskWork(String groupId,int taskId,int idInTask){
         Work work=null;
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
-                        + GROUP_NAME + "=? AND "
+                        + GROUP_ID + "=? AND "
                         + ID + "=? AND "
                         + TASK_ID +"=?",
                 new String []{
-                        groupName,
+                        groupId,
                         String.valueOf(idInTask),
                         String.valueOf(taskId)});
 
@@ -160,23 +160,23 @@ public class WorkDB {
     }
 
 
-    public  int getTaskWorkNum(String groupName,int taskId){
+    public  int getTaskWorkNum(String groupId,int taskId){
         List<Work> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
-                        + GROUP_NAME + "=? AND "
+                        + GROUP_ID + "=? AND "
                         + TASK_ID +"=?",
                 new String []{
-                        groupName,
+                        groupId,
                         String.valueOf(taskId)});
         int a=0;
         while (c.moveToNext()) {a++;}
         c.close();
         return a;
     }
-    public ArrayList<Work> getGroupWork(String groupName) {
+    public ArrayList<Work> getGroupWork(String groupId) {
         ArrayList<Work> list=new ArrayList<>();
-        Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+" where "+GROUP_NAME+"=?",new String []{groupName});
+        Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+" where "+ GROUP_ID +"=?",new String []{groupId});
 
         while (c.moveToNext()) {list.add(makeWork(c));}
         Collections.reverse(list);
@@ -186,7 +186,7 @@ public class WorkDB {
 
     public Work makeWork(Cursor c){
         Work work=new Work();
-        work.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+        work.setGroupId(c.getString(c.getColumnIndex(GROUP_ID)));
         work.setIdInTask(c.getInt(c.getColumnIndex(ID)));
         work.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
         work.setDate(c.getString(c.getColumnIndex(DATE)));
@@ -197,7 +197,7 @@ public class WorkDB {
         return work;
     }
 
-    public void delTable(String groupName) {
+    public void delTable(String groupId) {
         mDb.execSQL("DROP TABLE " + WORK_TABLE_NAME);
     }
 

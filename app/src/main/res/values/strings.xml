@@ -1,11 +1,11 @@
 <resources>
-    <string name="groupName">groupName</string>
+    <string name="groupId">groupId</string>
     <string name="groupNickName">groupNickName</string>
     <string name="exit">退出</string>
     <string name="destroy">注销</string>
     <string name="member">成员</string>
 
-    <string name="userName">userName</string>
+    <string name="userId">userId</string>
     <string name="target">目标：</string>
     <string name="clickMember">观看人员</string>
 
@@ -22,6 +22,11 @@
 
     <string name="chat">chat</string>
     <string name="date">date</string>
+
+    <string name="joinGroup">加入小组</string>
+    <string name="printGroupId">请输入小组号......</string>
+
+    <string name="getIcon">选择群组头像</string>
 
 
 

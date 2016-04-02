@@ -35,10 +35,10 @@ public class GroupsFind extends Fragment {
     private MyPreferenceManager myPreferenceManager;
     private TalkApplication mApplication;
     private View mView;
-    private EditText mGroupNameEdit;
+    private EditText mGroupIdEdit;
     private Button mAddGroup;
     private List<NameValuePair> formparams;
-    private String mGroupName;
+    private String mGroupId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,20 +49,20 @@ public class GroupsFind extends Fragment {
     public View init(LayoutInflater inflater){
         mApplication=(TalkApplication)getActivity().getApplication();
         mView =inflater.inflate(R.layout.find_into_group_layout,null);
-        mGroupNameEdit=(EditText) mView.findViewById(R.id.groupName);
+        mGroupIdEdit =(EditText) mView.findViewById(R.id.groupId);
         mAddGroup=(Button) mView.findViewById(R.id.send_button);
         myPreferenceManager=mApplication.getSpUtil();
 
         mAddGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mGroupName = mGroupNameEdit.getText().toString();
-                if (TextUtils.isEmpty(mGroupName)) {
+                mGroupId = mGroupIdEdit.getText().toString();
+                if (TextUtils.isEmpty(mGroupId)) {
                     DialogUtil.showToast(mApplication, "你还没输入文字呢");
                     return;
                 }
 //                makeF();
-                sendMessage("");
+                sendMessage(GlobleData.joinOrExitGroup);
             }
         });
         return mView;
@@ -81,16 +81,16 @@ public class GroupsFind extends Fragment {
 
     private HashMap makeMap(){
         Map map=new HashMap();
-        map.put(GlobleData.GROUP_NAME, mGroupName);
-        map.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserName());
+        map.put(GlobleData.GROUP_ID, mGroupId);
+        map.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
         map.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP));
         return makeMap();
     }
 
     private void makeF(){
         formparams = new ArrayList<>();
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mGroupName));
-        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, mGroupId));
+        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserId()));
         formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP)));
         new Thread(new MyRunnable(formparams,"",handler,GlobleData.USER_REQUEST_JOIN_GROUP));
     }

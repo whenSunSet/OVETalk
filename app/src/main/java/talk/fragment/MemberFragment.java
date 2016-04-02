@@ -39,7 +39,7 @@ public class MemberFragment extends BasicFragment {
         mWork=activity.mWork;
         if (activity.mIsWorkClick){
             mData=GlobleMethod.findClickWorkMembers(
-                    mGroup.getGroupName(),
+                    mGroup.getGroupId(),
                     mWork.getTaskId(),
                     mWork.getIdInTask(),
                     activity.mApplication.getClickWorkDB(),
@@ -47,12 +47,12 @@ public class MemberFragment extends BasicFragment {
 
         }else if (activity.mIsTaskClick){
             mData=GlobleMethod.findClickTaskMembers(
-                    mGroup.getGroupName(),
+                    mGroup.getGroupId(),
                     mTask.getIdInGroup(),
                     activity.mApplication.getClickTaskDB(),
                     activity.mApplication.getUserDB());
         }else {
-            mData= GlobleMethod.findUserFromGroup(mApplication.getJoinGroupDB(), mApplication.getUserDB(),mGroup.getGroupName());
+            mData= GlobleMethod.findUserFromGroup(mApplication.getJoinGroupDB(), mApplication.getUserDB(),mGroup.getGroupId());
         }
         mAdapter=new MemberAdapter(mApplication, R.layout.member_item_layout,mData);
         mListView.setAdapter(mAdapter);

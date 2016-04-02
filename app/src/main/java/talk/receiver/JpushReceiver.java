@@ -47,7 +47,7 @@ public class JpushReceiver extends BroadcastReceiver {
         formparams= new ArrayList<>();
         Bundle bundle = intent.getExtras();
         Message message;
-        String groupName;
+        String groupId;
         String msg=null;
         String groupNickName;
 
@@ -60,75 +60,75 @@ public class JpushReceiver extends BroadcastReceiver {
             //根据MessageImage 的状态得知信息的状态
             if (messageStatu<=3&&messageStatu==GlobleData.USER_PUT_HOMEWORK&&messageStatu==GlobleData.MASTER_PUT_TASK){
                 //1-3 10 11都是group接受的消息
-                groupName=message.getGroupName();
-                makeAndSaveMessage(message, groupName);
+                groupId=message.getGroupId();
+                makeAndSaveMessage(message, groupId);
                 if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
                     message.setMessage("我发布了一个任务，快来看看吧");
                     formparams.clear();
-                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
+                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, message.getGroupId()));
                     formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, message.getUserIcon()));
                     formparams.add(new BasicNameValuePair(GlobleData.TASK_ID, message.getUserNickName()));
                     new Thread(new MyRunnable(formparams,"",handler,messageStatu));
                 }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
                     message.setMessage("我发布了一个作业，快来看看吧");
                     formparams.clear();
-                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, message.getGroupName()));
+                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, message.getGroupId()));
                     formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, message.getUserIcon()));
                     new Thread(new MyRunnable(formparams,"",handler,messageStatu));
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
-                groupName=myPreferenceManager.getUserName();
+                groupId=myPreferenceManager.getUserId();
                 if (messageStatu==GlobleData.AGREE_USER_TO_GROUP){
                     groupNickName=message.getMessage();
                 }else {
-                    groupNickName=mApplication.getGroupDB().getGroup(message.getGroupName()).getGroupNick();
+                    groupNickName=mApplication.getGroupDB().getGroup(message.getGroupId()).getGroupNickName();
                 }
 
                 switch (messageStatu) {
                     case GlobleData.USER_JOIN_GROUP:
                         msg="加入了";
                         GlobleMethod.addUserToGroup(mApplication, message,GlobleData.ADD_MEMBER);
-                        //groupname:加入的群组，date：服务器发送的时间，nickname：加入人的昵称，username：加入人的id userIcon: 加入人的头像
+                        //groupId 加入的群组，date：服务器发送的时间，nickname：加入人的昵称，username：加入人的id userIcon: 加入人的头像
 
                         break;
                     case GlobleData.USER_OUT_GROUP:
                         msg="退出了";
                         GlobleMethod.quitFromGroup(mApplication, message);
-                        //groupname:要退出的群组，date：服务器发送的时间，nickname：退出人的昵称，username：退出人的id
+                        //groupId:要退出的群组，date：服务器发送的时间，nickname：退出人的昵称，username：退出人的id
 
                         break;
                     case GlobleData.USER_CANCEL_GROUP:
                         msg="注销了";
-                        mApplication.getGroupDB().delGroup(message.getGroupName());
+                        mApplication.getGroupDB().delGroup(message.getGroupId());
                         GlobleMethod.setTag(mApplication);
-                        //groupname:注销的群组，date：服务器发送的时间，nickname：注销群主的昵称，username：注销群主的id
+                        //groupId:注销的群组，date：服务器发送的时间，nickname：注销群主的昵称，username：注销群主的id
                         break;
                     case GlobleData.AGREE_USER_TO_GROUP:
                         msg="同意你加入";
-//                      mApplication.getGroupDB().addGroup(new Group(message.getGroupName(),groupNickName,message.getUserIcon(),message.getUserName()));
+//                      mApplication.getGroupDB().addGroup(new Group(message.getGroupId(),groupNickName,message.getUserIcon(),message.getUserId()));
                         GlobleMethod.setTag(mApplication);
                         formparams.clear();
-                        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserName()));
-                        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME,message.getGroupName()));
+                        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserId()));
+                        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID,message.getGroupId()));
                         formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String .valueOf(GlobleData.AGREE_USER_TO_GROUP)));
 
-                        new Thread(new MyRunnable(formparams,GlobleData.GET_GROUP_INFO,handler,GlobleData.AGREE_USER_TO_GROUP)).start();
+//                        new Thread(new MyRunnable(formparams,GlobleData.GET_GROUP_INFO,handler,GlobleData.AGREE_USER_TO_GROUP)).start();
 
-                        //groupname:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
+                        //groupID:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
 
                         break;
                     case GlobleData.DISAGREE_USER_TO_GROUP:
                         msg="不同意你加入";
-                        //groupname:不同意加入的群组，date：服务器发送的时间，nickname：不同意加入的群主的昵称，username：不同意加入的群主的id
+                        //groupID:不同意加入的群组，date：服务器发送的时间，nickname：不同意加入的群主的昵称，username：不同意加入的群主的id
 
                         break;
                     case GlobleData.USER_REQUEST_JOIN_GROUP:
                         msg="请求加入";
-                        //groupname:请求加入的群组，date：服务器发送的时间，nickname：想加入该群人的昵称，username：想加入该群人的id
+                        //groupId:请求加入的群组，date：服务器发送的时间，nickname：想加入该群人的昵称，username：想加入该群人的id
                         break;
                 }
-                makeAndSaveMessage(msg, message, groupName, groupNickName);
+                makeAndSaveMessage(msg, message, groupId, groupNickName);
             }
              sendMessageToActivity(context, message);
         }
@@ -142,16 +142,16 @@ public class JpushReceiver extends BroadcastReceiver {
             object=new JSONObject(bundle.getString("cn.jpush.android.EXTRA"));
             message = new Message(
                     bundle.getString("cn.jpush.android.MESSAGE"),
-                    object.getString("groupname"),
+                    object.getString("groupId"),
                     object.getString("icon"),
                     object.getString("date"),
                     object.getString("nickname"),
-                    object.getString("username"),
+                    object.getString("userName"),
                     object.getInt("messagestatu"),
                     object.getString("messageimage"));
 
             //如果是自己发出的信息，则不接受
-            if (object.getString("username").toString().equals(myPreferenceManager.getUserName())){
+            if (object.getString("userName").toString().equals(myPreferenceManager.getUserId())){
                 return null;
             }
         } catch (JSONException e) {
@@ -168,29 +168,29 @@ public class JpushReceiver extends BroadcastReceiver {
             context.sendBroadcast(msgIntent);
         }
     }
-    private void makeAndSaveMessage(Message message, String groupName){
-        makeAndSaveMessage("", message, groupName, "");
+    private void makeAndSaveMessage(Message message, String groupId){
+        makeAndSaveMessage("", message, groupId, "");
     }
-    private  void makeAndSaveMessage(String s, Message message, String groupName, String groupNickName){
+    private  void makeAndSaveMessage(String s, Message message, String groupId, String groupNickName){
         String msg;
 
         if (TextUtils.isEmpty(s)){
             msg=message.getMessage();
         }else {
-            msg=message.getUserNickName()+"("+message.getUserName()+")"+ s+"："+groupNickName+"("+message.getGroupName()+")群";
+            msg=message.getUserNickName()+"("+message.getUserId()+")"+ s+"："+groupNickName+"("+message.getGroupId()+")群";
         }
         message.setMessage(msg);
         GroupChatMessage groupChatMessage=new GroupChatMessage(
                 msg,
                 true,
-                message.getGroupName(),
+                message.getGroupId(),
                 message.getUserIcon(),
                 false,
                 message.getDate(),
                 message.getUserNickName(),
-                message.getUserName(),
+                message.getUserId(),
                 message.getMessageImage(),
                 message.getMessageStatu());
-        mApplication.getGroupMessageDB().add(groupName, groupChatMessage);
+        mApplication.getGroupMessageDB().add(groupId, groupChatMessage);
     }
 }

@@ -26,7 +26,7 @@
                         android:layout_gravity="left"
                         android:id="@+id/name"
                         android:maxLines="1"
-                        android:text="@string/groupName"/>
+                        android:text="@string/groupId"/>
 
                     <TextView
                         style="@style/Text_wrap_monospace_15"

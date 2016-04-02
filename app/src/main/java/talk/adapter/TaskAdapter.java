@@ -50,7 +50,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
     private void setResource(Task task,ViewHolder holder){
         holder.date.setText(task.getDate());
-        holder.name.setText("master name:"+task.getGroupName());
+        holder.name.setText("master name:"+task.getGroupId());
         holder.content.setText("target:"+task.getTarget());
 
         switch (task.getType()){

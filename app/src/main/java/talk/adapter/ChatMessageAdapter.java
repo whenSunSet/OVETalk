@@ -85,7 +85,7 @@ public class ChatMessageAdapter extends BaseAdapter{
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		mUser = mApplication.getUserDB().getMember(chatMessage.getUserName());
+		mUser = mApplication.getUserDB().getMember(chatMessage.getUserId());
 		setView(viewHolder,chatMessage,position);
 		return convertView;
 	}

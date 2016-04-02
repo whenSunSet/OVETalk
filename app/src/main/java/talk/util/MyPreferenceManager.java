@@ -106,20 +106,20 @@ public class MyPreferenceManager {
 
     }
 
-    public String getUserName() {
-        return mSharedPreferences.getString("userName","");
+    public String getUserId() {
+        return mSharedPreferences.getString("userId","");
     }
 
-    public void setUserName(String userName) {
+    public void setUserId(String userId) {
         mEditor = mSharedPreferences.edit();
-        mEditor.putString("userName", userName);
+        mEditor.putString("userId", userId);
         mEditor.commit();
     }
 
     public String getUserAll(){
         StringBuilder userAll=null;
         userAll.append("userIcon:"+this.getUserIcon());
-        userAll.append(",userName:"+this.getUserName());
+        userAll.append(",userId:"+this.getUserId());
         userAll.append(",userNickName:"+this.getUsreNickName());
 
         List<String> tagAll=getTagAll();

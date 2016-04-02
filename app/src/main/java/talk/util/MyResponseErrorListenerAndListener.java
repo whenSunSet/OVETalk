@@ -1,9 +1,11 @@
 package talk.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.example.heshixiyang.ovetalk.BuildConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,6 +80,7 @@ public class MyResponseErrorListenerAndListener implements Response.ErrorListene
 
     @Override
     public void onErrorResponse(VolleyError volleyError) {
+        if (BuildConfig.DEBUG) Log.d("MyResponseErrorListener", "volleyError:" + volleyError.toString());
         DialogUtil.showToast(context,"无法连接服务器");
     }
 

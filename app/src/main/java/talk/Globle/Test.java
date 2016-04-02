@@ -14,7 +14,7 @@ public class Test {
         MyPreferenceManager myPreferenceManager= talkApplication.getSpUtil();
 
         if (!myPreferenceManager.getIsCreatSystemGroup()){
-            myPreferenceManager.setUserName("13588197967");
+            myPreferenceManager.setUserId("13588197967");
             myPreferenceManager.setUserNickName("薛克林顿");
             createSystemGroup(talkApplication);
 
@@ -24,7 +24,7 @@ public class Test {
     }
     public static void createSystemGroup(TalkApplication talkApplication) {
         MyPreferenceManager myPreferenceManager= talkApplication.getSpUtil();
-        Group group = new Group(myPreferenceManager.getUserName(), "SystemMessage", " ", myPreferenceManager.getUserName(),0,0);
+        Group group = new Group(myPreferenceManager.getUserId(), "SystemMessage", " ", myPreferenceManager.getUserId(),0,0);
         talkApplication.getGroupDB().addGroup(group);
 
     }

@@ -18,6 +18,7 @@ import com.example.heshixiyang.ovetalk.R;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.supers.BasicActivity;
@@ -65,7 +67,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
         mWork=new Work();
-        mWork.setGroupName(getIntent().getStringExtra("groupName"));
+        mWork.setGroupId(getIntent().getStringExtra("groupId"));
         formparams = new ArrayList<>();
 
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
@@ -102,28 +104,23 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         stepTwo();
                         break;
                     case GlobleData.STEP_TWO:
-                        mWork.setMaster(mApplication.getSpUtil().getUserName());
-                        mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupName(), mWork.getTaskId()) + 1);
-                        mWork.setClickNumber(0);
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
-                        simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
-                        mWork.setDate(simpleDateFormat.format(new Date()));
+                        if (sendHomeWork(GlobleData.pushWork,mApplication)){
+                            mApplication.getWorkDB().add(mWork);
+                            GroupAll.mIsFlash = true;
 
-                        mApplication.getWorkDB().add(mWork);
-                        GroupAll.mIsFlash = true;
+                            Intent intent = new Intent();
+                            intent.putExtra("taskId", mWork.getTaskId());
+                            intent.putExtra("idInTask", mWork.getIdInTask());
+                            intent.putExtra("path", mWork.getPath());
+                            setResult(GlobleData.START_MAKE_HOMEWORK_ACTIVITY, intent);
+                            finish();
+                        }
 
 //                        try {
 //                            GlobleMethod.upLoadFile(mWork,"work","",mApplication);
 //                        } catch (FileNotFoundException e) {
 //                            e.printStackTrace();
 //                        }
-
-                        Intent intent = new Intent();
-                        intent.putExtra("taskId", mWork.getTaskId());
-                        intent.putExtra("idInTask", mWork.getIdInTask());
-                        intent.putExtra("path", mWork.getPath());
-                        setResult(GlobleData.START_MAKE_HOMEWORK_ACTIVITY, intent);
-                        finish();
                         break;
                     default:
                         break;
@@ -189,10 +186,10 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mChooseTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MakeHomeWorkActivity.this, ListViewActivity.class);
-                intent.putExtra("which",GlobleData.GROUP_TASK_LIST);
-                intent.putExtra("groupName",mWork.getGroupName());
-                startActivityForResult(intent,GlobleData.CHOOSE_TASK);
+                Intent intent = new Intent(MakeHomeWorkActivity.this, ListViewActivity.class);
+                intent.putExtra("which", GlobleData.GROUP_TASK_LIST);
+                intent.putExtra(GlobleData.GROUP_ID, mWork.getGroupId());
+                startActivityForResult(intent, GlobleData.CHOOSE_TASK);
             }
         });
     }
@@ -225,6 +222,23 @@ public class MakeHomeWorkActivity extends BasicActivity {
         }
     }
 
+    private boolean sendHomeWork(String url,TalkApplication talkApplication){
+        mWork.setMaster(mApplication.getSpUtil().getUserId());
+        mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupId(), mWork.getTaskId()) + 1);
+        mWork.setClickNumber(0);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
+        simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
+        mWork.setDate(simpleDateFormat.format(new Date()));
+
+        boolean isSuccess=false;
+        try {
+            isSuccess= GlobleMethod.upLoadFile(mWork,"work",url,talkApplication);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return isSuccess;
+    }
+
     MyHandler handler=new MyHandler(MakeHomeWorkActivity.this) {
         @Override
         public void handleMessage(Message msg) {
@@ -238,7 +252,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     };
     private void sendWork(){
         formparams.clear();
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_NAME, mWork.getGroupName()));
+        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, mWork.getGroupId()));
         formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
         formparams.add(new BasicNameValuePair(GlobleData.MASTER, mWork.getMaster()));
         formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));

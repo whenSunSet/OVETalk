@@ -15,7 +15,7 @@ public class GroupDB {
 
     public static final String GROUP_TABLE_NAME="groups";
 
-    public static final String GROUP_NAME="groupName";
+    public static final String GROUP_ID ="groupId";
     public static final String GROUP_NICK_NAME="groupNickName";
     public static final String GROUP_ICON="groupIcon";
     public static final String GROUP_MASTER="groupMaster";
@@ -37,7 +37,7 @@ public class GroupDB {
 
     public void createTable(SQLiteDatabase mDb) {
         mDb.execSQL("CREATE table IF NOT EXISTS "+GROUP_TABLE_NAME
-                +" ( "+GROUP_NAME +" TEXT PRIMARY KEY,"
+                +" ( "+ GROUP_ID +" TEXT PRIMARY KEY,"
                 +GROUP_NICK_NAME +" TEXT,"
                 +GROUP_ICON +" TEXT,"
                 +GROUP_TASK_NUM +" INTEGER,"
@@ -46,27 +46,27 @@ public class GroupDB {
     }
 
     public void addGroup(Group u) {
-        if (getGroup(u.getGroupName()) != null) {
+        if (getGroup(u.getGroupId()) != null) {
             update(u);
             return;
         }
         mDb.execSQL(
                 "insert into " + GROUP_TABLE_NAME + "("
-                        + GROUP_NAME + ","
+                        + GROUP_ID + ","
                         + GROUP_NICK_NAME + ","
                         + GROUP_MEMBER_NUM + ","
                         + GROUP_TASK_NUM+ ","
                         + GROUP_ICON + ","
                         + GROUP_MASTER + ") values(?,?,?,?,?,?)",
                 new Object[]{
-                        u.getGroupName(),
-                        u.getGroupNick(),
+                        u.getGroupId(),
+                        u.getGroupNickName(),
                         u.getMemberNum(),
                         u.getTaskNum(),
                         u.getGroupIcon(),
                         u.getGroupMaster()});
 
-        messageDB.createTable(u.getGroupName());
+        messageDB.createTable(u.getGroupId());
     }
 
 
@@ -76,11 +76,11 @@ public class GroupDB {
         }
     }
 
-    public void delGroup(String groupName) {
-        mDb.execSQL("delete from " + GROUP_TABLE_NAME + " where " + GROUP_NAME + "=?",
-                new Object[]{groupName});
+    public void delGroup(String groupId) {
+        mDb.execSQL("delete from " + GROUP_TABLE_NAME + " where " + GROUP_ID + "=?",
+                new Object[]{groupId});
 
-        messageDB.createTable(groupName);
+        messageDB.createTable(groupId);
     }
 
     public void upDateGroup(List<Group> list) {
@@ -99,27 +99,27 @@ public class GroupDB {
                         + GROUP_TASK_NUM+ "=?,"
                         + GROUP_MEMBER_NUM+ "=? "
                         + "where "
-                        + GROUP_NAME + "=?",
+                        + GROUP_ID + "=?",
                 new Object[]{
-                        u.getGroupNick(),
+                        u.getGroupNickName(),
                         u.getGroupIcon(),
                         u.getGroupMaster(),
                         u.getTaskNum(),
                         u.getMemberNum(),
-                        u.getGroupName()});
+                        u.getGroupId()});
     }
 
     public Group getGroup(String groupId) {
         Group u = new Group();
-        Cursor c = mDb.rawQuery("select * from " + GROUP_TABLE_NAME + " where " + GROUP_NAME + "=?",
+        Cursor c = mDb.rawQuery("select * from " + GROUP_TABLE_NAME + " where " + GROUP_ID + "=?",
                 new String[]{groupId});
         if (c.moveToFirst()) {
-            u.setGroupNick(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
+            u.setGroupNickName(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
             u.setGroupIcon(c.getString(c.getColumnIndex(GROUP_ICON)));
             u.setGroupMaster(c.getString(c.getColumnIndex(GROUP_MASTER)));
             u.setTaskNum(c.getInt(c.getColumnIndex(GROUP_TASK_NUM)));
             u.setMemberNum(c.getInt(c.getColumnIndex(GROUP_MEMBER_NUM)));
-            u.setGroupName(groupId);
+            u.setGroupId(groupId);
         } else {
             c.close();
             return null;
@@ -136,12 +136,12 @@ public class GroupDB {
         while (c.moveToNext())
         {
             Group u = new Group();
-            u.setGroupNick(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
+            u.setGroupNickName(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
             u.setGroupIcon(c.getString(c.getColumnIndex(GROUP_ICON)));
             u.setGroupMaster(c.getString(c.getColumnIndex(GROUP_MASTER)));
             u.setTaskNum(c.getInt(c.getColumnIndex(GROUP_TASK_NUM)));
             u.setMemberNum(c.getInt(c.getColumnIndex(GROUP_MEMBER_NUM)));
-            u.setGroupName(c.getString(c.getColumnIndex(GROUP_NAME)));
+            u.setGroupId(c.getString(c.getColumnIndex(GROUP_ID)));
             list.add(u);
         }
         c.close();
@@ -150,7 +150,7 @@ public class GroupDB {
 
     public int getGroupNum(){
         int num=0;
-        Cursor c = mDb.rawQuery("select "+GROUP_NAME+" from " + GROUP_TABLE_NAME, null);
+        Cursor c = mDb.rawQuery("select "+ GROUP_ID +" from " + GROUP_TABLE_NAME, null);
         while(c.moveToNext()){
             num++;
         }
@@ -158,11 +158,11 @@ public class GroupDB {
         return num;
     }
 
-    public List<String> getGroupNames() {
+    public List<String> getGroupIds() {
         List<String> list = new ArrayList<>();
-        Cursor c = mDb.rawQuery("select " + GROUP_NAME + " from " + GROUP_TABLE_NAME, null);
+        Cursor c = mDb.rawQuery("select " + GROUP_ID + " from " + GROUP_TABLE_NAME, null);
         while (c.moveToNext()) {
-            list.add(c.getString(c.getColumnIndex(GROUP_NAME)));
+            list.add(c.getString(c.getColumnIndex(GROUP_ID)));
         }
         c.close();
         return list;

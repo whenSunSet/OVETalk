@@ -38,19 +38,27 @@ import talk.model.Work;
  */
 public class  GroupAll extends IndicatorFragmentActivity {
     private static final String TAG="GroupAll";
-    //-------------当前的Group
+
     public Group mGroup;
+
     public boolean mIsSystemGroup;
+
     public GroupMessageDB mGroupMessageDB;
-        //-------------view控件
+
     private TextView textView;
+
     private ImageView myGroup;
+
     private ImageView mMakeTask;
+
     private ImageView mMakeWork;
-    //--------------Activity是否重新Resume过
+
     private Boolean mIsResume =false;
+
     private Boolean mIsMaster =false;
+
     public static boolean mIsChattingFlash =false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +75,11 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 receive(context, intent);
             }
         });
-        mIsSystemGroup =getIntent().getStringExtra("groupName").equals("-1");
+        mIsSystemGroup =getIntent().getStringExtra(GlobleData.GROUP_ID).equals("-1");
         mGroupMessageDB=mApplication.getGroupMessageDB();
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
         //判断当前的用户是不是当前群的master
-        if (mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserName())){
+        if (mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserId())){
             mIsMaster =true;
         }else {
             mIsMaster =false;
@@ -79,20 +87,20 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         if (mTitle.getVisibility()!=View.GONE){
             textView = (TextView) findViewById(R.id.textView1);
-            textView.setText(mGroup.getGroupNick());
+            textView.setText(mGroup.getGroupNickName());
             addView();
         }
 
     }
     public void receive(Context context, Intent intent) {
         Message message=intent.getParcelableExtra(GlobleData.KEY_MESSAGE);
-        GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupName()
-                ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserName()
+        GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupId()
+                ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserId()
                 ,message.getMessageImage(),message.getMessageStatu());
 
         int messageStatu=message.getMessageStatu();
 
-        if (!mIsSystemGroup &&message.getGroupName().equals(mGroup.getGroupName())){
+        if (!mIsSystemGroup &&message.getGroupId().equals(mGroup.getGroupId())){
             //不是System但是是该group 并且不在chat或者group被解散
             if (messageStatu==GlobleData.USER_CANCEL_GROUP){
                 //如果群被注销，则finish
@@ -148,7 +156,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GroupAll.this, MakeTaskActivity.class);
-                intent.putExtra("groupName", mGroup.getGroupName());
+                intent.putExtra(GlobleData.GROUP_ID, mGroup.getGroupId());
                 startActivityForResult(intent,GlobleData.START_MAKE_TASK_ACTIVITY);
             }
         });
@@ -157,7 +165,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GroupAll.this, MakeHomeWorkActivity.class);
-                intent.putExtra("groupName", mGroup.getGroupName());
+                intent.putExtra(GlobleData.GROUP_ID, mGroup.getGroupId());
                 startActivityForResult(intent, GlobleData.START_MAKE_HOMEWORK_ACTIVITY);
             }
         });
@@ -199,7 +207,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
     @Override
     protected int supplyTabs(List<TabInfo> tabs) {
         //如果是SystemGroup群
-        if (getIntent().getStringExtra("groupName").equals("-1")){
+        if (getIntent().getStringExtra(GlobleData.GROUP_ID).equals("-1")){
             tabs.add(new TabInfo(FRAGMENT_ONE, "SystemGroup",
                     GroupChatting.class));
             mTitle.setVisibility(View.GONE);
@@ -239,7 +247,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
     protected void onResume() {
         super.onResume();
         mIsForeground =true;
-        if (mApplication.getGroupDB().getGroup(mGroup.getGroupName())==null){
+        if (mApplication.getGroupDB().getGroup(mGroup.getGroupId())==null){
             finish();
             return;
         }

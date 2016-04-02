@@ -30,10 +30,10 @@
             android:layout_weight="6"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/userName"
+                android:id="@+id/userId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="userName"
+                android:text="userId"
                 android:textSize="20dp"/>
             <TextView
                 android:id="@+id/time"

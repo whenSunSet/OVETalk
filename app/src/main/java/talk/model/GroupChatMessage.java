@@ -10,28 +10,28 @@ public class GroupChatMessage {
     private String message;
     private boolean isComing;
     private Date date;
-    private String groupName;
+    private String groupId;
     private String userIcon;
     private boolean readed;
     private String dateStr;
     private String userNickName;
-    private String userName;
+    private String userId;
     private String messageImage;
     private int messageStatu;
 
     public GroupChatMessage() {}
 
-    public GroupChatMessage(String message, boolean isComing, String groupName, String userIcon,
-                            boolean readed, String dateStr, String userNickName, String userName,
+    public GroupChatMessage(String message, boolean isComing, String groupId, String userIcon,
+                            boolean readed, String dateStr, String userNickName, String userId,
                             String messageImage,int messageStatu) {
         this.message = message;
         this.isComing = isComing;
-        this.groupName = groupName;
+        this.groupId = groupId;
         this.userIcon = userIcon;
         this.readed = readed;
         this.dateStr = dateStr;
         this.userNickName = userNickName;
-        this.userName = userName;
+        this.userId = userId;
         this.messageImage = messageImage;
         this.messageStatu=messageStatu;
     }
@@ -79,12 +79,12 @@ public class GroupChatMessage {
         this.messageImage = messageImage;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public String getUserIcon() {
@@ -119,13 +119,13 @@ public class GroupChatMessage {
         this.userNickName = userNickName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
+    public void setUserId(String userId) {
 
-        this.userName = userName;
+        this.userId = userId;
     }
 
     @Override
@@ -134,12 +134,12 @@ public class GroupChatMessage {
                 "message='" + message + '\'' +
                 ", isComing=" + isComing +
                 ", date=" + date +
-                ", groupName='" + groupName + '\'' +
+                ", groupId='" + groupId + '\'' +
                 ", userIcon='" + userIcon + '\'' +
                 ", readed=" + readed +
                 ", dateStr='" + dateStr + '\'' +
                 ", userNickName='" + userNickName + '\'' +
-                ", userName='" + userName + '\'' +
+                ", userId='" + userId + '\'' +
                 ", messageImage='" + messageImage + '\'' +
                 ", messageStatu='" + messageStatu + '\'' +
                 '}';

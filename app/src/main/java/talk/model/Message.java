@@ -19,8 +19,8 @@ public class Message implements Parcelable {
     };
     private String message;
     private String date;
-    private String groupName;
-    private String userName;
+    private String groupId;
+    private String userId;
     private int messageStatu;
     private String messageImage;
 
@@ -29,32 +29,32 @@ public class Message implements Parcelable {
 
     public Message() {}
 
-    public Message(String userName, String groupName, String date, String userIcon, String userNickName) {
-        this.userName = userName;
-        this.groupName = groupName;
+    public Message(String userId, String groupId, String date, String userIcon, String userNickName) {
+        this.userId = userId;
+        this.groupId = groupId;
         this.date = date;
         this.userIcon = userIcon;
         this.userNickName = userNickName;
     }
 
-    public Message(String message, String groupName, String userIcon, String date, String userNickName, String userName, int messageStatu, String messageImage) {
+    public Message(String message, String groupId, String userIcon, String date, String userNickName, String userId, int messageStatu, String messageImage) {
         this.message = message;
-        this.groupName = groupName;
+        this.groupId = groupId;
         this.userIcon = userIcon;
         this.date = date;
         this.userNickName = userNickName;
-        this.userName = userName;
+        this.userId = userId;
         this.messageStatu = messageStatu;
         this.messageImage = messageImage;
     }
 
     protected Message(Parcel in) {
         this.message = in.readString();
-        this.groupName = in.readString();
+        this.groupId = in.readString();
         this.userIcon = in.readString();
         this.date = in.readString();
         this.userNickName = in.readString();
-        this.userName = in.readString();
+        this.userId = in.readString();
         this.messageStatu = in.readInt();
         this.messageImage = in.readString();
     }
@@ -67,12 +67,12 @@ public class Message implements Parcelable {
         this.message = message;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public String getUserIcon() {
@@ -99,12 +99,12 @@ public class Message implements Parcelable {
         this.userNickName = userNickName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public int getMessageStatu() {
@@ -131,11 +131,11 @@ public class Message implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.message);
-        dest.writeString(this.groupName);
+        dest.writeString(this.groupId);
         dest.writeString(this.userIcon);
         dest.writeString(this.date);
         dest.writeString(this.userNickName);
-        dest.writeString(this.userName);
+        dest.writeString(this.userId);
         dest.writeInt(this.messageStatu);
         dest.writeString(this.messageImage);
     }
