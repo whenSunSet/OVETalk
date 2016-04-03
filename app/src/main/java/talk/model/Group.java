@@ -8,18 +8,17 @@ import android.os.Parcelable;
  */
 public class Group implements Parcelable {
     private String groupId;
-    private String groupNickName;
+    private String groupNick;
     private String groupIcon;
     private String groupMaster;
     private int taskNum;
     private int memberNum;
 
-    public Group() {
-    }
+    public Group() {}
 
-    public Group(String groupId, String groupNickName, String groupIcon, String groupMaster, int taskNum, int memberNum) {
+    public Group(String groupId, String groupNick, String groupIcon, String groupMaster, int taskNum, int memberNum) {
         this.groupId = groupId;
-        this.groupNickName = groupNickName;
+        this.groupNick = groupNick;
         this.groupIcon = groupIcon;
         this.groupMaster = groupMaster;
         this.taskNum = taskNum;
@@ -34,12 +33,12 @@ public class Group implements Parcelable {
         this.groupId = groupId;
     }
 
-    public String getGroupNickName() {
-        return groupNickName;
+    public String getGroupNick() {
+        return groupNick;
     }
 
-    public void setGroupNickName(String groupNickName) {
-        this.groupNickName = groupNickName;
+    public void setGroupNick(String groupNick) {
+        this.groupNick = groupNick;
     }
 
     public String getGroupIcon() {
@@ -82,7 +81,7 @@ public class Group implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.groupId);
-        dest.writeString(this.groupNickName);
+        dest.writeString(this.groupNick);
         dest.writeString(this.groupIcon);
         dest.writeString(this.groupMaster);
         dest.writeInt(this.taskNum);
@@ -91,7 +90,7 @@ public class Group implements Parcelable {
 
     protected Group(Parcel in) {
         this.groupId = in.readString();
-        this.groupNickName = in.readString();
+        this.groupNick = in.readString();
         this.groupIcon = in.readString();
         this.groupMaster = in.readString();
         this.taskNum = in.readInt();

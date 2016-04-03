@@ -7,13 +7,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import cn.jpush.android.api.JPushInterface;
 import talk.Globle.GlobleData;
@@ -23,8 +20,10 @@ import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
 import talk.model.GroupChatMessage;
 import talk.model.Message;
+import talk.model.Task;
+import talk.model.Work;
 import talk.util.MyPreferenceManager;
-import talk.util.MyRunnable;
+import talk.util.SendMessage;
 
 /**
  * Created by asus on 2015/11/5.o
@@ -39,12 +38,11 @@ public class JpushReceiver extends BroadcastReceiver {
     };
     private TalkApplication mApplication;
     private MyPreferenceManager myPreferenceManager;
-    private List<NameValuePair> formparams;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         mApplication=(TalkApplication)context.getApplicationContext();
         myPreferenceManager=mApplication.getSpUtil();
-        formparams= new ArrayList<>();
         Bundle bundle = intent.getExtras();
         Message message;
         String groupId;
@@ -62,19 +60,20 @@ public class JpushReceiver extends BroadcastReceiver {
                 //1-3 10 11都是group接受的消息
                 groupId=message.getGroupId();
                 makeAndSaveMessage(message, groupId);
-                if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
+                HashMap<String,String> paramter=new HashMap<>();
+                HashMap<String,Object> result=null;
+                paramter.put(GlobleData.GROUP_ID, message.getGroupId());
+                if (messageStatu==GlobleData.MASTER_PUT_TASK){
                     message.setMessage("我发布了一个任务，快来看看吧");
-                    formparams.clear();
-                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, message.getGroupId()));
-                    formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, message.getUserIcon()));
-                    formparams.add(new BasicNameValuePair(GlobleData.TASK_ID, message.getUserNickName()));
-                    new Thread(new MyRunnable(formparams,"",handler,messageStatu));
-                }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
+                    paramter.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
+                    result=SendMessage.getSendMessage().post(mApplication,messageStatu,"",paramter,null);
+                    mApplication.getTaskDB().add((Task)result.get("task"));
+                }else if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
                     message.setMessage("我发布了一个作业，快来看看吧");
-                    formparams.clear();
-                    formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, message.getGroupId()));
-                    formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, message.getUserIcon()));
-                    new Thread(new MyRunnable(formparams,"",handler,messageStatu));
+                    paramter.put(GlobleData.TASK_ID, message.getUserIcon());
+                    paramter.put(GlobleData.ID_IN_TASK, message.getUserNickName());
+                    result=SendMessage.getSendMessage().post(mApplication,messageStatu,"",paramter,null);
+                    mApplication.getWorkDB().add((Work)result.get("work"));
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
@@ -82,7 +81,7 @@ public class JpushReceiver extends BroadcastReceiver {
                 if (messageStatu==GlobleData.AGREE_USER_TO_GROUP){
                     groupNickName=message.getMessage();
                 }else {
-                    groupNickName=mApplication.getGroupDB().getGroup(message.getGroupId()).getGroupNickName();
+                    groupNickName=mApplication.getGroupDB().getGroup(message.getGroupId()).getGroupNick();
                 }
 
                 switch (messageStatu) {
@@ -94,34 +93,29 @@ public class JpushReceiver extends BroadcastReceiver {
                         break;
                     case GlobleData.USER_OUT_GROUP:
                         msg="退出了";
-                        GlobleMethod.quitFromGroup(mApplication, message);
+                        GlobleMethod.userOutGroup(mApplication, message);
                         //groupId:要退出的群组，date：服务器发送的时间，nickname：退出人的昵称，username：退出人的id
 
                         break;
                     case GlobleData.USER_CANCEL_GROUP:
                         msg="注销了";
-                        mApplication.getGroupDB().delGroup(message.getGroupId());
+                        GlobleMethod.deleteGroup(mApplication,groupId,message.getUserId());
                         GlobleMethod.setTag(mApplication);
                         //groupId:注销的群组，date：服务器发送的时间，nickname：注销群主的昵称，username：注销群主的id
                         break;
                     case GlobleData.AGREE_USER_TO_GROUP:
                         msg="同意你加入";
-//                      mApplication.getGroupDB().addGroup(new Group(message.getGroupId(),groupNickName,message.getUserIcon(),message.getUserId()));
-                        GlobleMethod.setTag(mApplication);
-                        formparams.clear();
-                        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserId()));
-                        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID,message.getGroupId()));
-                        formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String .valueOf(GlobleData.AGREE_USER_TO_GROUP)));
+                        HashMap<String,String> paramter=new HashMap();
+                        HashMap<String,Object> result=SendMessage.getSendMessage().post(mApplication, GlobleData.AGREE_USER_TO_GROUP, GlobleData.getGroupInfo, paramter, null);
 
-//                        new Thread(new MyRunnable(formparams,GlobleData.GET_GROUP_INFO,handler,GlobleData.AGREE_USER_TO_GROUP)).start();
+                        GlobleMethod.addMeToGroup(mApplication,result);
+                        GlobleMethod.setTag(mApplication);
 
                         //groupID:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
-
                         break;
                     case GlobleData.DISAGREE_USER_TO_GROUP:
                         msg="不同意你加入";
                         //groupID:不同意加入的群组，date：服务器发送的时间，nickname：不同意加入的群主的昵称，username：不同意加入的群主的id
-
                         break;
                     case GlobleData.USER_REQUEST_JOIN_GROUP:
                         msg="请求加入";

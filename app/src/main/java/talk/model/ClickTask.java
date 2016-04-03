@@ -5,14 +5,14 @@ package talk.model;
  */
 public class ClickTask {
     private String groupId;
-    private int taskId;
+    private int idInGroup;
     private String userId;
     private String date;
 
 
-    public ClickTask(String groupId, int taskId, String userId, String date) {
+    public ClickTask(String groupId, int idInGroup, String userId, String date) {
         this.groupId = groupId;
-        this.taskId = taskId;
+        this.idInGroup = idInGroup;
         this.userId = userId;
         this.date = date;
     }
@@ -28,12 +28,12 @@ public class ClickTask {
         this.groupId = groupId;
     }
 
-    public int getTaskId() {
-        return taskId;
+    public int getIdInGroup() {
+        return idInGroup;
     }
 
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
+    public void setIdInGroup(int idInGroup) {
+        this.idInGroup = idInGroup;
     }
 
     public String getUserId() {

@@ -16,8 +16,8 @@ public class ClickWorkDB {
     public static final String CLICK_WORK_TABLE_NAME="clickWork";
 
     public static final String GROUP_ID ="groupId";
-    public static final String TASK_ID="idInGroup";
-    public static final String WORK_ID="idInTask";
+    public static final String TASK_ID="taskId";
+    public static final String ID_IN_TASK ="idInTask";
     public static final String USER_ID="userId";
     public static final String DATE="date";
 
@@ -34,17 +34,21 @@ public class ClickWorkDB {
                 + " (" + USER_ID + " TEXT,"
                 + GROUP_ID + " TEXT, "
                 + TASK_ID + " INTEGER,"
-                + WORK_ID + " INTEGER,"
+                + ID_IN_TASK + " INTEGER,"
                 + DATE + " TEXT,"
-                + "foreign key (" + GROUP_ID + "," + TASK_ID + "," + WORK_ID + ") references " + "work(groupId,idInGroup,idInTask) "
-                + "PRIMARY KEY (" + USER_ID + "," + GROUP_ID + "," + TASK_ID + "," + WORK_ID + "))");
+                + "foreign key (" + GROUP_ID + "," + TASK_ID + "," + ID_IN_TASK + ") references " + "work(groupId,idInGroup,idInTask) "
+                + "PRIMARY KEY (" + USER_ID + "," + GROUP_ID + "," + TASK_ID + "," + ID_IN_TASK + "))");
 
     }
 
-
+    public void adds(ArrayList<ClickWork> list){
+        for (ClickWork clickWork:list){
+            add(clickWork);
+        }
+    }
 
     public void add(ClickWork clickWork) {
-        if (getClick(clickWork.getGroupId(),clickWork.getUserId(),clickWork.getTaskId(),clickWork.getWorkId())!=null){
+        if (getClick(clickWork.getGroupId(),clickWork.getUserId(),clickWork.getTaskId(),clickWork.getIdInTask())!=null){
             update(clickWork);
             return;
         }
@@ -54,19 +58,18 @@ public class ClickWorkDB {
                         + " (" + GROUP_ID + ","
                         + TASK_ID + ","
                         + DATE + ","
-                        + WORK_ID + ","
+                        + ID_IN_TASK + ","
                         + USER_ID + ") values(?,?,?,?,?)",
                 new Object[]{
                         clickWork.getGroupId(),
                         clickWork.getTaskId(),
                         clickWork.getDate(),
-                        clickWork.getWorkId(),
+                        clickWork.getIdInTask(),
                         clickWork.getUserId()});
-
     }
 
     public void deleteClick(String groupId,String userId,int taskId,int workId) {
-        mDb.execSQL("delete from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ WORK_ID + "=? AND" + GROUP_ID + "=? AND"+TASK_ID + "=?",
+        mDb.execSQL("delete from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ ID_IN_TASK + "=? AND" + GROUP_ID + "=? AND"+TASK_ID + "=?",
                 new Object[]{userId, workId,groupId,taskId});
     }
 
@@ -78,7 +81,7 @@ public class ClickWorkDB {
 
 
     public ClickWork getClick(String groupId,String userId,int taskId,int workId){
-        Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ WORK_ID + "=? AND " + GROUP_ID + "=? AND "+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + USER_ID + "=? AND "+ ID_IN_TASK + "=? AND " + GROUP_ID + "=? AND "+TASK_ID + "=?",
                 new String []{userId,String.valueOf(workId),groupId,String.valueOf(taskId)});
         ClickWork clickWork=null;
         if (c.moveToFirst()){
@@ -91,7 +94,7 @@ public class ClickWorkDB {
 
     public ArrayList<ClickWork> getClicks(String groupId,int taskId,int workId){
         ArrayList<ClickWork> list=new ArrayList<>();
-        Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + WORK_ID + "=? AND " + GROUP_ID + "=? AND "+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + ID_IN_TASK + "=? AND " + GROUP_ID + "=? AND "+TASK_ID + "=?",
                 new String []{String.valueOf(workId),groupId,String.valueOf(taskId)});
         while (c.moveToFirst()){
             list.add(makeClickWork(c));
@@ -119,14 +122,14 @@ public class ClickWorkDB {
         clickWork.setUserId(c.getString(c.getColumnIndex(USER_ID)));
         clickWork.setDate(c.getString(c.getColumnIndex(DATE)));
         clickWork.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
-        clickWork.setWorkId(c.getInt(c.getColumnIndex(WORK_ID)));
+        clickWork.setIdInTask(c.getInt(c.getColumnIndex(ID_IN_TASK)));
 
         return clickWork;
     }
 
 
     public void update(ClickWork clickWork){
-        deleteClick(clickWork.getGroupId(), clickWork.getUserId(), clickWork.getTaskId(),clickWork.getWorkId());
+        deleteClick(clickWork.getGroupId(), clickWork.getUserId(), clickWork.getTaskId(),clickWork.getIdInTask());
         add(clickWork);
 
     }

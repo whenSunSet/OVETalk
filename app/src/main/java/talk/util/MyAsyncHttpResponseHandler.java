@@ -18,6 +18,7 @@ public class MyAsyncHttpResponseHandler extends JsonHttpResponseHandler{
     private boolean isSuccess;
     private Context context;
     private int statu;
+    private JSONObject jsonObject;
     public MyAsyncHttpResponseHandler(Context context,int statu) {
         this.statu=statu;
         this.context = context;
@@ -29,34 +30,37 @@ public class MyAsyncHttpResponseHandler extends JsonHttpResponseHandler{
         if (BuildConfig.DEBUG) Log.d("MyAsyncHttpResponseHand", "statusCode:" + statusCode);
         if (BuildConfig.DEBUG) Log.d("MyAsyncHttpResponseHand", response.toString());
         switch (statu){
-            case GlobleData.SEND_FILE:
+            case GlobleData.PHOTO_MESSAGE:
                 if (statusCode==200){
-                    DialogUtil.showToast(context,"上传成功");
+                    DialogUtil.showToast(context,"发送消息成功");
                 }
                 break;
-            case GlobleData.MAKE_GROUP:
+            case GlobleData.CREATE_GROUP:
                 if (statusCode==200){
-                    DialogUtil.showToast(context,"创建成功");
+                    DialogUtil.showToast(context,"群组创建成功");
+                }
+                break;
+            default:
+                if (statusCode==200){
+                    DialogUtil.showToast(context,"文件上传成功");
                 }
                 break;
         }
+        jsonObject=response;
         isSuccess=true;
     }
 
     @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-        switch (statu){
-            case GlobleData.SEND_FILE:
-                DialogUtil.showToast(context,"上传失败");
-                break;
-            case GlobleData.MAKE_GROUP:
-                DialogUtil.showToast(context,"创建失败");
-                break;
-        }
+        DialogUtil.showToast(context,"无法连接服务器");
         isSuccess=false;
     }
 
     public boolean isSuccess(){
         return isSuccess;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
     }
 }

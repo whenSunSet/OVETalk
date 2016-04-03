@@ -21,9 +21,9 @@
         android:orientation="vertical">
         <TextView
             style="@style/Text_wrap_monospace_20"
-            android:id="@+id/groupNickName"
+            android:id="@+id/groupNick"
             android:layout_height="30dp"
-            android:text="@string/groupNickName"/>
+            android:text="@string/groupNick"/>
         <TextView
             style="@style/Text_wrap_monospace_20"
             android:id="@+id/groupId"

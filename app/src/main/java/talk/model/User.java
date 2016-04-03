@@ -4,34 +4,34 @@ package talk.model;
  * Created by asus on 2015/11/18.
  */
 public class User {
-    private String userID;
-    private String userNickName;
+    private String userId;
+    private String userNick;
     private String userIcon;
 
 
     public User() {
     }
 
-    public User(String userID, String userNickName, String userIcon) {
-        this.userID = userID;
-        this.userNickName = userNickName;
+    public User(String userId, String userNick, String userIcon) {
+        this.userId = userId;
+        this.userNick = userNick;
         this.userIcon = userIcon;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUserNickName() {
-        return userNickName;
+    public String getUserNick() {
+        return userNick;
     }
 
-    public void setUserNickName(String userNickName) {
-        this.userNickName = userNickName;
+    public void setUserNick(String userNick) {
+        this.userNick = userNick;
     }
 
     public String getUserIcon() {

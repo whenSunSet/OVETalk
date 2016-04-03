@@ -1,7 +1,6 @@
 package talk.fragment;
 
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,34 +9,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.android.volley.Request;
 import com.example.heshixiyang.ovetalk.R;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.util.DialogUtil;
-import talk.util.MyHandler;
-import talk.util.MyJsonObjectRequest;
-import talk.util.MyPreferenceManager;
-import talk.util.MyResponseErrorListenerAndListener;
-import talk.util.MyRunnable;
+import talk.util.SendMessage;
 
 public class GroupsFind extends Fragment {
-    private MyPreferenceManager myPreferenceManager;
     private TalkApplication mApplication;
     private View mView;
     private EditText mGroupIdEdit;
     private Button mAddGroup;
-    private List<NameValuePair> formparams;
     private String mGroupId;
 
     @Override
@@ -51,7 +36,6 @@ public class GroupsFind extends Fragment {
         mView =inflater.inflate(R.layout.find_into_group_layout,null);
         mGroupIdEdit =(EditText) mView.findViewById(R.id.groupId);
         mAddGroup=(Button) mView.findViewById(R.id.send_button);
-        myPreferenceManager=mApplication.getSpUtil();
 
         mAddGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,53 +45,17 @@ public class GroupsFind extends Fragment {
                     DialogUtil.showToast(mApplication, "你还没输入文字呢");
                     return;
                 }
-//                makeF();
                 sendMessage(GlobleData.joinOrExitGroup);
             }
         });
         return mView;
     }
     private void sendMessage(String url){
-        JSONObject jsonObject = new JSONObject();
-        MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
-                Request.Method.POST,
-                url,
-                jsonObject,
-                makeMap(),
-                new MyResponseErrorListenerAndListener(getActivity(),GlobleData.DEFAULT)
-        );
-        mApplication.getRequestQueue().add(jsonObjectRequest);
-    }
+        HashMap<String,String> paramter=new HashMap<>();
+        paramter.put(GlobleData.GROUP_ID, mGroupId);
+        paramter.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
+        paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP));
 
-    private HashMap makeMap(){
-        Map map=new HashMap();
-        map.put(GlobleData.GROUP_ID, mGroupId);
-        map.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
-        map.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP));
-        return makeMap();
+        SendMessage.getSendMessage().post(mApplication,GlobleData.USER_REQUEST_JOIN_GROUP,url,paramter,null);
     }
-
-    private void makeF(){
-        formparams = new ArrayList<>();
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, mGroupId));
-        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME, myPreferenceManager.getUserId()));
-        formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP)));
-        new Thread(new MyRunnable(formparams,"",handler,GlobleData.USER_REQUEST_JOIN_GROUP));
-    }
-    MyHandler handler= new MyHandler(getActivity()){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case GlobleData.SEND_MESSAGE_SUCCESS:
-                    DialogUtil.showToast(mApplication, "发送加入请求成功");
-                case GlobleData.NO_SUCH_GROUP:
-                    DialogUtil.showToast(mApplication, "不好意思,没有这个群组");
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
 }

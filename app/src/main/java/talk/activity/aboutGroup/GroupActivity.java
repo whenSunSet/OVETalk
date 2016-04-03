@@ -3,33 +3,21 @@ package talk.activity.aboutGroup;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.example.heshixiyang.ovetalk.R;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
-
 import java.util.HashMap;
-import java.util.List;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
-import talk.activity.fragment.Groups;
 import talk.activity.util.ListViewActivity;
 import talk.model.Group;
-import talk.util.DialogUtil;
-import talk.util.MyHandler;
-import talk.util.MyJsonObjectRequest;
-import talk.util.MyPreferenceManager;
-import talk.util.MyResponseErrorListenerAndListener;
-import talk.util.MyRunnable;
+import talk.util.SendMessage;
 
 
 public class GroupActivity extends Activity {
@@ -41,9 +29,6 @@ public class GroupActivity extends Activity {
     private Button mMember;
     private Group mGroup;
     private TalkApplication mApplication;
-    private MyPreferenceManager myPreferenceManager;
-    private List<NameValuePair> formparams ;
-    private GroupActivity mGroupActivity;
 
     @Override
     public void finish() {
@@ -60,7 +45,6 @@ public class GroupActivity extends Activity {
     private void init(){
         mApplication=(TalkApplication)getApplication();
         mGroup=getIntent().getParcelableExtra("group");
-        mGroupActivity =this;
 
         mGroupIcon=(ImageView)findViewById(R.id.icon);
         mGroupId =(TextView)findViewById(R.id.groupId);
@@ -68,15 +52,13 @@ public class GroupActivity extends Activity {
         mExit=(Button)findViewById(R.id.exit);
         mDestroy=(Button)findViewById(R.id.destroy);
         mMember=(Button)findViewById(R.id.member);
-        myPreferenceManager=mApplication.getSpUtil();
 
 //      mGroupIcon.setImageResource(Integer.parseInt(mGroup.getGroupIcon()));
         mGroupId.setText(mGroup.getGroupId());
-        mGroupNickName.setText(mGroup.getGroupNickName());
+        mGroupNickName.setText(mGroup.getGroupNick());
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                setRequest(GlobleData.GROUP_EXIT,GlobleData.USER_OUT_GROUP);
                 sendMessage(GlobleData.joinOrExitGroup,GlobleData.USER_OUT_GROUP);
             }
         });
@@ -84,7 +66,6 @@ public class GroupActivity extends Activity {
         mDestroy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                setRequest(GlobleData.GROUP_CANCEL,GlobleData.USER_CANCEL_GROUP);
                 sendMessage(GlobleData.logoutGroup,GlobleData.USER_CANCEL_GROUP);
             }
         });
@@ -99,7 +80,7 @@ public class GroupActivity extends Activity {
             }
         });
 
-        if (mGroup.getGroupMaster().equals(myPreferenceManager.getUserId())){
+        if (mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserId())){
             mExit.setVisibility(View.GONE);
             mDestroy.setVisibility(View.VISIBLE);
         }else {
@@ -108,55 +89,17 @@ public class GroupActivity extends Activity {
         }
 
     }
+
     private void sendMessage(String url, final int messageStatu){
-        JSONObject jsonObject = new JSONObject();
-        MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
-                Request.Method.POST,
-                url,
-                jsonObject,
-                makeMap(),
-                new MyResponseErrorListenerAndListener(GroupActivity.this,messageStatu){
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        super.onResponse(jsonObject);
-                        if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
-                            mApplication.getGroupDB().delGroup(mGroup.getGroupId());
-                            mGroupActivity.finish();
-                            Groups.mIsFlash =true;
-                        }
-                    }
-                }
-        );
-        mApplication.getRequestQueue().add(jsonObjectRequest);
-    }
-    private HashMap<String ,String > makeMap(){
-        HashMap<String ,String > map=new HashMap();
-        map.put(GlobleData.GROUP_ID, mGroup.getGroupId());
-        map.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
-        map.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
-        return map;
-    }
+        HashMap<String ,String > paramter=new HashMap();
+        HashMap<String ,Object> result=new HashMap();
+        paramter.put(GlobleData.GROUP_ID, mGroup.getGroupId());
+        paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
+        paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
 
-
-    private void setRequest(String url,int messageStatu){
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID,mGroup.getGroupId()));
-        formparams.add(new BasicNameValuePair(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId()));
-        formparams.add(new BasicNameValuePair(GlobleData.MESSAGE_STATU,String.valueOf(messageStatu)));
-        new Thread(new MyRunnable(formparams,url,handler,messageStatu)).start();
-    }
-    MyHandler handler= new MyHandler(GroupActivity.this){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case GlobleData.SEND_MESSAGE_SUCCESS:
-                    DialogUtil.showToast(mApplication, "操作成功");
-                    break;
-                default:
-                    break;
-
-            }
+        result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,paramter,null);
+        if ((int)result.get("res")==GlobleData.SEND_MESSAGE_SUCCESS){
+            GlobleMethod.deleteGroup(mApplication,mGroup.getGroupId(),mApplication.getSpUtil().getUserId());
         }
-    };
-
+    }
 }

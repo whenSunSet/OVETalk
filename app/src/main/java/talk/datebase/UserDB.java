@@ -39,9 +39,14 @@ public class UserDB {
         mDb.execSQL("DROP TABLE " + USER_TABLE_NAME);
     }
 
+    public void adds(ArrayList<User> list){
+        for (User user:list){
+            add(user);
+        }
+    }
 
     public void add(User user) {
-        if (getMember(user.getUserID())!=null){
+        if (getMember(user.getUserId())!=null){
             update(user);
             return;
         }
@@ -53,8 +58,8 @@ public class UserDB {
                         + USER_ID + ") values(?,?,?)",
                 new Object[]{
                         user.getUserIcon(),
-                        user.getUserNickName(),
-                        user.getUserID()});
+                        user.getUserNick(),
+                        user.getUserId()});
 
     }
 
@@ -70,8 +75,8 @@ public class UserDB {
         if (c.moveToFirst()){
             user =new User();
             user.setUserIcon(c.getString(c.getColumnIndex(USER_ICON)));
-            user.setUserNickName(c.getString(c.getColumnIndex(USER_NICK_NAME)));
-            user.setUserID(c.getString(c.getColumnIndex(USER_ID)));
+            user.setUserNick(c.getString(c.getColumnIndex(USER_NICK_NAME)));
+            user.setUserId(c.getString(c.getColumnIndex(USER_ID)));
         }
 
         c.close();
@@ -88,9 +93,9 @@ public class UserDB {
         while (c.moveToNext())
         {
             User u = new User();
-            u.setUserNickName(c.getString(c.getColumnIndex(USER_NICK_NAME)));
+            u.setUserNick(c.getString(c.getColumnIndex(USER_NICK_NAME)));
             u.setUserIcon(c.getString(c.getColumnIndex(USER_ICON)));
-            u.setUserID(c.getString(c.getColumnIndex(USER_ID)));
+            u.setUserId(c.getString(c.getColumnIndex(USER_ID)));
             list.add(u);
         }
         c.close();
@@ -99,7 +104,7 @@ public class UserDB {
 
 
     public void update(User user){
-        deleteMember(user.getUserID());
+        deleteMember(user.getUserId());
         add(user);
 
     }

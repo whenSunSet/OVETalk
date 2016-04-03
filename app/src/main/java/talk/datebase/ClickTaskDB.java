@@ -17,7 +17,7 @@ public class ClickTaskDB {
 
     public static final String GROUP_ID ="groupId";
     public static final String USER_ID="userId";
-    public static final String TASK_ID="idInGroup";
+    public static final String ID_IN_GROUP ="idInGroup";
     public static final String DATE="date";
 
     private SQLiteDatabase mDb;
@@ -32,17 +32,21 @@ public class ClickTaskDB {
         mDb.execSQL("CREATE table IF NOT EXISTS " + CLICK_TASK_TABLE_NAME
                 + " (" + USER_ID + " TEXT, "
                 + GROUP_ID + " TEXT, "
-                + TASK_ID + " INTEGER "
+                + ID_IN_GROUP + " INTEGER "
                 + DATE + " TEXT,"
-                + "foreign key (" + GROUP_ID + "," + TASK_ID + ") references " + "task(groupId,idInGroup) "
-                + "PRIMARY KEY (" + USER_ID + "," + GROUP_ID + "," + TASK_ID + "))");
+                + "foreign key (" + GROUP_ID + "," + ID_IN_GROUP + ") references " + "task(groupId,idInGroup) "
+                + "PRIMARY KEY (" + USER_ID + "," + GROUP_ID + "," + ID_IN_GROUP + "))");
 
     }
 
-
+    public void adds(ArrayList<ClickTask> list){
+        for (ClickTask clickTask:list){
+            add(clickTask);
+        }
+    }
 
     public void add(ClickTask clickTask) {
-        if (getClick(clickTask.getGroupId(), clickTask.getUserId(), clickTask.getTaskId())!=null){
+        if (getClick(clickTask.getGroupId(), clickTask.getUserId(), clickTask.getIdInGroup())!=null){
             update(clickTask);
             return;
         }
@@ -50,19 +54,19 @@ public class ClickTaskDB {
                 "insert into "
                         + CLICK_TASK_TABLE_NAME
                         + " (" + GROUP_ID + ","
-                        + TASK_ID + ","
+                        + ID_IN_GROUP + ","
                         + DATE + ","
                         + USER_ID + ") values(?,?,?,?)",
                 new Object[]{
                         clickTask.getGroupId(),
-                        clickTask.getTaskId(),
+                        clickTask.getIdInGroup(),
                         clickTask.getDate(),
                         clickTask.getUserId()});
 
     }
 
     public void deleteClick(String groupId,String userId,int taskId) {
-        mDb.execSQL("delete from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_ID + "=? AND" + TASK_ID + "=?",
+        mDb.execSQL("delete from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_ID + "=? AND" + ID_IN_GROUP + "=?",
                 new Object[]{userId, groupId, taskId});
     }
 
@@ -74,7 +78,7 @@ public class ClickTaskDB {
 
 
     public ClickTask getClick(String groupId,String userId,int taskId){
-        Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_ID + "=? AND"+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_ID + "=? AND"+ ID_IN_GROUP + "=?",
                 new String []{userId,groupId,String.valueOf(taskId)});
         ClickTask clickTask=null;
         if (c.moveToFirst()){
@@ -87,7 +91,7 @@ public class ClickTaskDB {
 
     public ArrayList<ClickTask> getClicks(String groupId,int taskId){
         ArrayList<ClickTask> list=new ArrayList<>();
-        Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME+ " where " + GROUP_ID + "=? AND "+TASK_ID + "=?",
+        Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME+ " where " + GROUP_ID + "=? AND "+ ID_IN_GROUP + "=?",
                 new String []{groupId,String.valueOf(taskId)});
         while (c.moveToFirst()){
             list.add(makeClickTask(c));
@@ -113,7 +117,7 @@ public class ClickTaskDB {
         clickTask.setGroupId(c.getString(c.getColumnIndex(GROUP_ID)));
         clickTask.setUserId(c.getString(c.getColumnIndex(USER_ID)));
         clickTask.setDate(c.getString(c.getColumnIndex(DATE)));
-        clickTask.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
+        clickTask.setIdInGroup(c.getInt(c.getColumnIndex(ID_IN_GROUP)));
 
         return clickTask;
     }
@@ -121,7 +125,7 @@ public class ClickTaskDB {
 
 
     public void update(ClickTask clickTask){
-        deleteClick(clickTask.getGroupId(), clickTask.getUserId(), clickTask.getTaskId());
+        deleteClick(clickTask.getGroupId(), clickTask.getUserId(), clickTask.getIdInGroup());
         add(clickTask);
 
     }

@@ -2,8 +2,6 @@ package talk.activity.create;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
@@ -19,7 +17,6 @@ import android.widget.ListView;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +29,6 @@ import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.model.Task;
 import talk.util.DialogUtil;
-import talk.util.MyRunnable;
 
 public class MakeTaskActivity extends BasicActivity {
     private Task mTask;
@@ -119,7 +115,7 @@ public class MakeTaskActivity extends BasicActivity {
                         } else {
                             mTask.setTarget(mName.getText().toString());
                             mTask.setDate(new Date().toString());
-                            mTask.setClickNumber(0);
+                            mTask.setClickNum(0);
                             mTask.setGroupId(mGroupId);
                             mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupId) + 1);
 
@@ -212,6 +208,7 @@ public class MakeTaskActivity extends BasicActivity {
         mConent.setHint("请输入任务的要求和目标");
         mConent.setId(R.id.all + 4);
     }
+
     private void stepOne(){
         nowStep=GlobleData.STEP_ONE;
 
@@ -244,22 +241,4 @@ public class MakeTaskActivity extends BasicActivity {
                 break;
         }
     }
-
-
-    private void sendMessage(){
-        formparams.clear();
-        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_GROUP, String.valueOf(mTask.getIdInGroup())));
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, mGroupId));
-        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mTask.getType())));
-        formparams.add(new BasicNameValuePair(GlobleData.TARGET, mTask.getTarget()));
-        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mTask.getClickNumber())));
-        formparams.add(new BasicNameValuePair(GlobleData.DATE, mTask.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
-    }
-    Handler handler=new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
 }

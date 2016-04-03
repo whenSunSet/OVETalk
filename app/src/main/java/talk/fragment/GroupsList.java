@@ -39,5 +39,4 @@ public class GroupsList extends BasicFragment{
         super.upData();
         flash(GlobleData.SELECT_FRIST);
     }
-
 }

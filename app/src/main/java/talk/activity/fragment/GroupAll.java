@@ -87,7 +87,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         if (mTitle.getVisibility()!=View.GONE){
             textView = (TextView) findViewById(R.id.textView1);
-            textView.setText(mGroup.getGroupNickName());
+            textView.setText(mGroup.getGroupNick());
             addView();
         }
 
@@ -225,14 +225,14 @@ public class  GroupAll extends IndicatorFragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode==GlobleData.START_MAKE_TASK_ACTIVITY){
-            ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
+            ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
                     "我发布了一个任务，快来看看吧",
                     null,
                     10,
                     null,
-                    new Task(data.getStringExtra("path"),data.getIntExtra("idInGroup",GlobleData.DEFAULT)));
+                    new Task(data.getStringExtra("path"), data.getIntExtra("idInGroup", GlobleData.DEFAULT)));
         }else if (resultCode==GlobleData.START_MAKE_HOMEWORK_ACTIVITY){
-            ((GroupChatting) (mTabs.get(0).fragment)).addMessage(
+            ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
                     "我发布了一个作业，快来看看吧",
                     null,
                     11,

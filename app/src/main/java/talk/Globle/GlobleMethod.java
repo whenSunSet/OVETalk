@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,8 +36,14 @@ import cn.jpush.android.api.TagAliasCallback;
 import talk.TalkApplication;
 import talk.datebase.ClickTaskDB;
 import talk.datebase.ClickWorkDB;
+import talk.datebase.GroupDB;
 import talk.datebase.JoinGroupDB;
+import talk.datebase.TaskDB;
 import talk.datebase.UserDB;
+import talk.datebase.WorkDB;
+import talk.model.ClickTask;
+import talk.model.ClickWork;
+import talk.model.Group;
 import talk.model.JoinGroup;
 import talk.model.Message;
 import talk.model.Task;
@@ -56,17 +63,35 @@ public class GlobleMethod {
         JoinGroup joinGroup=new JoinGroup();
 
         joinGroup.setGroupId(message.getGroupId());
-        joinGroup.setMemberId(message.getUserId());
+        joinGroup.setUserId(message.getUserId());
         joinGroup.setDate(message.getDate());
 
         joinGroupDB.add(joinGroup);
         if (statu==GlobleData.ADD_MEMBER){
             User user=new User();
-            user.setUserID(message.getUserId());
+            user.setUserId(message.getUserId());
             user.setUserIcon(savaImage(talkApplication, message));
-            user.setUserNickName(message.getUserNickName());
+            user.setUserNick(message.getUserNickName());
             userDB.add(user);
         }
+    }
+
+    public static final void addMeToGroup(TalkApplication talkApplication,HashMap<String,Object> result){
+        GroupDB groupDB=talkApplication.getGroupDB();
+        TaskDB taskDB=talkApplication.getTaskDB();
+        WorkDB workDB=talkApplication.getWorkDB();
+        UserDB userDB=talkApplication.getUserDB();
+        ClickTaskDB clickTaskDB=talkApplication.getClickTaskDB();
+        ClickWorkDB clickWorkDB=talkApplication.getClickWorkDB();
+        JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
+
+        groupDB.addGroup((Group)result.get("group"));
+        taskDB.adds((ArrayList<Task>) result.get("tasks"));
+        workDB.adds((ArrayList<Work>)result.get("works"));
+        userDB.adds((ArrayList<User>)result.get("users"));
+        clickTaskDB.adds((ArrayList<ClickTask>)result.get("clickTasks"));
+        clickWorkDB.adds((ArrayList<ClickWork>)result.get("clickWorks"));
+        joinGroupDB.adds((ArrayList<JoinGroup>)result.get("joinGroup"));
     }
 
     public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,String groupId){
@@ -79,17 +104,26 @@ public class GlobleMethod {
         return list;
     }
 
-    public static final void quitFromGroup(TalkApplication talkApplication,Message message){
+    public static final void userOutGroup(TalkApplication talkApplication, Message message){
+        JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
+        ClickWorkDB clickWorkDB=talkApplication.getClickWorkDB();
+
+        joinGroupDB.deleteMember(message.getGroupId(), message.getUserId());
+        clickWorkDB.deleteClick(message.getGroupId(), message.getUserId());
+    }
+
+    public static final void deleteGroup(TalkApplication talkApplication,String groupId,String masterId){
+        GroupDB groupDB=talkApplication.getGroupDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
         ClickTaskDB clickTaskDB=talkApplication.getClickTaskDB();
         ClickWorkDB clickWorkDB=talkApplication.getClickWorkDB();
 
-        joinGroupDB.deleteMember(message.getGroupId(), message.getUserId());
-        clickTaskDB.deleteClick(message.getGroupId(), message.getUserId());
-        clickWorkDB.deleteClick(message.getGroupId(), message.getUserId());
+        groupDB.delGroup(groupId);
+        joinGroupDB.deleteMember(groupId,masterId);
+        clickTaskDB.deleteClick(groupId,masterId);
+        clickWorkDB.deleteClick(groupId, masterId);
 
     }
-
 
     public static boolean setTag(TalkApplication application){
         List<String > groupIds=application.getGroupDB().getGroupIds();
@@ -267,7 +301,7 @@ public class GlobleMethod {
             requestParams.put(GlobleData.GROUP_ID,mTask.getGroupId());
             requestParams.put(GlobleData.TYPE, mTask.getType());
             requestParams.put(GlobleData.TARGET, mTask.getTarget());
-            requestParams.put(GlobleData.CLICK_NUMBER, mTask.getClickNumber());
+            requestParams.put(GlobleData.CLICK_NUMBER, mTask.getClickNum());
             requestParams.put(GlobleData.DATE, mTask.getDate());
             requestParams.put(GlobleData.FILE, file);
 
@@ -281,7 +315,7 @@ public class GlobleMethod {
             requestParams.put(GlobleData.TYPE, mWork.getType());
             requestParams.put(GlobleData.ID_IN_TASK, mWork.getIdInTask());
             requestParams.put(GlobleData.TASK_ID,mWork.getTaskId());
-            requestParams.put(GlobleData.CLICK_NUMBER, mWork.getClickNumber());
+            requestParams.put(GlobleData.CLICK_NUMBER, mWork.getClickNum());
             requestParams.put(GlobleData.DATE, mWork.getDate());
             requestParams.put(GlobleData.FILE, file);
 

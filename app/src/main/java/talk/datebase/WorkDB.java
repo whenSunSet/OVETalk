@@ -45,9 +45,17 @@ public class WorkDB {
                 + "PRIMARY KEY (" + ID + "," + GROUP_ID + "," + TASK_ID + "))");
     }
 
+    public void adds(ArrayList<Work> list){
+        for (Work work:list) {
+            add(work);
+        }
+
+    }
 
     public void add(Work work) {
-
+        if (getTaskWork(work.getGroupId(),work.getTaskId(),work.getIdInTask())==null){
+            update(work);
+        }
         mDb.execSQL("insert into " + WORK_TABLE_NAME + " ("
                         + TASK_ID + ","
                         + GROUP_ID + ","
@@ -65,7 +73,7 @@ public class WorkDB {
                         work.getDate(),
                         work.getPath(),
                         work.getMaster(),
-                        work.getClickNumber()}
+                        work.getClickNum()}
         );
     }
 
@@ -190,7 +198,7 @@ public class WorkDB {
         work.setIdInTask(c.getInt(c.getColumnIndex(ID)));
         work.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
         work.setDate(c.getString(c.getColumnIndex(DATE)));
-        work.setClickNumber(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
+        work.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
         work.setType(c.getInt(c.getColumnIndex(TYPE)));
         work.setPath(c.getString(c.getColumnIndex(PATH)));
         work.setMaster(c.getString(c.getColumnIndex(MASTER)));

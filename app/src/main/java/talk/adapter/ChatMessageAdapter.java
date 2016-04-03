@@ -109,7 +109,7 @@ public class ChatMessageAdapter extends BaseAdapter{
 
 		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_PUT_HOMEWORK 只能在普通群组里使用
 		if (messageStatu<=3||messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
-			viewHolder.nickname.setText(mUser.getUserNickName());
+			viewHolder.nickname.setText(mUser.getUserNick());
 		}else {
 			//其他的消息只能在system里使用
 			viewHolder.nickname.setText("OVEsystem");

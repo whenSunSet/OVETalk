@@ -49,8 +49,8 @@ public class MemberAdapter extends ArrayAdapter<User> {
         return view;
     }
     public void setResource(User user,ViewHolder viewHolder){
-        viewHolder.nickName.setText(user.getUserNickName());
-        viewHolder.name.setText(user.getUserID());
+        viewHolder.nickName.setText(user.getUserNick());
+        viewHolder.name.setText(user.getUserId());
 
     }
 

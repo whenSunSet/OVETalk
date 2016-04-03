@@ -2,7 +2,6 @@ package talk.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import talk.activity.fragment.Groups;
 import talk.adapter.WorkAdapter;
 import talk.model.Group;
 import talk.model.Work;
-import talk.util.MyHandler;
 
 /**
  * Created by asus on 2015/11/15.
@@ -70,11 +68,4 @@ public class GroupWork extends BasicFragment{
 //        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupId()));
 //        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }
-
-    MyHandler handler=new MyHandler(getActivity()){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
 }

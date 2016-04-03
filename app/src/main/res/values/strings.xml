@@ -1,6 +1,6 @@
 <resources>
     <string name="groupId">groupId</string>
-    <string name="groupNickName">groupNickName</string>
+    <string name="groupNick">groupNick</string>
     <string name="exit">退出</string>
     <string name="destroy">注销</string>
     <string name="member">成员</string>

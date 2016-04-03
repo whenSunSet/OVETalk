@@ -73,6 +73,25 @@ public class GlobleData {
 
     public static final int YOU_DISAGREE_TO_JOIN_GROUP=13;
 
+    public static final int CREATE_GROUP =14;
+
+    public static final int SEND_TASK=15;
+
+    public static final int SEND_HOMEWORK=16;
+
+    public static final int GET_TASK_FILE=17;
+
+    public static final int GET_HOMEWORK_FILE=18;
+
+    public static final int GET_GROUP_INFO=19;
+
+    public static final int GET_TASK_CLICK=20;
+
+    public static final int GET_HOMEWORK_CLICK=21;
+
+    public static final int GET_HOMEWORK_INFO=22;
+
+    public static final int GET_TASK_INFO=23;
 
     public static final String MESSAGE="message";
     public static final String GROUP_ICON="groupIcon";

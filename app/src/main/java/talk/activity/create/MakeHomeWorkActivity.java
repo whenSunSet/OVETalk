@@ -2,7 +2,6 @@ package talk.activity.create;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -16,7 +15,6 @@ import android.widget.ListView;
 import com.example.heshixiyang.ovetalk.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -33,9 +31,6 @@ import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.activity.util.ListViewActivity;
 import talk.model.Work;
-import talk.util.DialogUtil;
-import talk.util.MyHandler;
-import talk.util.MyRunnable;
 
 public class MakeHomeWorkActivity extends BasicActivity {
     private Button mLastStep;
@@ -56,6 +51,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private Animation mAnimationPullBack;//收缩listView
     private List<NameValuePair> formparams;
     private boolean mIsListViewVisible =false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,7 +221,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private boolean sendHomeWork(String url,TalkApplication talkApplication){
         mWork.setMaster(mApplication.getSpUtil().getUserId());
         mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupId(), mWork.getTaskId()) + 1);
-        mWork.setClickNumber(0);
+        mWork.setClickNum(0);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
         simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
         mWork.setDate(simpleDateFormat.format(new Date()));
@@ -237,28 +233,5 @@ public class MakeHomeWorkActivity extends BasicActivity {
             e.printStackTrace();
         }
         return isSuccess;
-    }
-
-    MyHandler handler=new MyHandler(MakeHomeWorkActivity.this) {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case GlobleData.SEND_MESSAGE_SUCCESS:
-                    DialogUtil.showToast(MakeHomeWorkActivity.this,"发送成功");
-                    break;
-            }
-        }
-    };
-    private void sendWork(){
-        formparams.clear();
-        formparams.add(new BasicNameValuePair(GlobleData.GROUP_ID, mWork.getGroupId()));
-        formparams.add(new BasicNameValuePair(GlobleData.ID_IN_TASK, String.valueOf(mWork.getIdInTask())));
-        formparams.add(new BasicNameValuePair(GlobleData.MASTER, mWork.getMaster()));
-        formparams.add(new BasicNameValuePair(GlobleData.TYPE, String.valueOf(mWork.getType())));
-        formparams.add(new BasicNameValuePair(GlobleData.TASK_ID,String.valueOf(mWork.getTaskId()) ));
-        formparams.add(new BasicNameValuePair(GlobleData.CLICK_NUMBER, String.valueOf(mWork.getClickNumber())));
-        formparams.add(new BasicNameValuePair(GlobleData.DATE, mWork.getDate()));
-        new Thread(new MyRunnable(formparams,"",handler,GlobleData.DEFAULT)).start();
     }
 }

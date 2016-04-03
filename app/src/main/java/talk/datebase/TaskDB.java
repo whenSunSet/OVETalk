@@ -39,9 +39,16 @@ public class TaskDB {
                 + "PRIMARY KEY (" + ID + "," + GROUP_Id + "))");
     }
 
+    public void adds(ArrayList<Task> list){
+        for (Task task:list){
+            add(task);
+        }
+    }
 
     public void add(Task task) {
-
+        if (getTask(task.getGroupId(),task.getIdInGroup())!=null){
+            update(task);
+        }
         mDb.execSQL("insert into " + TASK_TABLE_NAME + " ("
                         + ID + ","
                         + GROUP_Id + ","
@@ -57,7 +64,7 @@ public class TaskDB {
                         task.getType(),
                         task.getDate(),
                         task.getPath(),
-                        task.getClickNumber()}
+                        task.getClickNum()}
         );
     }
 
@@ -112,7 +119,7 @@ public class TaskDB {
             task.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
             task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
             task.setDate(c.getString(c.getColumnIndex(DATE)));
-            task.setClickNumber(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
+            task.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
             task.setType(c.getInt(c.getColumnIndex(TYPE)));
             task.setPath(c.getString(c.getColumnIndex(PATH)));
             task.setTarget(c.getString(c.getColumnIndex(TARGET)));
@@ -131,7 +138,7 @@ public class TaskDB {
             task.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
             task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
             task.setDate(c.getString(c.getColumnIndex(DATE)));
-            task.setClickNumber(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
+            task.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
             task.setType(c.getInt(c.getColumnIndex(TYPE)));
             task.setPath(c.getString(c.getColumnIndex(PATH)));
             task.setTarget(c.getString(c.getColumnIndex(TARGET)));

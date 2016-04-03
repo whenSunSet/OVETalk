@@ -24,7 +24,7 @@ public class Task implements Parcelable {
     private int type;
     private String path;
     private String target;
-    private int clickNumber;
+    private int clickNum;
     private String date;
 
     public Task() {
@@ -35,13 +35,13 @@ public class Task implements Parcelable {
         this.idInGroup = idInGroup;
     }
 
-    public Task(String groupId, int idInGroup, int type, String path, String target, int clickNumber, String date) {
+    public Task(String groupId, int idInGroup, int type, String path, String target, int clickNum, String date) {
         this.groupId = groupId;
         this.idInGroup = idInGroup;
         this.type = type;
         this.path = path;
         this.target = target;
-        this.clickNumber = clickNumber;
+        this.clickNum = clickNum;
         this.date = date;
     }
 
@@ -51,7 +51,7 @@ public class Task implements Parcelable {
         this.type = in.readInt();
         this.path = in.readString();
         this.target = in.readString();
-        this.clickNumber = in.readInt();
+        this.clickNum = in.readInt();
         this.date = in.readString();
     }
 
@@ -95,12 +95,12 @@ public class Task implements Parcelable {
         this.target = target;
     }
 
-    public int getClickNumber() {
-        return clickNumber;
+    public int getClickNum() {
+        return clickNum;
     }
 
-    public void setClickNumber(int clickNumber) {
-        this.clickNumber = clickNumber;
+    public void setClickNum(int clickNum) {
+        this.clickNum = clickNum;
     }
 
     public String getDate() {
@@ -123,7 +123,7 @@ public class Task implements Parcelable {
         dest.writeInt(this.type);
         dest.writeString(this.path);
         dest.writeString(this.target);
-        dest.writeInt(this.clickNumber);
+        dest.writeInt(this.clickNum);
         dest.writeString(this.date);
     }
 }

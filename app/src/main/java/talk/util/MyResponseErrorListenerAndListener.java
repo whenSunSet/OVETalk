@@ -49,30 +49,28 @@ public class MyResponseErrorListenerAndListener implements Response.ErrorListene
                 break;
             case GlobleData.USER_CANCEL_GROUP:
                 if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
-                    DialogUtil.showToast(context,"注销操作失败");
+                    DialogUtil.showToast(context,"注销操作失败,建议等等操作");
                 }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
                     DialogUtil.showToast(context,"注销操作成功");
                 }
                 break;
             case GlobleData.AGREE_USER_TO_GROUP:
                 if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
-                    DialogUtil.showToast(context,"注销操作失败");
+                    DialogUtil.showToast(context,"同意失败，建议等等再操作");
                 }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
-                    DialogUtil.showToast(context,"注销操作成功");
+                    DialogUtil.showToast(context,"操作成功");
                 }
                 break;
             case GlobleData.DISAGREE_USER_TO_GROUP:
                 if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
-                    DialogUtil.showToast(context,"注销操作失败");
+                    DialogUtil.showToast(context,"不同意失败，建议等等操作");
                 }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
-                    DialogUtil.showToast(context,"注销操作成功");
+                    DialogUtil.showToast(context,"操作成功");
                 }
                 break;
             default:
                 if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
                     DialogUtil.showToast(context,"消息发送失败");
-                }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
-                    DialogUtil.showToast(context,"消息发送成功");
                 }
                 break;
         }

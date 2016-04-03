@@ -65,7 +65,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         //获取该group的最后一条信息
         GroupChatMessage chatMessage=mApplication.getGroupMessageDB().getLastChatMessage(group.getGroupId());
         //放置该group的NickName和icon
-        holder.name.setText(group.getGroupNickName());
+        holder.name.setText(group.getGroupNick());
         holder.icon.setImageResource(R.drawable.ic_launcher);
         //判断该群的groupName是否和其userName相同，若相同则该群为系统群
         boolean isSystemGroup=(group.getGroupId().equals(mApplication.getSpUtil().getUserId()));
@@ -96,7 +96,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             }
             holder.data.setText(chatMessage.getDateStr());
             //将发送过来user的姓名和聊天内容都写入
-            holder.chat.setText(mApplication.getUserDB().getMember(chatMessage.getUserId()).getUserNickName()+ ":" + chatMessage.getMessage());
+            holder.chat.setText(mApplication.getUserDB().getMember(chatMessage.getUserId()).getUserNick()+ ":" + chatMessage.getMessage());
             if (isSystemGroup){
                 //如果是系统Group的话就把姓名去掉
                 holder.chat.setText(chatMessage.getMessage());

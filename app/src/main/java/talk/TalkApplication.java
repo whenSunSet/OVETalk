@@ -64,8 +64,9 @@ public class TalkApplication extends Application {
 
         map.put("my", new User(getSpUtil().getUserId(),getSpUtil().getUsreNickName(),getSpUtil().getUserIcon()));
 
+
         GlobleData.SD_CACHE= GlobleMethod.getCacheDir(this);
-       GlobleData.SD_FILE= GlobleMethod.getFileDir(this);
+        GlobleData.SD_FILE= GlobleMethod.getFileDir(this);
     }
 
     public NotificationManager getNotificationManager() {
@@ -119,4 +120,5 @@ public class TalkApplication extends Application {
     public ClickWorkDB getClickWorkDB() {
         return clickWorkDB;
     }
+
 }

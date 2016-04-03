@@ -22,17 +22,17 @@ public class Work implements Parcelable {
     private int type;
     private String path;
     private String master;
-    private int clickNumber;
+    private int clickNum;
     private String date;
 
-    public Work(int taskId, String groupId, int idInTask, int type, String path, String master, int clickNumber, String date) {
+    public Work(int taskId, String groupId, int idInTask, int type, String path, String master, int clickNum, String date) {
         this.taskId = taskId;
         this.groupId = groupId;
         this.idInTask = idInTask;
         this.type = type;
         this.path = path;
         this.master = master;
-        this.clickNumber = clickNumber;
+        this.clickNum = clickNum;
         this.date = date;
     }
 
@@ -53,7 +53,7 @@ public class Work implements Parcelable {
         this.type = in.readInt();
         this.path = in.readString();
         this.master = in.readString();
-        this.clickNumber = in.readInt();
+        this.clickNum = in.readInt();
         this.date = in.readString();
     }
 
@@ -105,12 +105,12 @@ public class Work implements Parcelable {
         this.master = master;
     }
 
-    public int getClickNumber() {
-        return clickNumber;
+    public int getClickNum() {
+        return clickNum;
     }
 
-    public void setClickNumber(int clickNumber) {
-        this.clickNumber = clickNumber;
+    public void setClickNum(int clickNum) {
+        this.clickNum = clickNum;
     }
 
     public String getDate() {
@@ -134,7 +134,7 @@ public class Work implements Parcelable {
         dest.writeInt(this.type);
         dest.writeString(this.path);
         dest.writeString(this.master);
-        dest.writeInt(this.clickNumber);
+        dest.writeInt(this.clickNum);
         dest.writeString(this.date);
     }
 }

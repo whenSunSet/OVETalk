@@ -6,14 +6,14 @@ package talk.model;
 public class ClickWork {
     private String groupId;
     private int taskId;
-    private int workId;
+    private int idInTask;
     private String date;
     private String userId;
 
-    public ClickWork(String groupId, int taskId, int workId, String date, String userId) {
+    public ClickWork(String groupId, int taskId, int idInTask, String date, String userId) {
         this.groupId = groupId;
         this.taskId = taskId;
-        this.workId = workId;
+        this.idInTask = idInTask;
         this.date = date;
         this.userId = userId;
     }
@@ -37,12 +37,12 @@ public class ClickWork {
         this.taskId = taskId;
     }
 
-    public int getWorkId() {
-        return workId;
+    public int getIdInTask() {
+        return idInTask;
     }
 
-    public void setWorkId(int workId) {
-        this.workId = workId;
+    public void setIdInTask(int idInTask) {
+        this.idInTask = idInTask;
     }
 
     public String getDate() {

@@ -60,7 +60,7 @@ public class GroupDB {
                         + GROUP_MASTER + ") values(?,?,?,?,?,?)",
                 new Object[]{
                         u.getGroupId(),
-                        u.getGroupNickName(),
+                        u.getGroupNick(),
                         u.getMemberNum(),
                         u.getTaskNum(),
                         u.getGroupIcon(),
@@ -101,7 +101,7 @@ public class GroupDB {
                         + "where "
                         + GROUP_ID + "=?",
                 new Object[]{
-                        u.getGroupNickName(),
+                        u.getGroupNick(),
                         u.getGroupIcon(),
                         u.getGroupMaster(),
                         u.getTaskNum(),
@@ -114,7 +114,7 @@ public class GroupDB {
         Cursor c = mDb.rawQuery("select * from " + GROUP_TABLE_NAME + " where " + GROUP_ID + "=?",
                 new String[]{groupId});
         if (c.moveToFirst()) {
-            u.setGroupNickName(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
+            u.setGroupNick(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
             u.setGroupIcon(c.getString(c.getColumnIndex(GROUP_ICON)));
             u.setGroupMaster(c.getString(c.getColumnIndex(GROUP_MASTER)));
             u.setTaskNum(c.getInt(c.getColumnIndex(GROUP_TASK_NUM)));
@@ -136,7 +136,7 @@ public class GroupDB {
         while (c.moveToNext())
         {
             Group u = new Group();
-            u.setGroupNickName(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
+            u.setGroupNick(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
             u.setGroupIcon(c.getString(c.getColumnIndex(GROUP_ICON)));
             u.setGroupMaster(c.getString(c.getColumnIndex(GROUP_MASTER)));
             u.setTaskNum(c.getInt(c.getColumnIndex(GROUP_TASK_NUM)));

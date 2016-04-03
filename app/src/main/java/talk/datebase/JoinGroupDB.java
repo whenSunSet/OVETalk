@@ -37,10 +37,14 @@ public class JoinGroupDB {
         
     }
 
-
+    public void adds(ArrayList<JoinGroup> list){
+        for (JoinGroup joinGroup:list){
+            add(joinGroup);
+        }
+    }
 
     public void add(JoinGroup joinGroup) {
-        if (getMember(joinGroup.getGroupId(),joinGroup.getMemberId())!=null){
+        if (getMember(joinGroup.getGroupId(),joinGroup.getUserId())!=null){
             update(joinGroup);
             return;
         }
@@ -53,8 +57,7 @@ public class JoinGroupDB {
                 new Object[]{
                         joinGroup.getGroupId(),
                         joinGroup.getDate(),
-                        joinGroup.getMemberId()});
-
+                        joinGroup.getUserId()});
     }
 
     public void deleteMember(String groupId,String userId) {
@@ -69,7 +72,7 @@ public class JoinGroupDB {
         JoinGroup joinGroup=new JoinGroup();
         if (c.moveToFirst()){
             joinGroup.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
-            joinGroup.setMemberId(c.getString(c.getColumnIndex(USER_ID)));
+            joinGroup.setUserId(c.getString(c.getColumnIndex(USER_ID)));
             joinGroup.setDate(c.getString(c.getColumnIndex(DATE)));
 
             c.close();
@@ -96,7 +99,7 @@ public class JoinGroupDB {
 
 
     public void update(JoinGroup joinGroup){
-        deleteMember(joinGroup.getGroupId(),joinGroup.getMemberId());
+        deleteMember(joinGroup.getGroupId(),joinGroup.getUserId());
         add(joinGroup);
 
     }

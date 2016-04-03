@@ -5,12 +5,12 @@ package talk.model;
  */
 public class JoinGroup {
     private String groupId;
-    private String memberId;
+    private String userId;
     private String date;
 
-    public JoinGroup(String groupId, String memberId, String date) {
+    public JoinGroup(String groupId, String userId, String date) {
         this.groupId = groupId;
-        this.memberId = memberId;
+        this.userId = userId;
         this.date = date;
     }
 
@@ -25,12 +25,12 @@ public class JoinGroup {
         this.groupId = groupId;
     }
 
-    public String getMemberId() {
-        return memberId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getDate() {
