@@ -92,7 +92,7 @@ public class GroupActivity extends Activity {
 
     private void sendMessage(String url, final int messageStatu){
         HashMap<String ,String > paramter=new HashMap();
-        HashMap<String ,Object> result=new HashMap();
+        HashMap<String ,Object> result;
         paramter.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupId()));
         paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
         paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));

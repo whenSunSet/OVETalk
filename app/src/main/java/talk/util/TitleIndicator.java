@@ -32,12 +32,10 @@ import talk.model.TabInfo;
  */
 public class TitleIndicator extends LinearLayout implements View.OnClickListener, OnFocusChangeListener {
 
-    private static final String TAG = "TitleFlowIndicator";
     private static final float FOOTER_LINE_HEIGHT = 4.0f;
     private static final int FOOTER_COLOR = 0xFFFFC445;
     private static final float FOOTER_TRIANGLE_HEIGHT = 10;
-private final int BSSEEID = 0xffff00;
-    private boolean DEBUG = false;
+    private final int BSSEEID = 0xffff00;
     private int mCurrentScroll = 0;
     //选项卡列表
     private List<TabInfo> mTabs;
@@ -56,7 +54,7 @@ private final int BSSEEID = 0xffff00;
     private float mFooterLineHeight;
     //当前选项卡的下标，从0开始
     private int mSelectedTab = 0;
-    private Context mContext;;
+    private Context mContext;
     private boolean mChangeOnClick = true;
 
     private int mCurrID = 0;
@@ -81,8 +79,6 @@ private final int BSSEEID = 0xffff00;
     /**
      * The contructor used with an inflater
      *
-     * @param context
-     * @param attrs
      */
     public TitleIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -277,8 +273,7 @@ private final int BSSEEID = 0xffff00;
     }
 
     public int getTabCount() {
-        int children = getChildCount();
-        return children;
+        return getChildCount();
     }
 
     //设置当前选项卡
@@ -294,7 +289,7 @@ private final int BSSEEID = 0xffff00;
         View newTab = getChildAt(mSelectedTab);
         newTab.setSelected(true);
         setTabTextSize(newTab, true);
-        ((ImageView) newTab.findViewById(R.id.tab_title_tips)).setVisibility(View.GONE);
+        newTab.findViewById(R.id.tab_title_tips).setVisibility(View.GONE);
 
         mViewPager.setCurrentItem(mSelectedTab);
         invalidate();

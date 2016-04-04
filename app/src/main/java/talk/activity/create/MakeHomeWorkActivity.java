@@ -14,13 +14,9 @@ import android.widget.ListView;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import org.apache.http.NameValuePair;
-
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import talk.Globle.GlobleData;
@@ -49,7 +45,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private ArrayAdapter<String > mAdapter;
     private Animation mAnimationExpand;//显示listView
     private Animation mAnimationPullBack;//收缩listView
-    private List<NameValuePair> formparams;
     private boolean mIsListViewVisible =false;
 
     @Override
@@ -64,7 +59,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mDate= new String[]{"文档", "音频", "视频"};
         mWork=new Work();
         mWork.setGroupId(getIntent().getIntExtra("groupId",-999));
-        formparams = new ArrayList<>();
 
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
@@ -100,7 +94,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         stepTwo();
                         break;
                     case GlobleData.STEP_TWO:
-                        if (sendHomeWork(GlobleData.pushWork,mApplication)){
                             mApplication.getWorkDB().add(mWork);
                             GroupAll.mIsFlash = true;
 
@@ -110,7 +103,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
                             intent.putExtra("path", mWork.getPath());
                             setResult(GlobleData.START_MAKE_HOMEWORK_ACTIVITY, intent);
                             finish();
-                        }
 
 //                        try {
 //                            GlobleMethod.upLoadFile(mWork,"work","",mApplication);
@@ -136,19 +128,23 @@ public class MakeHomeWorkActivity extends BasicActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String date = (String) (mItem.getItemAtPosition(position));
                 Intent intent=new Intent(MakeHomeWorkActivity.this,GugleFileActivity.class);
-                if (date.equals("文档")) {
-                    mChooseType.setText("选择发布文件类型：文档");
-                    intent.putExtra("fileType",GlobleData.IS_TEXT);
-                    startActivityForResult(intent, GlobleData.CHOOSE_FILE);
-                    mWork.setType(GlobleData.IS_TEXT);
-                } else if (date.equals("音频")) {
-                    mChooseType.setText("选择发布文件类型：音频");
-                    intent.putExtra("fileType", GlobleData.IS_MUSIC);
-                    startActivityForResult(intent,GlobleData.CHOOSE_FILE);
-                    mWork.setType(GlobleData.IS_MUSIC);
-                } else {
-                    mChooseType.setText("选择发布文件类型：视频");
-                    mWork.setType(GlobleData.IS_VIDEO);
+                switch (date) {
+                    case "文档":
+                        mChooseType.setText("选择发布文件类型：文档");
+                        intent.putExtra("fileType", GlobleData.IS_TEXT);
+                        startActivityForResult(intent, GlobleData.CHOOSE_FILE);
+                        mWork.setType(GlobleData.IS_TEXT);
+                        break;
+                    case "音频":
+                        mChooseType.setText("选择发布文件类型：音频");
+                        intent.putExtra("fileType", GlobleData.IS_MUSIC);
+                        startActivityForResult(intent, GlobleData.CHOOSE_FILE);
+                        mWork.setType(GlobleData.IS_MUSIC);
+                        break;
+                    default:
+                        mChooseType.setText("选择发布文件类型：视频");
+                        mWork.setType(GlobleData.IS_VIDEO);
+                        break;
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);

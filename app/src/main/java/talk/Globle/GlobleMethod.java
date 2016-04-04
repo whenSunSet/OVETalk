@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import talk.datebase.WorkDB;
 import talk.model.ClickTask;
 import talk.model.ClickWork;
 import talk.model.Group;
+import talk.model.GroupChatMessage;
 import talk.model.JoinGroup;
 import talk.model.Message;
 import talk.model.Task;
@@ -57,7 +59,7 @@ import talk.util.MyAsyncHttpResponseHandler;
  */
 public class GlobleMethod {
 
-    public static final void addUserToGroup(TalkApplication talkApplication,Message message,int statu){
+    public static void addUserToGroup(TalkApplication talkApplication,Message message,int statu){
         UserDB userDB=talkApplication.getUserDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
         JoinGroup joinGroup=new JoinGroup();
@@ -76,7 +78,7 @@ public class GlobleMethod {
         }
     }
 
-    public static final void addMeToGroup(TalkApplication talkApplication,HashMap<String,Object> result){
+    public static void addMeToGroup(TalkApplication talkApplication,HashMap<String,Object> result){
         GroupDB groupDB=talkApplication.getGroupDB();
         TaskDB taskDB=talkApplication.getTaskDB();
         WorkDB workDB=talkApplication.getWorkDB();
@@ -88,13 +90,13 @@ public class GlobleMethod {
         groupDB.addGroup((Group)result.get("group"));
         taskDB.adds((ArrayList<Task>) result.get("tasks"));
         workDB.adds((ArrayList<Work>)result.get("works"));
-        userDB.adds((ArrayList<User>)result.get("users"));
-        clickTaskDB.adds((ArrayList<ClickTask>)result.get("clickTasks"));
-        clickWorkDB.adds((ArrayList<ClickWork>)result.get("clickWorks"));
-        joinGroupDB.adds((ArrayList<JoinGroup>)result.get("joinGroup"));
+        userDB.adds((ArrayList<User>) result.get("users"));
+        clickTaskDB.adds((ArrayList<ClickTask>) result.get("clickTasks"));
+        clickWorkDB.adds((ArrayList<ClickWork>) result.get("clickWorks"));
+        joinGroupDB.adds((ArrayList<JoinGroup>) result.get("joinGroup"));
     }
 
-    public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,int groupId){
+    public static ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,int groupId){
         ArrayList<User> list=new ArrayList<>();
         ArrayList<String> nameList;
         nameList=joinGroupDB.getMembersName(groupId);
@@ -104,7 +106,7 @@ public class GlobleMethod {
         return list;
     }
 
-    public static final void userOutGroup(TalkApplication talkApplication, Message message){
+    public static void userOutGroup(TalkApplication talkApplication, Message message){
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
         ClickWorkDB clickWorkDB=talkApplication.getClickWorkDB();
 
@@ -112,7 +114,7 @@ public class GlobleMethod {
         clickWorkDB.deleteClick(message.getGroupId(), message.getUserId());
     }
 
-    public static final void deleteGroup(TalkApplication talkApplication,int groupId,String masterId){
+    public static void deleteGroup(TalkApplication talkApplication,int groupId,String masterId){
         GroupDB groupDB=talkApplication.getGroupDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
         ClickTaskDB clickTaskDB=talkApplication.getClickTaskDB();
@@ -120,7 +122,7 @@ public class GlobleMethod {
 
         groupDB.delGroup(groupId);
         joinGroupDB.deleteMember(groupId,masterId);
-        clickTaskDB.deleteClick(groupId,masterId);
+        clickTaskDB.deleteClick(groupId, masterId);
         clickWorkDB.deleteClick(groupId, masterId);
 
     }
@@ -203,8 +205,7 @@ public class GlobleMethod {
     public static Bitmap getImage(Uri uri,Activity activity){
         try {
             // 读取uri所在的图片
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), uri);
-            return bitmap;
+            return MediaStore.Images.Media.getBitmap(activity.getContentResolver(), uri);
         } catch (Exception e) {
             Log.e("[Android]", e.getMessage());
             Log.e("[Android]", "目录为：" + uri);
@@ -224,8 +225,6 @@ public class GlobleMethod {
             bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
             fileOutputStream.flush();;
             fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
@@ -288,6 +287,26 @@ public class GlobleMethod {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
         String date=df.format(new java.util.Date());// new Date()为获取当前系统时间
         return date;
+    }
+
+
+    public static GroupChatMessage makeMessage(int groupId,String message, String messageImage,String you, int messageStatu, Task task, Work work){
+        GroupChatMessage chatMessage = new GroupChatMessage();
+        chatMessage.setIsComing(false);
+        chatMessage.setDate(new Date());
+        chatMessage.setMessage(message);
+        chatMessage.setReaded(true);
+        chatMessage.setGroupId(groupId);
+        chatMessage.setUserId(you);
+        chatMessage.setMessageImage(messageImage);
+        chatMessage.setMessageStatu(messageStatu);
+        if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
+            chatMessage.setUserIcon(String.valueOf(work.getTaskId()));
+            chatMessage.setUserNickName(String.valueOf(work.getIdInTask()));
+        }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
+            chatMessage.setUserIcon(String.valueOf(task.getIdInGroup()));
+        }
+        return chatMessage;
     }
 
     public static boolean upLoadFile(Object object,String name,String url, final Context context) throws FileNotFoundException {

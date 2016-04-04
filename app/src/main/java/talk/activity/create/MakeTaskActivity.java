@@ -16,18 +16,14 @@ import android.widget.ListView;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import org.apache.http.NameValuePair;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
-import talk.activity.fragment.GroupAll;
 import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.model.Task;
+import talk.service.HttpIntentService;
 import talk.util.DialogUtil;
 
 public class MakeTaskActivity extends BasicActivity {
@@ -47,7 +43,6 @@ public class MakeTaskActivity extends BasicActivity {
     private Animation mAnimationPullBack;//收缩listView
     private EditText mName;
     private EditText mConent;
-    private List<NameValuePair> formparams;
     private boolean mIsListViewVisible =false;
 
     @Override
@@ -62,7 +57,6 @@ public class MakeTaskActivity extends BasicActivity {
         mDate= new String[]{"文档", "音频", "视频"};
         mTask=new Task();
         mGroupId =getIntent().getIntExtra(GlobleData.GROUP_ID, GlobleData.DEFAULT);
-        formparams = new ArrayList<>();
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
         mAnimationExpand.setDuration(500);
@@ -119,14 +113,8 @@ public class MakeTaskActivity extends BasicActivity {
                             mTask.setGroupId(mGroupId);
                             mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupId) + 1);
 
-                            mApplication.getTaskDB().add(mTask);
-                            GroupAll.mIsFlash =true;
-
-//                            try {
-//                                GlobleMethod.upLoadFile(mTask,"task","",mApplication);
-//                            } catch (FileNotFoundException e) {
-//                                e.printStackTrace();
-//                            }
+                            Intent startHttpService=new Intent(MakeTaskActivity.this, HttpIntentService.class);
+                            startService(startHttpService);
 
                             Intent intent=new Intent();
                             intent.putExtra("idInGroup",mTask.getIdInGroup());
@@ -154,19 +142,23 @@ public class MakeTaskActivity extends BasicActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String date = (String) (mItem.getItemAtPosition(position));
                 Intent intent=new Intent(MakeTaskActivity.this,GugleFileActivity.class);
-                if (date.equals("文档")) {
-                    mChoose.setText("选择发布文件类型：文档");
-                    intent.putExtra("fileType", GlobleData.IS_TEXT);
-                    startActivityForResult(intent, 2);
-                    mTask.setType(GlobleData.IS_TEXT);
-                } else if (date.equals("音频")) {
-                    mChoose.setText("选择发布文件类型：音频");
-                    intent.putExtra("fileType", GlobleData.IS_MUSIC);
-                    startActivityForResult(intent,2);
-                    mTask.setType(GlobleData.IS_MUSIC);
-                } else {
-                    mChoose.setText("选择发布文件类型：视频");
-                    mTask.setType(GlobleData.IS_VIDEO);
+                switch (date) {
+                    case "文档":
+                        mChoose.setText("选择发布文件类型：文档");
+                        intent.putExtra("fileType", GlobleData.IS_TEXT);
+                        startActivityForResult(intent, 2);
+                        mTask.setType(GlobleData.IS_TEXT);
+                        break;
+                    case "音频":
+                        mChoose.setText("选择发布文件类型：音频");
+                        intent.putExtra("fileType", GlobleData.IS_MUSIC);
+                        startActivityForResult(intent, 2);
+                        mTask.setType(GlobleData.IS_MUSIC);
+                        break;
+                    default:
+                        mChoose.setText("选择发布文件类型：视频");
+                        mTask.setType(GlobleData.IS_VIDEO);
+                        break;
                 }
                 mItem.startAnimation(mAnimationPullBack);
                 mItem.setVisibility(View.GONE);

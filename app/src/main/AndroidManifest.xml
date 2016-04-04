@@ -145,6 +145,11 @@
         </activity>
         <activity android:name="talk.activity.util.ListViewActivity">
         </activity>
+
+        <service
+            android:name="talk.service.HttpIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

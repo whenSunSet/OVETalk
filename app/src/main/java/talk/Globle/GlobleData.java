@@ -166,5 +166,10 @@ public class GlobleData {
     public static final int MAKE_GROUP=2;
 
     public static final int SYSTEM=-99;
+
+    public static final int SEND_HOMEWORK_SERVICE=0;
+    public static final int SEND_TASK_SERVICE=1;
+    public static final int GET_HOMEWORK_FILE_SERVICE=2;
+    public static final int GET_TASK_FILE_SERVICE=3;
 }
 

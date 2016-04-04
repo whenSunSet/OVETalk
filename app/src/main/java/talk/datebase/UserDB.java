@@ -114,7 +114,7 @@ public class UserDB {
      获得所有member的NickName
      */
     public List<String> getGroupMenmberNickNames() {
-        List<String> list = new LinkedList<String>();
+        List<String> list = new LinkedList<>();
         Cursor c = mDb.rawQuery("select "+USER_NICK_NAME+" from "+ USER_TABLE_NAME, null);
         while (c.moveToNext())
         {

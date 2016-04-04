@@ -35,10 +35,7 @@ public class ViewPagerCompat extends ViewPager {
      */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (mViewTouchMode) {
-            return false;
-        }
-        return super.onInterceptTouchEvent(event);
+        return !mViewTouchMode && super.onInterceptTouchEvent(event);
     }
 
     @Override
@@ -57,8 +54,7 @@ public class ViewPagerCompat extends ViewPager {
     @Override
     public boolean arrowScroll(int direction) {
         if (mViewTouchMode) return false;
-        if (direction != FOCUS_LEFT && direction != FOCUS_RIGHT) return false;
-        return super.arrowScroll(direction);
+        return !(direction != FOCUS_LEFT && direction != FOCUS_RIGHT) && super.arrowScroll(direction);
     }
 
 }

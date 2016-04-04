@@ -37,8 +37,6 @@ import talk.model.Work;
  * Created by asus on 2015/11/14.
  */
 public class  GroupAll extends IndicatorFragmentActivity {
-    private static final String TAG="GroupAll";
-
     public Group mGroup;
 
     public boolean mIsSystemGroup;
@@ -72,18 +70,14 @@ public class  GroupAll extends IndicatorFragmentActivity {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                receive(context, intent);
+                receive(intent);
             }
         });
         mIsSystemGroup =getIntent().getStringExtra(GlobleData.GROUP_ID).equals("-1");
         mGroupMessageDB=mApplication.getGroupMessageDB();
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
         //判断当前的用户是不是当前群的master
-        if (mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserId())){
-            mIsMaster =true;
-        }else {
-            mIsMaster =false;
-        }
+        mIsMaster = mGroup.getGroupMaster().equals(mApplication.getSpUtil().getUserId());
 
         if (mTitle.getVisibility()!=View.GONE){
             textView = (TextView) findViewById(R.id.textView1);
@@ -92,7 +86,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
         }
 
     }
-    public void receive(Context context, Intent intent) {
+    public void receive( Intent intent) {
         Message message=intent.getParcelableExtra(GlobleData.KEY_MESSAGE);
         GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupId()
                 ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserId()

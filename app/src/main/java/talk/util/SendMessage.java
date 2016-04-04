@@ -34,7 +34,6 @@ public class SendMessage {
     }
 
     public HashMap<String,Object> post(TalkApplication mApplication,final int messageStatu,String url,HashMap<String ,String> paramter,RequestParams requestParams){
-        AsyncHttpClientUtil asyncHttpClientUtil=new AsyncHttpClientUtil();
         JSONObject jsonObject = new JSONObject();
 
         if ((messageStatu<=11&&messageStatu!= GlobleData.PHOTO_MESSAGE)
@@ -58,7 +57,7 @@ public class SendMessage {
                 ||messageStatu==GlobleData.SEND_TASK
                 ||messageStatu==GlobleData.SEND_HOMEWORK){
             MyAsyncHttpResponseHandler myAsyncHttpResponseHandler=new MyAsyncHttpResponseHandler(mApplication,messageStatu);
-            asyncHttpClientUtil.post(url, requestParams, myAsyncHttpResponseHandler);
+            AsyncHttpClientUtil.post(url, requestParams, myAsyncHttpResponseHandler);
             return makeReturnValue(messageStatu,myAsyncHttpResponseHandler.getJsonObject(),null);
         } else if (messageStatu==GlobleData.GET_TASK_FILE ||messageStatu==GlobleData.GET_HOMEWORK_FILE){
 
@@ -131,35 +130,9 @@ public class SendMessage {
                 }
                 break;
             case GlobleData.SEND_TASK:
-                if ((int)paramter.get(GlobleData.TYPE)==2){
-                    requestParams.put(GlobleData.PATH, (String)paramter.get(GlobleData.PATH));
-                }else{
-                    try {
-                        requestParams.put(GlobleData.FILE, (File)paramter.get(GlobleData.FILE));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                requestParams.put(GlobleData.ID_IN_GROUP,(int)paramter.get(GlobleData.ID_IN_GROUP));
-                requestParams.put(GlobleData.GROUP_ID,(int)paramter.get(GlobleData.GROUP_ID));
-                requestParams.put(GlobleData.TYPE, (int)paramter.get(GlobleData.TYPE));
-                requestParams.put(GlobleData.TARGET, (String)paramter.get(GlobleData.TARGET));
-                requestParams.put(GlobleData.CLICK_NUMBER, (int)paramter.get(GlobleData.CLICK_NUMBER));
-                requestParams.put(GlobleData.DATE, (String)paramter.get(GlobleData.DATE));
+
                 break;
             case GlobleData.SEND_HOMEWORK:
-                requestParams.put(GlobleData.ID_IN_TASK,(int)paramter.get(GlobleData.ID_IN_TASK));
-                requestParams.put(GlobleData.TASK_ID,(int)paramter.get(GlobleData.TASK_ID));
-                requestParams.put(GlobleData.GROUP_ID,(int)paramter.get(GlobleData.GROUP_ID));
-                requestParams.put(GlobleData.TYPE, (int)paramter.get(GlobleData.TYPE));
-                requestParams.put(GlobleData.MASTER, (String)paramter.get(GlobleData.MASTER));
-                requestParams.put(GlobleData.CLICK_NUMBER, (int)paramter.get(GlobleData.CLICK_NUMBER));
-                requestParams.put(GlobleData.DATE, (String)paramter.get(GlobleData.DATE));
-                try {
-                    requestParams.put(GlobleData.FILE, (File)paramter.get(GlobleData.FILE));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
                 break;
         }
     }

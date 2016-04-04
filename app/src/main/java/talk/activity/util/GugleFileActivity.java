@@ -39,7 +39,7 @@ public class GugleFileActivity extends Activity {
 	// 列表数据与视图的适配器
 	private SimpleAdapter adapter;
 	// 目录层级的堆栈
-	private Stack<String> folderStack = new Stack<String>();
+	private Stack<String> folderStack = new Stack<>();
 	// 当前的目录
 	private String nowFolder;
 	// 返回次数，当为2时，退出软件
@@ -131,7 +131,6 @@ public class GugleFileActivity extends Activity {
 
 	/**
 	 * 压入元素，如果元素个数超过了规定的数量，则把最底层的元素弹出，再压入
-	 * @param data
 	 */
 	private void pushData(String data)
 	{
@@ -140,7 +139,6 @@ public class GugleFileActivity extends Activity {
 
 	/**
 	 * 取得堆栈元素，当取到最后一层时，直接返回根目录
-	 * @return
 	 */
 	private String popData() {
 		if (folderStack.isEmpty()) {
@@ -154,10 +152,10 @@ public class GugleFileActivity extends Activity {
 	private void freshList(int sortType) {
 		List<File> fileList = GugleUtils.getSortedFiles(new File(nowFolder), sortType, isAsc);
 		ArrayList<HashMap<String, Object>> result = new ArrayList<>();
-		HashMap<String, Object> map = null;
+		HashMap<String, Object> map ;
 		Log.d("GugleFileActivity", "fileType:" + fileType);
 		for (File file : fileList) {
-			map = new HashMap<String, Object>();
+			map = new HashMap<>();
 			if (fileType==TEXT){
 				if (GugleUtils.getFileType(file.isDirectory(),file.getName())==R.drawable.text
 						||GugleUtils.getFileType(file.isDirectory(), file.getName())==R.drawable.folder){
@@ -234,7 +232,6 @@ public class GugleFileActivity extends Activity {
 	 * <pre>
 	 * 初始化程序配置
 	 * </pre>
-	 * @param basePath
 	 */
 	private void initSetting(String basePath)
 	{
@@ -245,15 +242,13 @@ public class GugleFileActivity extends Activity {
 		if (-1 == setting.getInt(GF_SET_LIST_TYPE, -1)) {
 			SharedPreferences.Editor editor = setting.edit();
 			editor.putInt(GF_SET_LIST_TYPE, GugleConstants.SORT_BY_WORD);
-			editor.commit();
+			editor.apply();
 		}
 	}
 
 
 	/**
 	 * 点击文件时触发的事件处理
-	 * @param thisAdapter
-	 * @param index
 	 */
 
 	private void fileClick(AdapterView<?> thisAdapter, int index) {
@@ -324,15 +319,4 @@ public class GugleFileActivity extends Activity {
 	{
 		backIndex = 1;
 	}
-
-	public String getFileManagePath()
-	{
-		return fileManagePath;
-	}
-
-	public void setFileManagePath(String fileManagePath)
-	{
-		this.fileManagePath = fileManagePath;
-	}
-
 }

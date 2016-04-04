@@ -6,7 +6,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by heshixiyang on 2016/3/14.
@@ -19,12 +18,12 @@ public class MyJsonObjectRequest extends JsonObjectRequest {
     }
 
     @Override
-    protected Map<String, String> getPostParams() throws AuthFailureError {
+    protected HashMap<String, String> getPostParams() throws AuthFailureError {
         return map;
     }
 
     @Override
-    protected Map<String, String> getParams() throws AuthFailureError {
+    protected HashMap<String, String> getParams() throws AuthFailureError {
         return map;
     }
 }

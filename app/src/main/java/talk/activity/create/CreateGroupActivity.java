@@ -76,7 +76,7 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
     }
 
     private void makeGroup(Bitmap icon,String url) {
-        HashMap<String,Object> result=null;
+        HashMap<String,Object> result;
         RequestParams requestParams=new RequestParams();
         requestParams.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
         requestParams.put(GlobleData.GROUP_NICK_NAME,mGroupNickName);
@@ -91,7 +91,6 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
             Groups.mIsFlash =true;
             addGroup();
         }
-        return ;
     }
 
     public void addGroup(){

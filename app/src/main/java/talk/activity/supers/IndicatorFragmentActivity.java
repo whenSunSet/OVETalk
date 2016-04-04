@@ -133,9 +133,6 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     /**
      * 根据EditText所在坐标和用户点击的坐标相对比，来判断是否隐藏键盘，因为当用户点击EditText时没必要隐藏
      *
-     * @param isEdit
-     * @param event
-     * @return
      */
     protected int isShouldHideInput(View isEdit,ImageView isImage,Button button,MotionEvent event) {
         if (event.getAction()==MotionEvent.ACTION_DOWN){
@@ -181,7 +178,6 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     /**
      * 多种隐藏软件盘方法的其中一种
      *
-     * @param token
      */
     protected void hideSoftInput(IBinder token,int statu) {
         switch (statu){
@@ -195,7 +191,6 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
             default:
                 break;
         }
-        return;
     }
 
     protected abstract int supplyTabs(List<TabInfo> tabs);

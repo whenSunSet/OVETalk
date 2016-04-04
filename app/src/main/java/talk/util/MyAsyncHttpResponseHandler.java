@@ -1,9 +1,7 @@
 package talk.util;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.example.heshixiyang.ovetalk.BuildConfig;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -19,16 +17,14 @@ public class MyAsyncHttpResponseHandler extends JsonHttpResponseHandler{
     private Context context;
     private int statu;
     private JSONObject jsonObject;
+
     public MyAsyncHttpResponseHandler(Context context,int statu) {
         this.statu=statu;
         this.context = context;
     }
-
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
         super.onSuccess(statusCode, headers, response);
-        if (BuildConfig.DEBUG) Log.d("MyAsyncHttpResponseHand", "statusCode:" + statusCode);
-        if (BuildConfig.DEBUG) Log.d("MyAsyncHttpResponseHand", response.toString());
         switch (statu){
             case GlobleData.PHOTO_MESSAGE:
                 if (statusCode==200){
@@ -40,9 +36,14 @@ public class MyAsyncHttpResponseHandler extends JsonHttpResponseHandler{
                     DialogUtil.showToast(context,"群组创建成功");
                 }
                 break;
-            default:
+            case GlobleData.SEND_HOMEWORK:
                 if (statusCode==200){
-                    DialogUtil.showToast(context,"文件上传成功");
+                    DialogUtil.showToast(context,"作业上传成功");
+                }
+                break;
+            case GlobleData.SEND_TASK:
+                if (statusCode==200){
+                    DialogUtil.showToast(context,"任务上传成功");
                 }
                 break;
         }

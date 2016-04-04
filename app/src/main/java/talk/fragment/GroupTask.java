@@ -28,7 +28,6 @@ import talk.model.Task;
 public class GroupTask extends BasicFragment{
     private Group mGroup;
     private int mWhichActivity;
-    private List<NameValuePair>  formparams;
     public GroupTask() {
         super();
     }

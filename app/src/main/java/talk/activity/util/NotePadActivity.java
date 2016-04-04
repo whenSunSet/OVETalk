@@ -53,7 +53,7 @@ public class NotePadActivity extends Activity
 			FileInputStream fis = new FileInputStream(file);
 			InputStreamReader isr = new InputStreamReader(fis);
 			reader = new BufferedReader(isr);
-			String readLine = null;
+			String readLine;
 			while((readLine = reader.readLine()) != null)
 			{
 				mctv.append(readLine);

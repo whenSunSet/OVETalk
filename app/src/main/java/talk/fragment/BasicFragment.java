@@ -69,7 +69,6 @@ public  class BasicFragment extends Fragment {
                 upData();
             }
         });
-        return ;
     }
 
     protected void upData(){

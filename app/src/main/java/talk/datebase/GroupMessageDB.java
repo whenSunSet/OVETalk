@@ -173,7 +173,7 @@ public class GroupMessageDB {
      获取每个group未读消息的条数
      */
     public Map<Integer, Integer> getGroupUnReadMsgs(List<Integer> groupIds) {
-        Map<Integer, Integer> groupUnReadMsgs = new HashMap();
+        HashMap groupUnReadMsgs = new HashMap();
         for (Integer groupId : groupIds) {
             int count = getUnreadedMsgsCountByGroupId(groupId);
             groupUnReadMsgs.put(groupId, count);
@@ -189,7 +189,7 @@ public class GroupMessageDB {
         Map<Integer,Integer> stringIntegerMap=getGroupUnReadMsgs(groupIds);
         int count=0;
         for (Integer valus:stringIntegerMap.values()){
-            count=count+valus.intValue();
+            count=count+ valus;
         }
         return count;
     }

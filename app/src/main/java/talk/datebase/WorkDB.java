@@ -169,7 +169,6 @@ public class WorkDB {
 
 
     public  int getTaskWorkNum(int groupId,int taskId){
-        List<Work> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
                         + GROUP_ID + "=? AND "

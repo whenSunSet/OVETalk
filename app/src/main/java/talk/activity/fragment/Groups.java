@@ -23,11 +23,8 @@ import talk.model.TabInfo;
 
 
 public class Groups extends IndicatorFragmentActivity {
-    private static final String TAG="Groups";
-
     private TextView mMakeGroup;
     private Boolean mIsResume =false;
-
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

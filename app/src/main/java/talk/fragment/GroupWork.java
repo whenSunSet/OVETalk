@@ -6,13 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-
 import com.example.heshixiyang.ovetalk.R;
-
-import org.apache.http.NameValuePair;
-
-import java.util.List;
-
 import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
@@ -26,7 +20,6 @@ import talk.model.Work;
  */
 public class GroupWork extends BasicFragment{
     private Group mGroup;
-    private List<NameValuePair> formparams;
     public GroupWork() {}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

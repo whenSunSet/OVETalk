@@ -30,19 +30,19 @@ public class MyPreferenceManager {
     protected static void removeKey(String key){
         mEditor = mSharedPreferences.edit();
         mEditor.remove(key);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     protected static void removeAll(){
         mEditor = mSharedPreferences.edit();
         mEditor.clear();
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public static void commitString(String key, String value){
         mEditor = mSharedPreferences.edit();
         mEditor.putString(key, value);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public static String getString(String key, String faillValue){
@@ -52,7 +52,7 @@ public class MyPreferenceManager {
     public static void commitInt(String key, int value){
         mEditor = mSharedPreferences.edit();
         mEditor.putInt(key, value);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public static int getInt(String key, int failValue){
@@ -62,7 +62,7 @@ public class MyPreferenceManager {
     public static void commitLong(String key, long value){
         mEditor = mSharedPreferences.edit();
         mEditor.putLong(key, value);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public static long getLong(String key, long failValue) {
@@ -76,7 +76,7 @@ public class MyPreferenceManager {
     public static void commitBoolean(String key, boolean value){
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean(key, value);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public static Boolean getBoolean(String key, boolean failValue){
@@ -87,7 +87,7 @@ public class MyPreferenceManager {
     public static void commitStringList(String key,Set<String> value) {
         mEditor = mSharedPreferences.edit();
         mEditor.putStringSet(key, value);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -102,8 +102,7 @@ public class MyPreferenceManager {
     public void setIsCreatSystemGroup(boolean isCreatSystemGroup){
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean("isCreateSystemGroup", isCreatSystemGroup);
-        mEditor.commit();
-
+        mEditor.apply();
     }
 
     public String getUserId() {
@@ -113,21 +112,21 @@ public class MyPreferenceManager {
     public void setUserId(String userId) {
         mEditor = mSharedPreferences.edit();
         mEditor.putString("userId", userId);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public String getUserAll(){
-        StringBuilder userAll=null;
-        userAll.append("userIcon:"+this.getUserIcon());
-        userAll.append(",userId:"+this.getUserId());
-        userAll.append(",userNickName:"+this.getUsreNickName());
+        StringBuilder userAll=new StringBuilder();
+        userAll.append("userIcon:").append(this.getUserIcon());
+        userAll.append(",userId:").append(this.getUserId());
+        userAll.append(",userNickName:").append(this.getUsreNickName());
 
         List<String> tagAll=getTagAll();
 
         for (String tag:tagAll){
             int i=1;
-            userAll.append(",tag"+i+":"+tag);
-            i++;
+            userAll.append(",tag").append(i).append(":").append(tag);
+            i += 1;
         }
 
         return userAll.toString();
@@ -136,7 +135,7 @@ public class MyPreferenceManager {
     public void setUserNickName(String userNickName) {
         mEditor = mSharedPreferences.edit();
         mEditor.putString("userNickName", userNickName);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public String getUsreNickName (){
@@ -150,13 +149,13 @@ public class MyPreferenceManager {
     public void setUserIcon(String userIcon) {
         mEditor = mSharedPreferences.edit();
         mEditor.putString("userIcon", userIcon);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public void setTagNum(){
         mEditor = mSharedPreferences.edit();
         mEditor.putInt("tagNum",mSharedPreferences.getInt("tagNum",0)+1);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public int getTagNum(){
@@ -167,7 +166,7 @@ public class MyPreferenceManager {
         mEditor = mSharedPreferences.edit();
         setTagNum();
         mEditor.putString("tag"+getTagNum(),tag);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     public List<String> getTagAll() {
@@ -194,7 +193,6 @@ public class MyPreferenceManager {
 
     public void setAppId(String appid)
     {
-        // TODO Auto-generated method stub
         mEditor.putString("appid", appid);
         mEditor.commit();
     }
@@ -209,7 +207,7 @@ public class MyPreferenceManager {
     {
         mEditor = mSharedPreferences.edit();
         mEditor.putString("ChannelId", ChannelId);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     // 是否通知
@@ -222,7 +220,7 @@ public class MyPreferenceManager {
     {
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean(MESSAGE_NOTIFY_KEY, isChecked);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     // 新消息是否有声音
@@ -235,7 +233,7 @@ public class MyPreferenceManager {
     {
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean(MESSAGE_SOUND_KEY, isChecked);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     // 刷新是否有声音
@@ -248,7 +246,7 @@ public class MyPreferenceManager {
     {
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean(PULLREFRESH_SOUND_KEY, isChecked);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     // 是否显示自己头像
@@ -261,7 +259,7 @@ public class MyPreferenceManager {
     {
         mEditor = mSharedPreferences.edit();
         mEditor.putBoolean(SHOW_HEAD_KEY, isChecked);
-        mEditor.commit();
+        mEditor.apply();
     }
 
     // 表情翻页效果
@@ -276,7 +274,7 @@ public class MyPreferenceManager {
             effect = 3;
         mEditor = mSharedPreferences.edit();
         mEditor.putInt("face_effects", effect);
-        mEditor.commit();
+        mEditor.apply();
     }
 
 }

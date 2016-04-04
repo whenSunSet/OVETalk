@@ -20,16 +20,12 @@ import android.widget.LinearLayout;
 import com.example.heshixiyang.ovetalk.R;
 import com.loopj.android.http.RequestParams;
 
-import org.apache.http.NameValuePair;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.fragment.GroupAll;
@@ -44,7 +40,7 @@ import talk.util.DialogUtil;
 import talk.util.MyPreferenceManager;
 import talk.util.SendMessage;
 
-public class GroupChatting extends BasicFragment implements ChatMessageAdapter.AdapterClickLisener{
+public class GroupChatting extends BasicFragment implements ChatMessageAdapter.AdapterClickListener {
     private ImageView mMore;
     private Button mMsgSend;
     private EditText mMsgInput;
@@ -57,7 +53,6 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     private GroupAll mActivity;
 
     //发送消息的数据
-    private List<NameValuePair> formparams;
     private MyPreferenceManager mPreferenceManager;
     private GroupMessageDB mGroupMessageDB;
 
@@ -101,7 +96,6 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             mEmoji=(ImageView) view.findViewById(R.id.btn_emoji);
 
             mContainer=(LinearLayout)view.findViewById(R.id.ll_btn_container);
-            formparams = new ArrayList<>();
         }
 
         //将本group的所有消息设置为已读
@@ -218,9 +212,9 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     }
 
     public void addAndSendMessage(String message, String messageImage, int messageStatu, Work work, Task task) {
-        GroupChatMessage chatMessage = makeMessage(message, messageImage, messageStatu, task, work);
+        GroupChatMessage chatMessage = GlobleMethod.makeMessage(mGroupId,message, messageImage,mPreferenceManager.getUserId(),messageStatu, task, work);
         HashMap<String,Object> result=null;
-        if (chatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE&&chatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
+        if (chatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE||chatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
             result=sendMessage(GlobleData.jpush_sendMessage, chatMessage.getMessage(), null, chatMessage.getMessageStatu(), null, null);
         }else if (chatMessage.getMessageStatu()==GlobleData.PHOTO_MESSAGE){
             result=sendMessage(GlobleData.jpush_sendImage, null, chatMessage.getMessageImage(), chatMessage.getMessageStatu(), null, null);
@@ -231,28 +225,9 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         }
         makeResult(result, messageStatu, chatMessage);
         flash(GlobleData.SELECT_LAST, chatMessage);
-        return;
     }
 
     //组装chatMessage
-    private GroupChatMessage makeMessage(String message, String messageImage, int statu, Task task, Work work){
-        GroupChatMessage chatMessage = new GroupChatMessage();
-        chatMessage.setIsComing(false);
-        chatMessage.setDate(new Date());
-        chatMessage.setMessage(message);
-        chatMessage.setReaded(true);
-        chatMessage.setGroupId(mGroupId);
-        chatMessage.setUserId(mPreferenceManager.getUserId());
-        chatMessage.setMessageImage(messageImage);
-        chatMessage.setMessageStatu(statu);
-        if (statu==GlobleData.USER_PUT_HOMEWORK){
-            chatMessage.setUserIcon(String.valueOf(work.getTaskId()));
-            chatMessage.setUserNickName(String.valueOf(work.getIdInTask()));
-        }else if (statu==GlobleData.MASTER_PUT_TASK){
-            chatMessage.setUserIcon(String.valueOf(task.getIdInGroup()));
-        }
-        return chatMessage;
-    }
 
     /**
      *  如果是普通消息 message=消息 isIamge=空 type=空
@@ -265,7 +240,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
      */
     private HashMap<String ,Object> sendMessage(String url, String message, String isImage, int messageStatu, Work work, Task task){
         HashMap<String ,String > paramter=new HashMap();
-        HashMap<String,Object> result=null;
+        HashMap<String,Object> result;
         RequestParams requestParams=new RequestParams();
         if (messageStatu==GlobleData.PHOTO_MESSAGE){
             requestParams.put(GlobleData.GROUP_ID, mGroup.getGroupId());

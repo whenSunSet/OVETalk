@@ -27,14 +27,14 @@ public class ChatMessageAdapter extends BaseAdapter{
 	private LayoutInflater mInflater;
 	private List<GroupChatMessage> mDatas;
 	private TalkApplication mApplication;
-	private AdapterClickLisener mAdapterClickLisener;
+	private AdapterClickListener mAdapterClickListener;
 	private User mUser;
 
-	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas,AdapterClickLisener mAdapterClickLisener) {
+	public ChatMessageAdapter(Context context, List<GroupChatMessage> datas,AdapterClickListener mAdapterClickListener) {
 		mInflater = LayoutInflater.from(context);
 		mDatas = datas;
 		mApplication =(TalkApplication)context;
-		this.mAdapterClickLisener=mAdapterClickLisener;
+		this.mAdapterClickListener = mAdapterClickListener;
 	}
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -128,7 +128,7 @@ public class ChatMessageAdapter extends BaseAdapter{
 				viewHolder.img.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						mAdapterClickLisener.onClick((GroupChatMessage)getItem(position));
+						mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
 					}
 				});
 			}else if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
@@ -138,13 +138,13 @@ public class ChatMessageAdapter extends BaseAdapter{
 				viewHolder.agree.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						mAdapterClickLisener.onClick((GroupChatMessage)getItem(position));
+						mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
 					}
 				});
 				viewHolder.disagree.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						mAdapterClickLisener.onClick((GroupChatMessage)getItem(position));
+						mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
 					}
 				});
 			}
@@ -201,8 +201,7 @@ public class ChatMessageAdapter extends BaseAdapter{
 		public ImageView userIcon;
 	}
 
-	public interface AdapterClickLisener{
-		public void onClick(GroupChatMessage groupChatMessage);
-	};
-
+	public interface AdapterClickListener {
+		void onClick(GroupChatMessage groupChatMessage);
+	}
 }

@@ -4,14 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
-
 import cn.jpush.android.api.JPushInterface;
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
@@ -29,13 +25,7 @@ import talk.util.SendMessage;
  * Created by asus on 2015/11/5.o
  */
 public class JpushReceiver extends BroadcastReceiver {
-    Handler handler=new Handler(){
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            super.handleMessage(msg);
 
-        }
-    };
     private TalkApplication mApplication;
     private MyPreferenceManager myPreferenceManager;
 
@@ -56,12 +46,12 @@ public class JpushReceiver extends BroadcastReceiver {
             int messageStatu=message.getMessageStatu();
 
             //根据MessageImage 的状态得知信息的状态
-            if (messageStatu<=3&&messageStatu==GlobleData.USER_PUT_HOMEWORK&&messageStatu==GlobleData.MASTER_PUT_TASK){
+            if (messageStatu<=3||messageStatu==GlobleData.USER_PUT_HOMEWORK||messageStatu==GlobleData.MASTER_PUT_TASK){
                 //1-3 10 11都是group接受的消息
                 groupId=message.getGroupId();
                 makeAndSaveMessage(message, groupId);
                 HashMap<String,String> paramter=new HashMap<>();
-                HashMap<String,Object> result=null;
+                HashMap<String,Object> result;
                 paramter.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
                 if (messageStatu==GlobleData.MASTER_PUT_TASK){
                     message.setMessage("我发布了一个任务，快来看看吧");
@@ -145,7 +135,7 @@ public class JpushReceiver extends BroadcastReceiver {
                     object.getString("messageimage"));
 
             //如果是自己发出的信息，则不接受
-            if (object.getString("userName").toString().equals(myPreferenceManager.getUserId())){
+            if (object.getString("userName").equals(myPreferenceManager.getUserId())){
                 return null;
             }
         } catch (JSONException e) {
