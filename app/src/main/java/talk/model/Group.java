@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by asus on 2015/11/3.
  */
 public class Group implements Parcelable {
-    private String groupId;
+    private int groupId;
     private String groupNick;
     private String groupIcon;
     private String groupMaster;
@@ -16,7 +16,7 @@ public class Group implements Parcelable {
 
     public Group() {}
 
-    public Group(String groupId, String groupNick, String groupIcon, String groupMaster, int taskNum, int memberNum) {
+    public Group(int groupId, String groupNick, String groupIcon, String groupMaster, int taskNum, int memberNum) {
         this.groupId = groupId;
         this.groupNick = groupNick;
         this.groupIcon = groupIcon;
@@ -25,11 +25,11 @@ public class Group implements Parcelable {
         this.memberNum = memberNum;
     }
 
-    public String getGroupId() {
+    public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
 
@@ -80,7 +80,7 @@ public class Group implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.groupId);
+        dest.writeInt(this.groupId);
         dest.writeString(this.groupNick);
         dest.writeString(this.groupIcon);
         dest.writeString(this.groupMaster);
@@ -89,7 +89,7 @@ public class Group implements Parcelable {
     }
 
     protected Group(Parcel in) {
-        this.groupId = in.readString();
+        this.groupId = in.readInt();
         this.groupNick = in.readString();
         this.groupIcon = in.readString();
         this.groupMaster = in.readString();

@@ -45,7 +45,7 @@ public class JpushReceiver extends BroadcastReceiver {
         myPreferenceManager=mApplication.getSpUtil();
         Bundle bundle = intent.getExtras();
         Message message;
-        String groupId;
+        int groupId;
         String msg=null;
         String groupNickName;
 
@@ -62,7 +62,7 @@ public class JpushReceiver extends BroadcastReceiver {
                 makeAndSaveMessage(message, groupId);
                 HashMap<String,String> paramter=new HashMap<>();
                 HashMap<String,Object> result=null;
-                paramter.put(GlobleData.GROUP_ID, message.getGroupId());
+                paramter.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
                 if (messageStatu==GlobleData.MASTER_PUT_TASK){
                     message.setMessage("我发布了一个任务，快来看看吧");
                     paramter.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
@@ -77,7 +77,7 @@ public class JpushReceiver extends BroadcastReceiver {
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
-                groupId=myPreferenceManager.getUserId();
+                groupId=GlobleData.SYSTEM;
                 if (messageStatu==GlobleData.AGREE_USER_TO_GROUP){
                     groupNickName=message.getMessage();
                 }else {
@@ -136,7 +136,7 @@ public class JpushReceiver extends BroadcastReceiver {
             object=new JSONObject(bundle.getString("cn.jpush.android.EXTRA"));
             message = new Message(
                     bundle.getString("cn.jpush.android.MESSAGE"),
-                    object.getString("groupId"),
+                    object.getInt("groupId"),
                     object.getString("icon"),
                     object.getString("date"),
                     object.getString("nickname"),
@@ -162,10 +162,10 @@ public class JpushReceiver extends BroadcastReceiver {
             context.sendBroadcast(msgIntent);
         }
     }
-    private void makeAndSaveMessage(Message message, String groupId){
+    private void makeAndSaveMessage(Message message, int groupId){
         makeAndSaveMessage("", message, groupId, "");
     }
-    private  void makeAndSaveMessage(String s, Message message, String groupId, String groupNickName){
+    private  void makeAndSaveMessage(String s, Message message, int groupId, String groupNickName){
         String msg;
 
         if (TextUtils.isEmpty(s)){

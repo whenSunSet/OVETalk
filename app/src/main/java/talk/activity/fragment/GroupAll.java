@@ -100,7 +100,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
 
         int messageStatu=message.getMessageStatu();
 
-        if (!mIsSystemGroup &&message.getGroupId().equals(mGroup.getGroupId())){
+        if (!mIsSystemGroup &&message.getGroupId()==mGroup.getGroupId()){
             //不是System但是是该group 并且不在chat或者group被解散
             if (messageStatu==GlobleData.USER_CANCEL_GROUP){
                 //如果群被注销，则finish

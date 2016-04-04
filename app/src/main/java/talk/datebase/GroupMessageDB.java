@@ -38,10 +38,10 @@ public class GroupMessageDB {
         mDb = context.openOrCreateDatabase(GlobleData.CHAT_DB_NAME, Context.MODE_PRIVATE, null);
     }
 
-    public void createTable(String groupId) {
+    public void createTable(int groupId) {
         mDb.execSQL("CREATE table IF NOT EXISTS _" + groupId
                 + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL_GROUP_ID +" TEXT, "
+                + COL_GROUP_ID +" INTEGER, "
                 + COL_ICON +" TEXT, "
                 + COL_IS_COMING +" INTEGER ,"
                 + COL_MESSAGE_STATU +" INTEGER ,"
@@ -52,7 +52,7 @@ public class GroupMessageDB {
                 + COL_MESSAGE_IMAGE+" TEXT ,"
                 + COL_READED +" INTEGER)");
     }
-    public void delTable(String groupId) {
+    public void delTable(int groupId) {
         mDb.execSQL("DROP TABLE _"+groupId);
     }
 
@@ -60,7 +60,7 @@ public class GroupMessageDB {
      * 为每个用户根据其groupId创建一张消息表
      *
      */
-    public void add(String groupId, GroupChatMessage groupChatMessage) {
+    public void add(int groupId, GroupChatMessage groupChatMessage) {
         createTable(groupId);
         int isComing = groupChatMessage.isComing() ? 1 : 0;
         int readed = groupChatMessage.isReaded() ? 1 : 0;
@@ -93,7 +93,7 @@ public class GroupMessageDB {
      *
      查找指定的最后n条消息记录
      */
-    public ArrayList<GroupChatMessage> find(String groupId, int currentPage, int pageSize) {
+    public ArrayList<GroupChatMessage> find(int groupId, int currentPage, int pageSize) {
         ArrayList<GroupChatMessage> groupChatMessages = new ArrayList<>();
         createTable(groupId);
         int start = (currentPage - 1) * pageSize;
@@ -107,7 +107,7 @@ public class GroupMessageDB {
             groupChatMessage = new GroupChatMessage(
                     c.getString(c.getColumnIndex(COL_MESSAGE)),
                     c.getInt(c.getColumnIndex(COL_IS_COMING))==1,
-                    c.getString(c.getColumnIndex(COL_GROUP_ID)),
+                    c.getInt(c.getColumnIndex(COL_GROUP_ID)),
                     c.getString(c.getColumnIndex(COL_ICON)),
                     c.getInt(c.getColumnIndex(COL_READED))== 1,
                     c.getString(c.getColumnIndex(COL_DATE)),
@@ -131,7 +131,7 @@ public class GroupMessageDB {
      *
      获取指定group的消息条数
      */
-    public int getMessageNum(String groupId){
+    public int getMessageNum(int groupId){
         Cursor c = mDb.rawQuery("select * from _"+groupId,null);
         int count=c.getCount();
         c.close();
@@ -142,7 +142,7 @@ public class GroupMessageDB {
      *
      获取指定group的最后一条消息的
      */
-    public GroupChatMessage getLastChatMessage(String groupId){
+    public GroupChatMessage getLastChatMessage(int groupId){
         GroupChatMessage groupChatMessage = null;
         Cursor c = mDb.rawQuery("select * from _" + groupId, null);
         String count=String.valueOf(c.getCount());
@@ -154,7 +154,7 @@ public class GroupMessageDB {
             groupChatMessage = new GroupChatMessage(
                     c.getString(c.getColumnIndex(COL_MESSAGE)),
                     c.getInt(c.getColumnIndex(COL_IS_COMING))==1,
-                    c.getString(c.getColumnIndex(COL_GROUP_ID)),
+                    c.getInt(c.getColumnIndex(COL_GROUP_ID)),
                     c.getString(c.getColumnIndex(COL_ICON)),
                     c.getInt(c.getColumnIndex(COL_READED))== 1,
                     c.getString(c.getColumnIndex(COL_DATE)),
@@ -172,9 +172,9 @@ public class GroupMessageDB {
      *
      获取每个group未读消息的条数
      */
-    public Map<String, Integer> getGroupUnReadMsgs(List<String> groupIds) {
-        Map<String, Integer> groupUnReadMsgs = new HashMap<String, Integer>();
-        for (String groupId : groupIds) {
+    public Map<Integer, Integer> getGroupUnReadMsgs(List<Integer> groupIds) {
+        Map<Integer, Integer> groupUnReadMsgs = new HashMap();
+        for (Integer groupId : groupIds) {
             int count = getUnreadedMsgsCountByGroupId(groupId);
             groupUnReadMsgs.put(groupId, count);
         }
@@ -185,8 +185,8 @@ public class GroupMessageDB {
      *
      获得所有未读消息的条数
      */
-    public int getUnreadMsgsCount(List<String> groupIds){
-        Map<String,Integer> stringIntegerMap=getGroupUnReadMsgs(groupIds);
+    public int getUnreadMsgsCount(List<Integer> groupIds){
+        Map<Integer,Integer> stringIntegerMap=getGroupUnReadMsgs(groupIds);
         int count=0;
         for (Integer valus:stringIntegerMap.values()){
             count=count+valus.intValue();
@@ -198,7 +198,7 @@ public class GroupMessageDB {
      *
      获取指定group的未读消息的条数
      */
-    public int getUnreadedMsgsCountByGroupId(String groupId) {
+    public int getUnreadedMsgsCountByGroupId(int groupId) {
         createTable(groupId);
         String sql = "select count(*) as count from _" + groupId + " where "
                 + COL_IS_COMING + " = 1 and " + COL_READED + " = 0";
@@ -213,7 +213,7 @@ public class GroupMessageDB {
      *
      让指定group未读消息条数变为0
      */
-    public void updateReaded(String groupId) {
+    public void updateReaded(int groupId) {
         createTable(groupId);
         mDb.execSQL("update  _" + groupId + " set " + COL_READED + " = 1 where "
                 + COL_READED + " = 0 ", new Object[]{});
@@ -223,7 +223,7 @@ public class GroupMessageDB {
      *
      通过日期和group找到指定的信息，改变其中的值
      */
-    public void update(String which,String what,String time,String groupId){
+    public void update(String which,String what,String time,int groupId){
         createTable(groupId);
         mDb.execSQL("update  _" + groupId + " set "
                 + which+ " = "+what +" where "

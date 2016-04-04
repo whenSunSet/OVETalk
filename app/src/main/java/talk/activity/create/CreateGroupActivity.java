@@ -14,11 +14,8 @@ import android.widget.ImageView;
 import com.example.heshixiyang.ovetalk.R;
 import com.loopj.android.http.RequestParams;
 
-import org.apache.http.NameValuePair;
-
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.List;
 
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
@@ -35,10 +32,9 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
     private ImageView mIcon;
     private Button mGetIcon;
     private TalkApplication mApplication;
-    private String mGroupId=null;
+    private int mGroupId;
     private String mGroupNickName =null;
     private String mIconPath=null;
-    private List<NameValuePair> formparams ;
     private Bitmap icon;
 
     public static final int START_ALBUM_CODE=1;
@@ -91,7 +87,7 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
         }
         result=SendMessage.getSendMessage().post(mApplication,GlobleData.CREATE_GROUP,url,null,requestParams);
         if (result.get("res")==1){
-            mGroupId= String.valueOf(result.get("groupId"));
+            mGroupId= (int) result.get("groupId");
             Groups.mIsFlash =true;
             addGroup();
         }

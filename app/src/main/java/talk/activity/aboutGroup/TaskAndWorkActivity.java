@@ -30,7 +30,7 @@ public class TaskAndWorkActivity extends Activity {
     private Work mWork;
     private int which;
 
-    private String groupId;
+    private int groupId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

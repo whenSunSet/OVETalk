@@ -29,7 +29,7 @@ public class TaskDB {
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + TASK_TABLE_NAME + " ( "
                 + ID + " INTEGER, "
-                + GROUP_Id + " TEXT, "
+                + GROUP_Id + " INTEGER, "
                 + TARGET + " TEXT, "
                 + TYPE + " INTEGER,"
                 + DATE + " TEXT, "
@@ -68,7 +68,7 @@ public class TaskDB {
         );
     }
 
-    public void deltask(String groupId,int idInGroup){
+    public void deltask(int groupId,int idInGroup){
             mDb.execSQL("delete from "
                     + TASK_TABLE_NAME
                     + " where "
@@ -84,7 +84,7 @@ public class TaskDB {
         add(task);
     }
 
-    public void update(int clickNum,int idInGroup ,String groupId){
+    public void update(int clickNum,int idInGroup ,int groupId){
         mDb.execSQL("update "
                         + TASK_TABLE_NAME
                         + " set "
@@ -97,7 +97,7 @@ public class TaskDB {
                         idInGroup,
                         groupId});
     }
-    public void update(String path,int idInGroup ,String groupId){
+    public void update(String path,int idInGroup ,int groupId){
         mDb.execSQL("update "
                         + TASK_TABLE_NAME
                         + " set "
@@ -110,13 +110,13 @@ public class TaskDB {
                         idInGroup,
                         groupId});
     }
-    public Task getTask(String groupId,int idInGroup){
+    public Task getTask(int groupId,int idInGroup){
         Task task=new Task();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ ID + "=? AND " + GROUP_Id +"=?",
-                new String []{String.valueOf(idInGroup),groupId});
+                new String []{String.valueOf(idInGroup),String.valueOf(groupId)});
 
         if (c.moveToFirst()) {
-            task.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
+            task.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
             task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
             task.setDate(c.getString(c.getColumnIndex(DATE)));
             task.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
@@ -129,13 +129,13 @@ public class TaskDB {
 
     }
 
-    public ArrayList<Task> getGroupTask(String groupId) {
+    public ArrayList<Task> getGroupTask(int groupId) {
         ArrayList<Task> tasks= new ArrayList<>();
-        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{groupId});
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{String .valueOf(groupId)});
 
         while (c.moveToNext()) {
             Task task=new Task();
-            task.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
+            task.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
             task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
             task.setDate(c.getString(c.getColumnIndex(DATE)));
             task.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
@@ -148,8 +148,8 @@ public class TaskDB {
         c.close();
         return tasks;
     }
-    public int getGroupTaskNum(String groupName) {
-        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{groupName});
+    public int getGroupTaskNum(int groupId) {
+        Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{String .valueOf(groupId)});
         int a=0;
         while (c.moveToNext()) {
             a++;
@@ -157,7 +157,7 @@ public class TaskDB {
         c.close();
         return a;
     }
-    public void delTable(String groupName) {
+    public void delTable(int groupId) {
         mDb.execSQL("DROP TABLE " + TASK_TABLE_NAME);
     }
 }

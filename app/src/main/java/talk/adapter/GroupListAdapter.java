@@ -68,7 +68,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         holder.name.setText(group.getGroupNick());
         holder.icon.setImageResource(R.drawable.ic_launcher);
         //判断该群的groupName是否和其userName相同，若相同则该群为系统群
-        boolean isSystemGroup=(group.getGroupId().equals(mApplication.getSpUtil().getUserId()));
+        boolean isSystemGroup=(group.getGroupId()==GlobleData.SYSTEM);
 
         //判断当前group的消息是否为空
         if (chatMessage==null){
@@ -106,7 +106,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         //判断当前是不是系统群
         if (isSystemGroup){
             //若是，则把向下一个Activity传递的groupName设置为-1
-            setClick(holder.chatAll,"-1",group);
+            setClick(holder.chatAll,GlobleData.SYSTEM,group);
         }else {
             //若不是，则直接传递groupName
             setClick(holder.chatAll,group.getGroupId(),group);
@@ -114,7 +114,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
 
     }
 
-    private void setClick(LinearLayout chatAll, final String extraMessage, final Group group){
+    private void setClick(LinearLayout chatAll, final int groupId, final Group group){
         final Group group1=mApplication.getGroupDB().getGroup(group.getGroupId());
         if (group1==null) {
             Toast.makeText(mApplication, "该群组已经解散,请刷新列表", Toast.LENGTH_SHORT).show();
@@ -126,7 +126,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
                 (mApplication).map.put("nowGroup",group);
 
                 Intent intent = new Intent(mApplication, GroupAll.class);
-                intent.putExtra(GlobleData.GROUP_ID, extraMessage);
+                intent.putExtra(GlobleData.GROUP_ID, groupId);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mApplication.startActivity(intent);
             }

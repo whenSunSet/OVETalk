@@ -19,7 +19,7 @@ public class Task implements Parcelable {
         }
     };
     //0 ：文档，1：音频，2：视频
-    private String groupId;
+    private int groupId;
     private int idInGroup;
     private int type;
     private String path;
@@ -35,7 +35,7 @@ public class Task implements Parcelable {
         this.idInGroup = idInGroup;
     }
 
-    public Task(String groupId, int idInGroup, int type, String path, String target, int clickNum, String date) {
+    public Task(int groupId, int idInGroup, int type, String path, String target, int clickNum, String date) {
         this.groupId = groupId;
         this.idInGroup = idInGroup;
         this.type = type;
@@ -46,7 +46,7 @@ public class Task implements Parcelable {
     }
 
     protected Task(Parcel in) {
-        this.groupId = in.readString();
+        this.groupId = in.readInt();
         this.idInGroup = in.readInt();
         this.type = in.readInt();
         this.path = in.readString();
@@ -55,11 +55,11 @@ public class Task implements Parcelable {
         this.date = in.readString();
     }
 
-    public String getGroupId() {
+    public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
 
@@ -118,7 +118,7 @@ public class Task implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.groupId);
+        dest.writeInt(this.groupId);
         dest.writeInt(this.idInGroup);
         dest.writeInt(this.type);
         dest.writeString(this.path);

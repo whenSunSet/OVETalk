@@ -19,7 +19,7 @@ public class Message implements Parcelable {
     };
     private String message;
     private String date;
-    private String groupId;
+    private int groupId;
     private String userId;
     private int messageStatu;
     private String messageImage;
@@ -29,7 +29,7 @@ public class Message implements Parcelable {
 
     public Message() {}
 
-    public Message(String userId, String groupId, String date, String userIcon, String userNickName) {
+    public Message(String userId, int groupId, String date, String userIcon, String userNickName) {
         this.userId = userId;
         this.groupId = groupId;
         this.date = date;
@@ -37,7 +37,7 @@ public class Message implements Parcelable {
         this.userNickName = userNickName;
     }
 
-    public Message(String message, String groupId, String userIcon, String date, String userNickName, String userId, int messageStatu, String messageImage) {
+    public Message(String message, int groupId, String userIcon, String date, String userNickName, String userId, int messageStatu, String messageImage) {
         this.message = message;
         this.groupId = groupId;
         this.userIcon = userIcon;
@@ -50,7 +50,7 @@ public class Message implements Parcelable {
 
     protected Message(Parcel in) {
         this.message = in.readString();
-        this.groupId = in.readString();
+        this.groupId = in.readInt();
         this.userIcon = in.readString();
         this.date = in.readString();
         this.userNickName = in.readString();
@@ -67,11 +67,11 @@ public class Message implements Parcelable {
         this.message = message;
     }
 
-    public String getGroupId() {
+    public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
 
@@ -131,7 +131,7 @@ public class Message implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.message);
-        dest.writeString(this.groupId);
+        dest.writeInt(this.groupId);
         dest.writeString(this.userIcon);
         dest.writeString(this.date);
         dest.writeString(this.userNickName);

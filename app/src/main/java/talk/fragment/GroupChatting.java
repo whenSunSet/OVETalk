@@ -53,7 +53,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     private ImageView mEmoji;
     public LinearLayout mContainer;
 
-    private String mGroupId;
+    private int mGroupId;
     private GroupAll mActivity;
 
     //发送消息的数据
@@ -89,7 +89,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
 
         if (mActivity.mIsSystemGroup){
             //如果是SystemGroup的话就把输入框去掉
-            mGroupId = mApplication.getSpUtil().getUserId();
+            mGroupId = GlobleData.SYSTEM;
             view.findViewById(R.id.contant).setVisibility(View.GONE);
         }else {
             mMsgSend = (Button) view.findViewById(R.id.id_chat_send);
@@ -278,7 +278,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             }
             result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams);
         }else{
-            paramter.put(GlobleData.GROUP_ID, mGroup.getGroupId());
+            paramter.put(GlobleData.GROUP_ID, String.valueOf(mGroup.getGroupId()));
             paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
             paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(messageStatu));
 
@@ -379,30 +379,6 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             intent.putExtra("which", GlobleData.IS_WORK);
             startActivity(intent);
         }
-    }
-
-    public GroupMessageDB getmGroupMessageDB() {
-        return mGroupMessageDB;
-    }
-
-    public Work getmWork() {
-        return mWork;
-    }
-
-    public Task getmTask() {
-        return mTask;
-    }
-
-    public String getmGroupId() {
-        return mGroupId;
-    }
-
-    public void setmWork(Work mWork) {
-        this.mWork = mWork;
-    }
-
-    public void setmTask(Task mTask) {
-        this.mTask = mTask;
     }
 
     public ImageView getmMore() {

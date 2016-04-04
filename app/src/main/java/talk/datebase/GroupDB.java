@@ -37,7 +37,7 @@ public class GroupDB {
 
     public void createTable(SQLiteDatabase mDb) {
         mDb.execSQL("CREATE table IF NOT EXISTS "+GROUP_TABLE_NAME
-                +" ( "+ GROUP_ID +" TEXT PRIMARY KEY,"
+                +" ( "+ GROUP_ID +" INTEGER PRIMARY KEY,"
                 +GROUP_NICK_NAME +" TEXT,"
                 +GROUP_ICON +" TEXT,"
                 +GROUP_TASK_NUM +" INTEGER,"
@@ -76,7 +76,7 @@ public class GroupDB {
         }
     }
 
-    public void delGroup(String groupId) {
+    public void delGroup(int groupId) {
         mDb.execSQL("delete from " + GROUP_TABLE_NAME + " where " + GROUP_ID + "=?",
                 new Object[]{groupId});
 
@@ -109,10 +109,10 @@ public class GroupDB {
                         u.getGroupId()});
     }
 
-    public Group getGroup(String groupId) {
+    public Group getGroup(int groupId) {
         Group u = new Group();
         Cursor c = mDb.rawQuery("select * from " + GROUP_TABLE_NAME + " where " + GROUP_ID + "=?",
-                new String[]{groupId});
+                new String[]{String .valueOf(groupId)});
         if (c.moveToFirst()) {
             u.setGroupNick(c.getString(c.getColumnIndex(GROUP_NICK_NAME)));
             u.setGroupIcon(c.getString(c.getColumnIndex(GROUP_ICON)));
@@ -141,7 +141,7 @@ public class GroupDB {
             u.setGroupMaster(c.getString(c.getColumnIndex(GROUP_MASTER)));
             u.setTaskNum(c.getInt(c.getColumnIndex(GROUP_TASK_NUM)));
             u.setMemberNum(c.getInt(c.getColumnIndex(GROUP_MEMBER_NUM)));
-            u.setGroupId(c.getString(c.getColumnIndex(GROUP_ID)));
+            u.setGroupId(c.getInt(c.getColumnIndex(GROUP_ID)));
             list.add(u);
         }
         c.close();

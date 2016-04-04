@@ -30,7 +30,7 @@ public class JoinGroupDB {
     public void createTable() {
         mDb.execSQL("CREATE table IF NOT EXISTS " + JOIN_TABLE_NAME
                 + " (" + USER_ID + " TEXT, " //
-                + GROUP_Id + " TEXT, "//
+                + GROUP_Id + " INTEGER, "//
                 + DATE + " TEXT,"
                 + "foreign key (" + GROUP_Id + ") references " + "groups(groupId) "
                 + "PRIMARY KEY (" + USER_ID + "," + GROUP_Id + "))");
@@ -60,18 +60,18 @@ public class JoinGroupDB {
                         joinGroup.getUserId()});
     }
 
-    public void deleteMember(String groupId,String userId) {
+    public void deleteMember(int groupId,String userId) {
         mDb.execSQL("delete from " + JOIN_TABLE_NAME + " where " + USER_ID + "=? AND " + GROUP_Id + "=?",
                 new Object[]{userId, groupId});
     }
 
 
-    public JoinGroup getMember(String groupId,String userId){
+    public JoinGroup getMember(int groupId,String userId){
         Cursor c=mDb.rawQuery("select * from " + JOIN_TABLE_NAME + " where "+ USER_ID + "=? AND " + GROUP_Id +"=?",
-                new String []{userId,groupId});
+                new String []{userId,String .valueOf(groupId)});
         JoinGroup joinGroup=new JoinGroup();
         if (c.moveToFirst()){
-            joinGroup.setGroupId(c.getString(c.getColumnIndex(GROUP_Id)));
+            joinGroup.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
             joinGroup.setUserId(c.getString(c.getColumnIndex(USER_ID)));
             joinGroup.setDate(c.getString(c.getColumnIndex(DATE)));
 
@@ -84,10 +84,10 @@ public class JoinGroupDB {
 
     }
 
-    public ArrayList<String> getMembersName(String groupId){
+    public ArrayList<String> getMembersName(int groupId){
         Cursor c=mDb.rawQuery("select "+USER_ID+" from " + JOIN_TABLE_NAME + " where "+ GROUP_Id +"=?",
-                new String []{groupId});
-        ArrayList<String> list=new ArrayList<String>();
+                new String []{String .valueOf(groupId)});
+        ArrayList<String> list=new ArrayList<>();
         if (c.moveToFirst()){
             list.add(c.getString(c.getColumnIndex(USER_ID)));
         }

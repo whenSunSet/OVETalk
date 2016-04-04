@@ -63,7 +63,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
         mWork=new Work();
-        mWork.setGroupId(getIntent().getStringExtra("groupId"));
+        mWork.setGroupId(getIntent().getIntExtra("groupId",-999));
         formparams = new ArrayList<>();
 
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);

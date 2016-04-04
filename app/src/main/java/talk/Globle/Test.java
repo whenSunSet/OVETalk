@@ -24,7 +24,7 @@ public class Test {
     }
     public static void createSystemGroup(TalkApplication talkApplication) {
         MyPreferenceManager myPreferenceManager= talkApplication.getSpUtil();
-        Group group = new Group(myPreferenceManager.getUserId(), "SystemMessage", " ", myPreferenceManager.getUserId(),0,0);
+        Group group = new Group(GlobleData.SYSTEM, "SystemMessage", " ", myPreferenceManager.getUserId(),0,0);
         talkApplication.getGroupDB().addGroup(group);
 
     }

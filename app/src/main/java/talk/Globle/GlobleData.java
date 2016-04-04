@@ -165,6 +165,6 @@ public class GlobleData {
     public static final int SEND_FILE=1;
     public static final int MAKE_GROUP=2;
 
-
+    public static final int SYSTEM=-99;
 }
 

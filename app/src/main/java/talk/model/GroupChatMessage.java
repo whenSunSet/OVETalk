@@ -10,7 +10,7 @@ public class GroupChatMessage {
     private String message;
     private boolean isComing;
     private Date date;
-    private String groupId;
+    private int groupId;
     private String userIcon;
     private boolean readed;
     private String dateStr;
@@ -21,7 +21,7 @@ public class GroupChatMessage {
 
     public GroupChatMessage() {}
 
-    public GroupChatMessage(String message, boolean isComing, String groupId, String userIcon,
+    public GroupChatMessage(String message, boolean isComing, int groupId, String userIcon,
                             boolean readed, String dateStr, String userNickName, String userId,
                             String messageImage,int messageStatu) {
         this.message = message;
@@ -79,11 +79,11 @@ public class GroupChatMessage {
         this.messageImage = messageImage;
     }
 
-    public String getGroupId() {
+    public int getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
 

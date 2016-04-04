@@ -94,7 +94,7 @@ public class GlobleMethod {
         joinGroupDB.adds((ArrayList<JoinGroup>)result.get("joinGroup"));
     }
 
-    public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,String groupId){
+    public static final ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,int groupId){
         ArrayList<User> list=new ArrayList<>();
         ArrayList<String> nameList;
         nameList=joinGroupDB.getMembersName(groupId);
@@ -112,7 +112,7 @@ public class GlobleMethod {
         clickWorkDB.deleteClick(message.getGroupId(), message.getUserId());
     }
 
-    public static final void deleteGroup(TalkApplication talkApplication,String groupId,String masterId){
+    public static final void deleteGroup(TalkApplication talkApplication,int groupId,String masterId){
         GroupDB groupDB=talkApplication.getGroupDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
         ClickTaskDB clickTaskDB=talkApplication.getClickTaskDB();
@@ -148,7 +148,7 @@ public class GlobleMethod {
         }
     }
 
-    public static ArrayList<User> findClickWorkMembers(String groupId,
+    public static ArrayList<User> findClickWorkMembers(int groupId,
                                                          int taskId,
                                                          int workId,
                                                          ClickWorkDB clickWorkDB,
@@ -160,7 +160,7 @@ public class GlobleMethod {
         return list;
     }
 
-    public static ArrayList<User> findClickTaskMembers(String groupId,
+    public static ArrayList<User> findClickTaskMembers(int groupId,
                                                        int taskId,
                                                        ClickTaskDB clickTaskDB,
                                                        UserDB userDB){

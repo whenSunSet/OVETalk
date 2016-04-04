@@ -48,7 +48,7 @@ public class GroupActivity extends Activity {
 
         mGroupIcon=(ImageView)findViewById(R.id.icon);
         mGroupId =(TextView)findViewById(R.id.groupId);
-        mGroupNickName=(TextView)findViewById(R.id.groupNickName);
+        mGroupNickName=(TextView)findViewById(R.id.groupNick);
         mExit=(Button)findViewById(R.id.exit);
         mDestroy=(Button)findViewById(R.id.destroy);
         mMember=(Button)findViewById(R.id.member);
@@ -93,7 +93,7 @@ public class GroupActivity extends Activity {
     private void sendMessage(String url, final int messageStatu){
         HashMap<String ,String > paramter=new HashMap();
         HashMap<String ,Object> result=new HashMap();
-        paramter.put(GlobleData.GROUP_ID, mGroup.getGroupId());
+        paramter.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupId()));
         paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
         paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
 

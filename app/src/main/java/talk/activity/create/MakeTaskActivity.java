@@ -39,7 +39,7 @@ public class MakeTaskActivity extends BasicActivity {
     private Button mNextStep;
     private int nowStep=1;
     private LinearLayout.LayoutParams mLayoutParams;
-    private String mGroupId;
+    private int mGroupId;
     private Button mChoose;
     private ListView mItem;
     private ArrayAdapter<String > mAdapter;
@@ -61,7 +61,7 @@ public class MakeTaskActivity extends BasicActivity {
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
         mTask=new Task();
-        mGroupId =getIntent().getStringExtra(GlobleData.GROUP_ID);
+        mGroupId =getIntent().getIntExtra(GlobleData.GROUP_ID, GlobleData.DEFAULT);
         formparams = new ArrayList<>();
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
@@ -105,7 +105,7 @@ public class MakeTaskActivity extends BasicActivity {
                         if (TextUtils.isEmpty(mName.getText().toString())) {
                             DialogUtil.showToast(mApplication, "还没有输入任务的名字");
                         } else {
-                            mTask.setGroupId(mName.getText().toString());
+                            mTask.setGroupId(Integer.parseInt(mName.getText().toString()));
                             stepThree();
                         }
                         break;

@@ -23,7 +23,7 @@ public class GroupsFind extends Fragment {
     private View mView;
     private EditText mGroupIdEdit;
     private Button mAddGroup;
-    private String mGroupId;
+    private String  mGroupId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class GroupsFind extends Fragment {
             public void onClick(View v) {
                 mGroupId = mGroupIdEdit.getText().toString();
                 if (TextUtils.isEmpty(mGroupId)) {
-                    DialogUtil.showToast(mApplication, "你还没输入文字呢");
+                    DialogUtil.showToast(mApplication, "你还没输入小组号呢");
                     return;
                 }
                 sendMessage(GlobleData.joinOrExitGroup);
