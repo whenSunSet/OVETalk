@@ -14,13 +14,13 @@ import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.model.Task;
 import talk.model.Work;
-import talk.util.SendMessage;
+import talk.util.DialogUtil;
+import talk.http.SendMessage;
 
 public class HttpIntentService extends IntentService {
     public HttpIntentService() {
         super("HttpIntentService");
     }
-
     @Override
     protected void onHandleIntent(Intent intent) {
         TalkApplication mApplication=(TalkApplication)getApplication();
@@ -30,7 +30,7 @@ public class HttpIntentService extends IntentService {
         int messageStatu=intent.getIntExtra("messageStatu", GlobleData.DEFAULT);
         RequestParams requestParams=null;
 
-         if (messageStatu==GlobleData.SEND_TASK_SERVICE) {
+         if (messageStatu==GlobleData.SEND_TASK) {
              Task task=(Task)pa.get("task");
              if (task.getType() == 2) {
                  requestParams.put(GlobleData.PATH, task.getPath());
@@ -41,17 +41,29 @@ public class HttpIntentService extends IntentService {
                      e.printStackTrace();
                  }
              }
+
              requestParams.put(GlobleData.ID_IN_GROUP,task.getIdInGroup());
              requestParams.put(GlobleData.GROUP_ID,task.getGroupId());
              requestParams.put(GlobleData.TYPE,task.getType());
              requestParams.put(GlobleData.TARGET, task.getTarget());
              requestParams.put(GlobleData.CLICK_NUMBER,task.getClickNum());
-             requestParams.put(GlobleData.DATE,task.getDate());
+             requestParams.put(GlobleData.DATE, task.getDate());
              result= SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams);
+             if (result==null){
+                 return;
+             }
+             if (result.get("res")==1){
+                 mApplication.getTaskDB().add(task);
+                 GroupAll.mIsFlash =true;
 
-             mApplication.getTaskDB().add(task);
-             GroupAll.mIsFlash =true;
-         } else if (messageStatu == GlobleData.SEND_HOMEWORK_SERVICE) {
+                 Intent msgIntent = new Intent(GlobleData.MESSAGE_RECEIVED_ACTION);
+                 msgIntent.putExtra("type", GlobleData.BROADCAST_TASK_MESSAGE);
+                 msgIntent.putExtra("task", pa);
+                 mApplication.sendBroadcast(msgIntent);
+             }else {
+                 DialogUtil.showToast(mApplication,"任务上传失败");
+             }
+         } else if (messageStatu == GlobleData.SEND_HOMEWORK) {
              Work work=(Work)pa.get("work");
              try {
                  requestParams.put(GlobleData.FILE, new File(work.getPath()));
@@ -66,20 +78,39 @@ public class HttpIntentService extends IntentService {
              requestParams.put(GlobleData.CLICK_NUMBER, work.getClickNum());
              requestParams.put(GlobleData.DATE, work.getDate());
              result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams);
+             if (result==null){
+                 return;
+             }
+             if (result.get("res")==1){
+                 mApplication.getWorkDB().add(work);
+                 GroupAll.mIsFlash =true;
 
-         }else if (messageStatu==GlobleData.GET_HOMEWORK_FILE_SERVICE){
+                 Intent msgIntent = new Intent(GlobleData.MESSAGE_RECEIVED_ACTION);
+                 msgIntent.putExtra("type",GlobleData.BROADCAST_HOMEWORK_MESSAGE);
+                 msgIntent.putExtra("work",pa);
+                 mApplication.sendBroadcast(msgIntent);
+             }else {
+                 DialogUtil.showToast(mApplication, "作业上传失败");
+             }
+         }else if (messageStatu==GlobleData.GET_TASK_FILE){
+             int type= (int) pa.get("type");
              requestParams.put(GlobleData.GROUP_ID,(int)pa.get(GlobleData.GROUP_ID));
              requestParams.put(GlobleData.ID_IN_GROUP,(int)pa.get(GlobleData.ID_IN_GROUP));
              requestParams.put(GlobleData.USER_NAME,(String)pa.get(GlobleData.USER_NAME));
              result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams);
-
-         }else if (messageStatu==GlobleData.GET_TASK_FILE_SERVICE){
+             if (result==null){
+                 return;
+             }
+         }else if (messageStatu==GlobleData.GET_HOMEWORK_FILE){
+             int type= (int) pa.get("type");
              requestParams.put(GlobleData.GROUP_ID,(int)pa.get(GlobleData.GROUP_ID));
              requestParams.put(GlobleData.ID_IN_TASK,(int)pa.get(GlobleData.ID_IN_TASK));
              requestParams.put(GlobleData.TASK_ID,(String)pa.get(GlobleData.TASK_ID));
              requestParams.put(GlobleData.USER_NAME,(String)pa.get(GlobleData.USER_NAME));
              result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams);
-
+             if (result==null){
+                 return;
+             }
          }
     }
 }

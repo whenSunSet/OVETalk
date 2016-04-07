@@ -100,15 +100,15 @@ public class ChatMessageAdapter extends BaseAdapter{
 		viewHolder.img.setVisibility(View.GONE);
 		viewHolder.createDate.setText(chatMessage.getDateStr());
 
-		if (mUser.getUserIcon().matches("http")){
+		if (mUser.getUserIcon().contains("http")){
 			//没有获取成功的userIcon
 			viewHolder.userIcon.setImageResource(R.drawable.icon);
 		}else {
 			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
 		}
 
-		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_PUT_HOMEWORK 只能在普通群组里使用
-		if (messageStatu<=3||messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
+		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_SEND_HOMEWORK_MESSAGE 只能在普通群组里使用
+		if (messageStatu<=3||messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE ||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
 			viewHolder.nickname.setText(mUser.getUserNick());
 		}else {
 			//其他的消息只能在system里使用
@@ -122,7 +122,7 @@ public class ChatMessageAdapter extends BaseAdapter{
 		}else {
 			//将消息内容显示
 			viewHolder.content.setText(chatMessage.getMessage());
-			if (messageStatu==GlobleData.MASTER_PUT_TASK||messageStatu==GlobleData.USER_PUT_HOMEWORK){
+			if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE ||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
 				//如果是 任务或者作品 将附上一张图
 				setImage(viewHolder,chatMessage);
 				viewHolder.img.setOnClickListener(new View.OnClickListener() {

@@ -77,7 +77,6 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
 
     }
 
-
     public void registerMessageReceiver(BroadcastReceiver broadcastReceiver) {
         mMessageReceiver = broadcastReceiver;
         IntentFilter filter = new IntentFilter();

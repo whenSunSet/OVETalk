@@ -1,4 +1,4 @@
-package talk.util;
+package talk.http;
 
 import android.content.Context;
 
@@ -8,27 +8,27 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 import talk.Globle.GlobleData;
+import talk.util.DialogUtil;
 
 /**
  * Created by heshixiyang on 2016/3/20.
  */
-public class MyAsyncHttpResponseHandler extends JsonHttpResponseHandler{
+public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
     private boolean isSuccess;
     private Context context;
     private int statu;
     private JSONObject jsonObject;
 
-    public MyAsyncHttpResponseHandler(Context context,int statu) {
+    public JsonAsyncHttpResponseHandler(Context context, int statu) {
         this.statu=statu;
         this.context = context;
     }
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-        super.onSuccess(statusCode, headers, response);
         switch (statu){
             case GlobleData.PHOTO_MESSAGE:
                 if (statusCode==200){
-                    DialogUtil.showToast(context,"发送消息成功");
+                    DialogUtil.showToast(context, "发送消息成功");
                 }
                 break;
             case GlobleData.CREATE_GROUP:

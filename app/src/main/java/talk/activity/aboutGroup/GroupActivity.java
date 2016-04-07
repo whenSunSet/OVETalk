@@ -17,7 +17,7 @@ import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.util.ListViewActivity;
 import talk.model.Group;
-import talk.util.SendMessage;
+import talk.http.SendMessage;
 
 
 public class GroupActivity extends Activity {
@@ -98,6 +98,9 @@ public class GroupActivity extends Activity {
         paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
 
         result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,paramter,null);
+        if (result==null){
+            return;
+        }
         if ((int)result.get("res")==GlobleData.SEND_MESSAGE_SUCCESS){
             GlobleMethod.deleteGroup(mApplication,mGroup.getGroupId(),mApplication.getSpUtil().getUserId());
         }

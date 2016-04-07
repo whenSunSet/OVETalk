@@ -19,7 +19,7 @@ import talk.model.Message;
 import talk.model.Task;
 import talk.model.Work;
 import talk.util.MyPreferenceManager;
-import talk.util.SendMessage;
+import talk.http.SendMessage;
 
 /**
  * Created by asus on 2015/11/5.o
@@ -46,23 +46,29 @@ public class JpushReceiver extends BroadcastReceiver {
             int messageStatu=message.getMessageStatu();
 
             //根据MessageImage 的状态得知信息的状态
-            if (messageStatu<=3||messageStatu==GlobleData.USER_PUT_HOMEWORK||messageStatu==GlobleData.MASTER_PUT_TASK){
+            if (messageStatu<=3||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE ||messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                 //1-3 10 11都是group接受的消息
                 groupId=message.getGroupId();
                 makeAndSaveMessage(message, groupId);
                 HashMap<String,String> paramter=new HashMap<>();
                 HashMap<String,Object> result;
                 paramter.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
-                if (messageStatu==GlobleData.MASTER_PUT_TASK){
+                if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                     message.setMessage("我发布了一个任务，快来看看吧");
                     paramter.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
-                    result=SendMessage.getSendMessage().post(mApplication,messageStatu,"",paramter,null);
+                    result=SendMessage.getSendMessage().post(mApplication,GlobleData.GET_TASK_INFO,"",paramter,null);
+                    if (result==null){
+                        return;
+                    }
                     mApplication.getTaskDB().add((Task)result.get("task"));
-                }else if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
+                }else if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
                     message.setMessage("我发布了一个作业，快来看看吧");
                     paramter.put(GlobleData.TASK_ID, message.getUserIcon());
                     paramter.put(GlobleData.ID_IN_TASK, message.getUserNickName());
-                    result=SendMessage.getSendMessage().post(mApplication,messageStatu,"",paramter,null);
+                    result=SendMessage.getSendMessage().post(mApplication,GlobleData.GET_HOMEWORK_INFO,"",paramter,null);
+                    if (result==null){
+                        return;
+                    }
                     mApplication.getWorkDB().add((Work)result.get("work"));
                 }
             }else {
@@ -148,6 +154,7 @@ public class JpushReceiver extends BroadcastReceiver {
             Bundle bundle=new Bundle();
             bundle.putParcelable(GlobleData.KEY_MESSAGE,message);
             Intent msgIntent = new Intent(GlobleData.MESSAGE_RECEIVED_ACTION);
+            msgIntent.putExtra("type",GlobleData.BROADCAST_MESSAGE);
             msgIntent.putExtras(bundle);
             context.sendBroadcast(msgIntent);
         }

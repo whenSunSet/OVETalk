@@ -10,13 +10,15 @@ import android.widget.TextView;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import java.util.HashMap;
+
 import talk.Globle.GlobleData;
-import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.util.ListViewActivity;
 import talk.activity.util.NotePadActivity;
 import talk.model.Task;
 import talk.model.Work;
+import talk.service.HttpIntentService;
 
 public class TaskAndWorkActivity extends Activity {
     private TalkApplication mApplication;
@@ -31,6 +33,7 @@ public class TaskAndWorkActivity extends Activity {
     private int which;
 
     private int groupId;
+    private boolean disDownLoad =true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +55,7 @@ public class TaskAndWorkActivity extends Activity {
         mCliclMember=(Button)findViewById(R.id.clickMember);
 
         String p = null;
-        int type = 0;
+        int t = 0;
         int w = 0;
         switch (which){
             case GlobleData.IS_TASK:
@@ -60,7 +63,7 @@ public class TaskAndWorkActivity extends Activity {
                 mName.setText(mTask.getGroupId());
                 mTime.setText(mTask.getDate());
                 p=mTask.getPath();
-                type=mTask.getType();
+                t=mTask.getType();
                 w=GlobleData.TASK_CLICK_MEMBER_LIST;
                 groupId =mTask.getGroupId();
                 break;
@@ -69,12 +72,14 @@ public class TaskAndWorkActivity extends Activity {
                 mName.setText(mWork.getMaster());
                 mTime.setText(mWork.getDate());
                 p=mWork.getPath();
-                type=mWork.getType();
+                t=mWork.getType();
                 w=GlobleData.WORK_CLICK_MEMBER_LIST;
                 groupId =mWork.getGroupId();
                 break;
         }
         final String[] path = {p};
+        final int type=t;
+        disDownLoad =p.contains("http");
         switch (type){
             case GlobleData.IS_TEXT:
                 mType.setImageResource(R.drawable.text);
@@ -82,7 +87,7 @@ public class TaskAndWorkActivity extends Activity {
                 mButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        makeButton(path[0], NotePadActivity.class);
+                        makeButton(path[0], type,NotePadActivity.class);
                     }
                 });
                 break;
@@ -92,14 +97,14 @@ public class TaskAndWorkActivity extends Activity {
                 mButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        makeButton(path[0],null);
+                        makeButton(path[0],type,null);
                     }
                 });
                 break;
             case GlobleData.IS_VIDEO:
                 mType.setImageResource(R.drawable.video);
                 mButton.setText("观看视频");
-                makeButton(path[0],null);
+                makeButton(path[0],type,null);
                 break;
             default:
                 break;
@@ -115,17 +120,66 @@ public class TaskAndWorkActivity extends Activity {
             }
         });
     }
-    private void makeButton(String path,Class c){
+    private void makeButton(String path,int type,Class c){
         Intent intent = new Intent(TaskAndWorkActivity.this,c);
-        if (which==GlobleData.IS_TASK){
-            intent.putExtra("vedioId",Integer.parseInt(path));
-        }else if (which==GlobleData.IS_WORK){
-            if (!GlobleMethod.isDownLoad(path)) {
-                path= GlobleMethod.downLoadFile();
-//                mApplication.getTaskDB().update(path, mTask.getIdInGroup(), mTask.getGroupId());
-            }
-            intent.putExtra("FILE_NAME", path);
+        switch (type){
+            case GlobleData.IS_TEXT:
+                if (!disDownLoad){
+                    intent.putExtra("FILE_NAME", path);
+                }else {
+                    mButton.setText("正在下载文档");
+                    downLoadFile();
+                    return;
+                }
+                break;
+            case GlobleData.IS_MUSIC:
+                if (!disDownLoad){
+                    intent.putExtra("FILE_NAME", path);
+                }else{
+                    mButton.setText("正在下载音频");
+                    downLoadFile();
+                    return;
+                }
+                break;
+            case GlobleData.IS_VIDEO:
+                if (which==GlobleData.IS_TASK||!disDownLoad){
+                    intent.putExtra("vedioId", path);
+                }else {
+                    mButton.setText("正在下载视频");
+                    downLoadFile();
+                    return;
+                }
+                break;
         }
         startActivity(intent);
+    }
+
+    private void downLoadFile(){
+        Intent startHttpService=new Intent(TaskAndWorkActivity.this, HttpIntentService.class);
+        HashMap<String,Object> pa=new HashMap<>();
+        int messageStatu;
+        String url;
+
+        if (which==GlobleData.IS_TASK){
+            messageStatu=GlobleData.GET_TASK_FILE;
+            url=GlobleData.getTaskFile;
+            pa.put(GlobleData.GROUP_ID,mTask.getGroupId());
+            pa.put(GlobleData.ID_IN_GROUP,mTask.getIdInGroup());
+            pa.put(GlobleData.USER_NAME,mApplication.getGroupDB().getGroup(mTask.getGroupId()).getGroupId());
+            pa.put("type",mTask.getType());
+        }else {
+            messageStatu=GlobleData.GET_HOMEWORK_FILE;
+            url=GlobleData.getWorkFile;
+            pa.put(GlobleData.GROUP_ID,mWork.getGroupId());
+            pa.put(GlobleData.ID_IN_TASK,mWork.getIdInTask());
+            pa.put(GlobleData.USER_NAME,mWork.getMaster());
+            pa.put(GlobleData.TASK_ID,mWork.getTaskId());
+            pa.put("type",mWork.getType());
+        }
+
+        startHttpService.putExtra("pa", pa);
+        startHttpService.putExtra("url",url);
+        startHttpService.putExtra("messageStatu", messageStatu);
+        startService(startHttpService);
     }
 }

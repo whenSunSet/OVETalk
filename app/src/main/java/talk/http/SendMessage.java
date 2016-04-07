@@ -1,16 +1,17 @@
-package talk.util;
+package talk.http;
 
 import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.RequestParams;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.model.ClickTask;
@@ -42,30 +43,35 @@ public class SendMessage {
                 ||messageStatu==GlobleData.GET_HOMEWORK_CLICK
                 ||messageStatu==GlobleData.GET_TASK_INFO
                 ||messageStatu==GlobleData.GET_HOMEWORK_INFO){
-
+            MyResponseErrorListenerAndListener myResponseErrorListenerAndListener=new MyResponseErrorListenerAndListener(mApplication,messageStatu);
             MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
                     Request.Method.POST,
                     url,
                     jsonObject,
                     paramter,
-                    new MyResponseErrorListenerAndListener(mApplication,messageStatu)
+                    myResponseErrorListenerAndListener
             );
             mApplication.getRequestQueue().add(jsonObjectRequest);
-            return makeReturnValue(messageStatu,jsonObject,null);
+            return makeReturnValue(messageStatu,jsonObject,null,myResponseErrorListenerAndListener.isSuccess());
         }else if (messageStatu==GlobleData.PHOTO_MESSAGE
                 ||messageStatu==GlobleData.CREATE_GROUP
                 ||messageStatu==GlobleData.SEND_TASK
                 ||messageStatu==GlobleData.SEND_HOMEWORK){
-            MyAsyncHttpResponseHandler myAsyncHttpResponseHandler=new MyAsyncHttpResponseHandler(mApplication,messageStatu);
-            AsyncHttpClientUtil.post(url, requestParams, myAsyncHttpResponseHandler);
-            return makeReturnValue(messageStatu,myAsyncHttpResponseHandler.getJsonObject(),null);
+            JsonAsyncHttpResponseHandler jsonAsyncHttpResponseHandler =new JsonAsyncHttpResponseHandler(mApplication,messageStatu);
+            AsyncHttpClientUtil.post(url, requestParams, jsonAsyncHttpResponseHandler);
+            return makeReturnValue(messageStatu, jsonAsyncHttpResponseHandler.getJsonObject(),null,jsonAsyncHttpResponseHandler.isSuccess());
         } else if (messageStatu==GlobleData.GET_TASK_FILE ||messageStatu==GlobleData.GET_HOMEWORK_FILE){
-
+            ByteAsyncHttpResponseHandler byteAsyncHttpResponseHandler=new ByteAsyncHttpResponseHandler(mApplication,messageStatu);
+            AsyncHttpClientUtil.post(url,requestParams,byteAsyncHttpResponseHandler);
+            return makeReturnValue(messageStatu,null,byteAsyncHttpResponseHandler.getBytes(),byteAsyncHttpResponseHandler.isSuccess());
         }
         return null;
     }
 
-    private HashMap<String,Object> makeReturnValue(int messageStatu,JSONObject jsonObject,File file){
+    private HashMap<String,Object> makeReturnValue(int messageStatu,JSONObject jsonObject,byte[] bytes,boolean isSuccess){
+        if (!isSuccess){
+            return null;
+        }
         HashMap<String,Object> returnValue=new HashMap();
         Gson gson=new Gson();
         try {
@@ -73,7 +79,7 @@ public class SendMessage {
                 returnValue.put("res",jsonObject.getInt("res"));
             }else if (messageStatu==GlobleData.CREATE_GROUP){
                 returnValue.put("groupId",jsonObject.getInt("groupId"));
-                returnValue.put("res",jsonObject.getInt("groupId"));
+                returnValue.put("res",jsonObject.getInt("res"));
             }else if (messageStatu==GlobleData.GET_GROUP_INFO){
                 Type workListType = new TypeToken<ArrayList<Work>>(){}.getType();
                 Type taskListType = new TypeToken<ArrayList<Task>>(){}.getType();
@@ -101,39 +107,12 @@ public class SendMessage {
             }else if (messageStatu==GlobleData.GET_HOMEWORK_INFO){
                 Type workType = new TypeToken<ArrayList<Work>>(){}.getType();
                 returnValue.put("Work",gson.fromJson(jsonObject.toString(),workType));
+            }else if (messageStatu==GlobleData.GET_TASK_FILE||messageStatu==GlobleData.GET_HOMEWORK_FILE) {
+                returnValue.put("bytes",bytes);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return returnValue;
-    }
-
-    private void makeRequestParams(int messageStatu,final RequestParams requestParams,HashMap<String,Object> paramter){
-        switch (messageStatu){
-            case GlobleData.CREATE_GROUP:
-                requestParams.put(GlobleData.USER_NAME,(String)paramter.get(GlobleData.USER_NAME));
-                requestParams.put(GlobleData.GROUP_NICK_NAME,(String)paramter.get(GlobleData.GROUP_NICK_NAME));
-                try {
-                    requestParams.put(GlobleData.GROUP_ICON,(File)paramter.get(GlobleData.GROUP_ICON));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case GlobleData.PHOTO_MESSAGE:
-                requestParams.put(GlobleData.USER_NAME,(String)paramter.get(GlobleData.USER_NAME));
-                requestParams.put(GlobleData.GROUP_ID,(int)paramter.get(GlobleData.GROUP_ID));
-                requestParams.put(GlobleData.MESSAGE_STATU,(int)paramter.get(GlobleData.MESSAGE_STATU));
-                try {
-                    requestParams.put(GlobleData.MESSAGE_IMAGE,(File)paramter.get(GlobleData.MESSAGE_IMAGE));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case GlobleData.SEND_TASK:
-
-                break;
-            case GlobleData.SEND_HOMEWORK:
-                break;
-        }
     }
 }

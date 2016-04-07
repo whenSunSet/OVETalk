@@ -24,7 +24,7 @@ import talk.activity.fragment.Groups;
 import talk.activity.supers.BasicActivity;
 import talk.model.Group;
 import talk.util.DialogUtil;
-import talk.util.SendMessage;
+import talk.http.SendMessage;
 
 public class CreateGroupActivity extends BasicActivity implements View.OnClickListener{
     private EditText mGroupNickNameText;
@@ -86,6 +86,9 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
             e.printStackTrace();
         }
         result=SendMessage.getSendMessage().post(mApplication,GlobleData.CREATE_GROUP,url,null,requestParams);
+        if (result==null){
+            return;
+        }
         if (result.get("res")==1){
             mGroupId= (int) result.get("groupId");
             Groups.mIsFlash =true;

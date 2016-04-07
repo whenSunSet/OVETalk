@@ -17,16 +17,17 @@ import com.example.heshixiyang.ovetalk.R;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
-import talk.activity.fragment.GroupAll;
 import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.activity.util.ListViewActivity;
 import talk.model.Work;
+import talk.service.HttpIntentService;
 
 public class MakeHomeWorkActivity extends BasicActivity {
     private Button mLastStep;
@@ -94,21 +95,22 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         stepTwo();
                         break;
                     case GlobleData.STEP_TWO:
-                            mApplication.getWorkDB().add(mWork);
-                            GroupAll.mIsFlash = true;
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
+                        simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
+                        mWork.setDate(simpleDateFormat.format(new Date()));
+                        mWork.setMaster(mApplication.getSpUtil().getUserId());
+                        mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupId(), mWork.getTaskId()) + 1);
+                        mWork.setClickNum(0);
 
-                            Intent intent = new Intent();
-                            intent.putExtra("taskId", mWork.getTaskId());
-                            intent.putExtra("idInTask", mWork.getIdInTask());
-                            intent.putExtra("path", mWork.getPath());
-                            setResult(GlobleData.START_MAKE_HOMEWORK_ACTIVITY, intent);
-                            finish();
+                        HashMap<String ,Object> pa=new HashMap<>();
+                        pa.put("work",mWork);
+                        Intent startHttpService=new Intent(MakeHomeWorkActivity.this, HttpIntentService.class);
+                        startHttpService.putExtra("url",GlobleData.pushWork);
+                        startHttpService.putExtra("messageStatu",GlobleData.SEND_HOMEWORK);
+                        startHttpService.putExtra("pa",pa);
+                        startService(startHttpService);
 
-//                        try {
-//                            GlobleMethod.upLoadFile(mWork,"work","",mApplication);
-//                        } catch (FileNotFoundException e) {
-//                            e.printStackTrace();
-//                        }
+                        finish();
                         break;
                     default:
                         break;
@@ -172,7 +174,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
         });
 
         //stepTwo
-        mChooseTask=new Button(mApplication);
+         mChooseTask=new Button(mApplication);
         mChooseTask.setId(R.id.all + 13);
         mChooseTask.setText("请选择任务");
         mChooseTask.setOnClickListener(new View.OnClickListener() {
@@ -215,12 +217,6 @@ public class MakeHomeWorkActivity extends BasicActivity {
     }
 
     private boolean sendHomeWork(String url,TalkApplication talkApplication){
-        mWork.setMaster(mApplication.getSpUtil().getUserId());
-        mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupId(), mWork.getTaskId()) + 1);
-        mWork.setClickNum(0);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
-        simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
-        mWork.setDate(simpleDateFormat.format(new Date()));
 
         boolean isSuccess=false;
         try {

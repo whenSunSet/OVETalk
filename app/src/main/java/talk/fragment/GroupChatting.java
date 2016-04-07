@@ -22,10 +22,10 @@ import com.loopj.android.http.RequestParams;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.HashMap;
 
 import talk.Globle.GlobleData;
-import talk.Globle.GlobleMethod;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.fragment.GroupAll;
@@ -38,7 +38,7 @@ import talk.model.Task;
 import talk.model.Work;
 import talk.util.DialogUtil;
 import talk.util.MyPreferenceManager;
-import talk.util.SendMessage;
+import talk.http.SendMessage;
 
 public class GroupChatting extends BasicFragment implements ChatMessageAdapter.AdapterClickListener {
     private ImageView mMore;
@@ -212,27 +212,43 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     }
 
     public void addAndSendMessage(String message, String messageImage, int messageStatu, Work work, Task task) {
-        GroupChatMessage chatMessage = GlobleMethod.makeMessage(mGroupId,message, messageImage,mPreferenceManager.getUserId(),messageStatu, task, work);
+        GroupChatMessage chatMessage = makeMessage(mGroupId,message, messageImage,mPreferenceManager.getUserId(),messageStatu, task, work);
         HashMap<String,Object> result=null;
         if (chatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE||chatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
             result=sendMessage(GlobleData.jpush_sendMessage, chatMessage.getMessage(), null, chatMessage.getMessageStatu(), null, null);
         }else if (chatMessage.getMessageStatu()==GlobleData.PHOTO_MESSAGE){
             result=sendMessage(GlobleData.jpush_sendImage, null, chatMessage.getMessageImage(), chatMessage.getMessageStatu(), null, null);
-        }else if (chatMessage.getMessageStatu()==GlobleData.USER_PUT_HOMEWORK){
+        }else if (chatMessage.getMessageStatu()==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
             result=sendMessage(GlobleData.sendWorkMessage,chatMessage.getMessage(), chatMessage.getMessageImage(), chatMessage.getMessageStatu(), work, null);
-        }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_PUT_TASK){
+        }else if (chatMessage.getMessageStatu()==GlobleData.MASTER_SEND_TASK_MESSAGE){
             result=sendMessage(GlobleData.sendTaskMessage,chatMessage.getMessage(), null, messageStatu, null, task);
         }
         makeResult(result, messageStatu, chatMessage);
         flash(GlobleData.SELECT_LAST, chatMessage);
     }
-
     //组装chatMessage
-
+    public GroupChatMessage makeMessage(int groupId,String message, String messageImage,String you, int messageStatu, Task task, Work work){
+        GroupChatMessage chatMessage = new GroupChatMessage();
+        chatMessage.setIsComing(false);
+        chatMessage.setDate(new Date());
+        chatMessage.setMessage(message);
+        chatMessage.setReaded(true);
+        chatMessage.setGroupId(groupId);
+        chatMessage.setUserId(you);
+        chatMessage.setMessageImage(messageImage);
+        chatMessage.setMessageStatu(messageStatu);
+        if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
+            chatMessage.setUserIcon(String.valueOf(work.getTaskId()));
+            chatMessage.setUserNickName(String.valueOf(work.getIdInTask()));
+        }else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
+            chatMessage.setUserIcon(String.valueOf(task.getIdInGroup()));
+        }
+        return chatMessage;
+    }
     /**
      *  如果是普通消息 message=消息 isIamge=空 type=空
      *  如果是 Emoji消息 !
-     *  如果是 photo消息 message=空 isIamge=图片路径 type=空
+     *  如果是 photo消息 message=空 isIamge=图片路径 type=空!
      *  如果是 homeWork消息 message=消息 isImage=无 work
      *  如果是 Task消息 message=消息 isImage=无 task
      *  如果是 同意某人加入 无
@@ -257,12 +273,12 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
             paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
             paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(messageStatu));
 
-            if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
+            if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
                 paramter.put(GlobleData.TASK_ID, String.valueOf(work.getTaskId()));
                 paramter.put(GlobleData.ID_IN_TASK, String.valueOf(work.getIdInTask()));
                 paramter.put(GlobleData.MESSAGE, message);
 
-            }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
+            }else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                 paramter.put(GlobleData.ID_IN_GROUP, String.valueOf(task.getIdInGroup()));
                 paramter.put(GlobleData.MESSAGE, message);
             }
@@ -273,6 +289,9 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     }
 
     private void makeResult(HashMap<String,Object> result,int messageStatu,GroupChatMessage chatMessage){
+        if (result==null){
+            return;
+        }
         if ((int)result.get("res")==GlobleData.SEND_MESSAGE_SUCCESS){
             switch (messageStatu){
                 case GlobleData.AGREE_USER_TO_GROUP:
@@ -339,13 +358,13 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
                 }
             });
             builder.create().show();
-        } else if (chatMessage.getMessageStatu() == GlobleData.MASTER_PUT_TASK) {
+        } else if (chatMessage.getMessageStatu() == GlobleData.MASTER_SEND_TASK_MESSAGE) {
             mTask = mApplication.getTaskDB().getTask(chatMessage.getGroupId(), Integer.parseInt(chatMessage.getUserIcon()));
             mApplication.map.put("nowTask", mTask);
             Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
             intent.putExtra("which", GlobleData.IS_TASK);
             startActivity(intent);
-        } else if (chatMessage.getMessageStatu() == GlobleData.USER_PUT_HOMEWORK) {
+        } else if (chatMessage.getMessageStatu() == GlobleData.USER_SEND_HOMEWORK_MESSAGE) {
             mWork = mApplication.getWorkDB().getWork(chatMessage.getGroupId(),
                     Integer.parseInt(chatMessage.getUserIcon()),
                     Integer.parseInt(chatMessage.getUserNickName()));

@@ -7,13 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import com.example.heshixiyang.ovetalk.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import talk.Globle.GlobleData;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
 import talk.adapter.WorkAdapter;
+import talk.model.ClickTask;
 import talk.model.Group;
 import talk.model.Work;
+import talk.http.SendMessage;
 
 /**
  * Created by asus on 2015/11/15.
@@ -58,6 +64,15 @@ public class GroupWork extends BasicFragment{
     @Override
     protected void upData() {
         super.upData();
+        HashMap<String,String> paramter=new HashMap<>();
+        HashMap<String,Object> result;
+        paramter.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupIcon()));
+        result=SendMessage.sendMessage.post(mApplication, GlobleData.GET_TASK_CLICK, GlobleData.updateAllTaskClick, paramter, null);
+        if (result==null){
+            return;
+        }
+        mApplication.getClickTaskDB().adds((ArrayList<ClickTask>) result.get("clickTasks"));
+        flash(GlobleData.SELECT_FRIST);
 //        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupId()));
 //        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }

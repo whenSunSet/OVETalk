@@ -16,7 +16,10 @@ import android.widget.ListView;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
@@ -107,19 +110,22 @@ public class MakeTaskActivity extends BasicActivity {
                         if (TextUtils.isEmpty(mConent.getText().toString())) {
                             DialogUtil.showToast(mApplication, "还没有输入任务的目标");
                         } else {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
+                            simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
+                            mTask.setDate(simpleDateFormat.format(new Date()));
                             mTask.setTarget(mName.getText().toString());
-                            mTask.setDate(new Date().toString());
                             mTask.setClickNum(0);
                             mTask.setGroupId(mGroupId);
                             mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupId) + 1);
 
+                            HashMap<String ,Object> pa=new HashMap<>();
+                            pa.put("task",mTask);
                             Intent startHttpService=new Intent(MakeTaskActivity.this, HttpIntentService.class);
+                            startHttpService.putExtra("url",GlobleData.sendTask);
+                            startHttpService.putExtra("messageStatu",GlobleData.SEND_TASK);
+                            startHttpService.putExtra("pa",pa);
                             startService(startHttpService);
 
-                            Intent intent=new Intent();
-                            intent.putExtra("idInGroup",mTask.getIdInGroup());
-                            intent.putExtra("path",mTask.getPath());
-                            setResult(GlobleData.START_MAKE_TASK_ACTIVITY,intent);
                             finish();
                         }
                         break;

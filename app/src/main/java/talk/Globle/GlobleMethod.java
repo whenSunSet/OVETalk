@@ -20,13 +20,13 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,17 +42,16 @@ import talk.datebase.JoinGroupDB;
 import talk.datebase.TaskDB;
 import talk.datebase.UserDB;
 import talk.datebase.WorkDB;
+import talk.http.AsyncHttpClientUtil;
+import talk.http.JsonAsyncHttpResponseHandler;
 import talk.model.ClickTask;
 import talk.model.ClickWork;
 import talk.model.Group;
-import talk.model.GroupChatMessage;
 import talk.model.JoinGroup;
 import talk.model.Message;
 import talk.model.Task;
 import talk.model.User;
 import talk.model.Work;
-import talk.util.AsyncHttpClientUtil;
-import talk.util.MyAsyncHttpResponseHandler;
 
 /**
  * Created by heshixiyang on 2016/1/22.
@@ -79,6 +78,9 @@ public class GlobleMethod {
     }
 
     public static void addMeToGroup(TalkApplication talkApplication,HashMap<String,Object> result){
+        if (result==null){
+            return;
+        }
         GroupDB groupDB=talkApplication.getGroupDB();
         TaskDB taskDB=talkApplication.getTaskDB();
         WorkDB workDB=talkApplication.getWorkDB();
@@ -239,6 +241,39 @@ public class GlobleMethod {
         return image;
     }
 
+    public static void getFile(byte[] bfile, String filePath,String fileName) {
+        BufferedOutputStream bos = null;
+        FileOutputStream fos = null;
+        File file = null;
+        try {
+            File dir = new File(filePath);
+            if(!dir.exists()&&dir.isDirectory()){//判断文件目录是否存在
+                dir.mkdirs();
+            }
+            file = new File(filePath+"\\"+fileName);
+            fos = new FileOutputStream(file);
+            bos = new BufferedOutputStream(fos);
+            bos.write(bfile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+    }
+
     //一些重要性不高的cache或者大文件放到这里，比如图片缓存
     public static String getCacheDir(Context context){
         String cachePath ;
@@ -290,29 +325,12 @@ public class GlobleMethod {
     }
 
 
-    public static GroupChatMessage makeMessage(int groupId,String message, String messageImage,String you, int messageStatu, Task task, Work work){
-        GroupChatMessage chatMessage = new GroupChatMessage();
-        chatMessage.setIsComing(false);
-        chatMessage.setDate(new Date());
-        chatMessage.setMessage(message);
-        chatMessage.setReaded(true);
-        chatMessage.setGroupId(groupId);
-        chatMessage.setUserId(you);
-        chatMessage.setMessageImage(messageImage);
-        chatMessage.setMessageStatu(messageStatu);
-        if (messageStatu==GlobleData.USER_PUT_HOMEWORK){
-            chatMessage.setUserIcon(String.valueOf(work.getTaskId()));
-            chatMessage.setUserNickName(String.valueOf(work.getIdInTask()));
-        }else if (messageStatu==GlobleData.MASTER_PUT_TASK){
-            chatMessage.setUserIcon(String.valueOf(task.getIdInGroup()));
-        }
-        return chatMessage;
-    }
+
 
     public static boolean upLoadFile(Object object,String name,String url, final Context context) throws FileNotFoundException {
         AsyncHttpClientUtil asyncHttpClientUtil=new AsyncHttpClientUtil();
         RequestParams requestParams=new RequestParams();
-        MyAsyncHttpResponseHandler myAsyncHttpResponseHandler=new MyAsyncHttpResponseHandler(context,GlobleData.SEND_FILE);
+        JsonAsyncHttpResponseHandler jsonAsyncHttpResponseHandler =new JsonAsyncHttpResponseHandler(context,GlobleData.SEND_FILE);
         if (name.equals("task")){
             Task mTask=(Task)object;
             File file=new File(mTask.getPath());
@@ -324,7 +342,7 @@ public class GlobleMethod {
             requestParams.put(GlobleData.DATE, mTask.getDate());
             requestParams.put(GlobleData.FILE, file);
 
-            asyncHttpClientUtil.post(url, requestParams,myAsyncHttpResponseHandler);
+            asyncHttpClientUtil.post(url, requestParams, jsonAsyncHttpResponseHandler);
         }else if (name.equals("work")){
             Work mWork=(Work)object;
             File file=new File(mWork.getPath());
@@ -338,9 +356,9 @@ public class GlobleMethod {
             requestParams.put(GlobleData.DATE, mWork.getDate());
             requestParams.put(GlobleData.FILE, file);
 
-            asyncHttpClientUtil.post(url, requestParams,myAsyncHttpResponseHandler);
+            asyncHttpClientUtil.post(url, requestParams, jsonAsyncHttpResponseHandler);
         }
-        return myAsyncHttpResponseHandler.isSuccess();
+        return jsonAsyncHttpResponseHandler.isSuccess();
     }
     public static void updateFile(Part[] parts,String url){
 

@@ -65,9 +65,9 @@ public class GlobleData {
 
     public static final int USER_REQUEST_JOIN_GROUP=9;
 
-    public static final int MASTER_PUT_TASK=10;
+    public static final int MASTER_SEND_TASK_MESSAGE =10;
 
-    public static final int USER_PUT_HOMEWORK=11;
+    public static final int USER_SEND_HOMEWORK_MESSAGE =11;
 
     public static final int YOU_AGREE_TO_JOIN_GROUP=12;
 
@@ -167,9 +167,8 @@ public class GlobleData {
 
     public static final int SYSTEM=-99;
 
-    public static final int SEND_HOMEWORK_SERVICE=0;
-    public static final int SEND_TASK_SERVICE=1;
-    public static final int GET_HOMEWORK_FILE_SERVICE=2;
-    public static final int GET_TASK_FILE_SERVICE=3;
+    public static final int BROADCAST_MESSAGE=1;
+    public static final int BROADCAST_TASK_MESSAGE=2;
+    public static final int BROADCAST_HOMEWORK_MESSAGE=3;
 }
 

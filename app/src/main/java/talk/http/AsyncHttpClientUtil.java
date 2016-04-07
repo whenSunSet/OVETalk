@@ -1,4 +1,4 @@
-package talk.util;
+package talk.http;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;

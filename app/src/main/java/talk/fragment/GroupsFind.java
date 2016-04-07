@@ -16,7 +16,7 @@ import java.util.HashMap;
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.util.DialogUtil;
-import talk.util.SendMessage;
+import talk.http.SendMessage;
 
 public class GroupsFind extends Fragment {
     private TalkApplication mApplication;

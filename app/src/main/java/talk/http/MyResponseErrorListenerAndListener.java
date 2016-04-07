@@ -1,4 +1,4 @@
-package talk.util;
+package talk.http;
 
 import android.content.Context;
 import android.util.Log;
@@ -11,13 +11,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import talk.Globle.GlobleData;
+import talk.util.DialogUtil;
 
 /**
  * Created by heshixiyang on 2016/3/14.
  */
 public class MyResponseErrorListenerAndListener implements Response.ErrorListener ,Response.Listener<JSONObject>{
-    Context context;
-    int messageStatu;
+    private Context context;
+    private int messageStatu;
+    private boolean isSuccess;
     public MyResponseErrorListenerAndListener(Context context, int messageStatu) {
         this.context=context;
         this.messageStatu=messageStatu;
@@ -33,7 +35,7 @@ public class MyResponseErrorListenerAndListener implements Response.ErrorListene
         switch (messageStatu){
             case GlobleData.USER_REQUEST_JOIN_GROUP:
                 if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
-                    DialogUtil.showToast(context,"加入请求发送失败");
+                    DialogUtil.showToast(context, "加入请求发送失败");
                 }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
                     DialogUtil.showToast(context,"加入请求发送成功");
                 }else if (GlobleData.res== GlobleData.NO_SUCH_GROUP){
@@ -74,12 +76,17 @@ public class MyResponseErrorListenerAndListener implements Response.ErrorListene
                 }
                 break;
         }
+        isSuccess=true;
     }
 
     @Override
     public void onErrorResponse(VolleyError volleyError) {
         if (BuildConfig.DEBUG) Log.d("MyResponseErrorListener", "volleyError:" + volleyError.toString());
         DialogUtil.showToast(context,"无法连接服务器");
+        isSuccess=false;
     }
 
+    public boolean isSuccess() {
+        return isSuccess;
+    }
 }

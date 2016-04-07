@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import java.util.HashMap;
 import java.util.List;
 
 import talk.Globle.GlobleData;
@@ -70,7 +71,23 @@ public class  GroupAll extends IndicatorFragmentActivity {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                receive(intent);
+                if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_MESSAGE){
+                    receive(intent);
+                }else if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_TASK_MESSAGE){
+                    ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
+                            "我发布了一个任务，快来看看吧",
+                            null,
+                            GlobleData.MASTER_SEND_TASK_MESSAGE,
+                            null,
+                            (Task)((HashMap<String, Object>) intent.getParcelableExtra("task")).get("task"));
+                }else if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_HOMEWORK_MESSAGE){
+                    ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
+                            "我发布了一个作业，快来看看吧",
+                            null,
+                            GlobleData.USER_SEND_HOMEWORK_MESSAGE,
+                            (Work)((HashMap<String, Object>) intent.getParcelableExtra("work")).get("work"),
+                            null);
+                }
             }
         });
         mIsSystemGroup =getIntent().getStringExtra(GlobleData.GROUP_ID).equals("-1");
@@ -84,9 +101,8 @@ public class  GroupAll extends IndicatorFragmentActivity {
             textView.setText(mGroup.getGroupNick());
             addView();
         }
-
     }
-    public void receive( Intent intent) {
+    public void receive(Intent intent) {
         Message message=intent.getParcelableExtra(GlobleData.KEY_MESSAGE);
         GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupId()
                 ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserId()
@@ -102,7 +118,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 finish();
             }
 
-            if ((mCurrentTab==1&&messageStatu==GlobleData.MASTER_PUT_TASK)||(mCurrentTab==2&&messageStatu==GlobleData.USER_PUT_HOMEWORK)){
+            if ((mCurrentTab==1&&messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE)||(mCurrentTab==2&&messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE)){
                 //如果不在chat 且消息类型匹配
                 flashFragment();
                 return;
@@ -215,27 +231,6 @@ public class  GroupAll extends IndicatorFragmentActivity {
         tabs.add(new TabInfo(FRAGMENT_THREE, "作业"
                 , GroupWork.class));
         return 0;
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode==GlobleData.START_MAKE_TASK_ACTIVITY){
-            ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
-                    "我发布了一个任务，快来看看吧",
-                    null,
-                    10,
-                    null,
-                    new Task(data.getStringExtra("path"), data.getIntExtra("idInGroup", GlobleData.DEFAULT)));
-        }else if (resultCode==GlobleData.START_MAKE_HOMEWORK_ACTIVITY){
-            ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
-                    "我发布了一个作业，快来看看吧",
-                    null,
-                    11,
-                    new Work(data.getIntExtra("taskId", GlobleData.DEFAULT),
-                            data.getIntExtra("idInTask", GlobleData.DEFAULT),
-                            data.getStringExtra("path"),
-                            resultCode),
-                    null);
-        }
     }
     @Override
     protected void onResume() {

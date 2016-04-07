@@ -14,6 +14,7 @@ import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
 
+import talk.Globle.GlobleData;
 import talk.Globle.Test;
 import talk.activity.create.CreateGroupActivity;
 import talk.activity.supers.IndicatorFragmentActivity;
@@ -33,6 +34,7 @@ public class Groups extends IndicatorFragmentActivity {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent.getIntExtra("type", GlobleData.DEFAULT)==GlobleData.BROADCAST_MESSAGE)
                 flashFragment();
             }
         });
