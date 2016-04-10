@@ -5,29 +5,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.HashMap;
+
 import cn.jpush.android.api.JPushInterface;
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.activity.fragment.Groups;
+import talk.http.SendMessage;
 import talk.model.GroupChatMessage;
 import talk.model.Message;
 import talk.model.Task;
 import talk.model.Work;
 import talk.util.MyPreferenceManager;
-import talk.http.SendMessage;
 
 /**
  * Created by asus on 2015/11/5.o
  */
-public class JpushReceiver extends BroadcastReceiver {
-
+public class JpushReceiver extends BroadcastReceiver implements SendMessage.SendMessageListener{
     private TalkApplication mApplication;
     private MyPreferenceManager myPreferenceManager;
+    private int messageStatu;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -43,33 +46,25 @@ public class JpushReceiver extends BroadcastReceiver {
             if ((message=getMessage(bundle))==null){
                 return;
             }
-            int messageStatu=message.getMessageStatu();
+            messageStatu=message.getMessageStatu();
 
             //根据MessageImage 的状态得知信息的状态
             if (messageStatu<=3||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE ||messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                 //1-3 10 11都是group接受的消息
                 groupId=message.getGroupId();
                 makeAndSaveMessage(message, groupId);
+
                 HashMap<String,String> paramter=new HashMap<>();
-                HashMap<String,Object> result;
                 paramter.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
                 if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                     message.setMessage("我发布了一个任务，快来看看吧");
                     paramter.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
-                    result=SendMessage.getSendMessage().post(mApplication,GlobleData.GET_TASK_INFO,"",paramter,null);
-                    if (result==null){
-                        return;
-                    }
-                    mApplication.getTaskDB().add((Task)result.get("task"));
+                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_TASK_INFO,"",paramter,null,this);
                 }else if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
                     message.setMessage("我发布了一个作业，快来看看吧");
                     paramter.put(GlobleData.TASK_ID, message.getUserIcon());
                     paramter.put(GlobleData.ID_IN_TASK, message.getUserNickName());
-                    result=SendMessage.getSendMessage().post(mApplication,GlobleData.GET_HOMEWORK_INFO,"",paramter,null);
-                    if (result==null){
-                        return;
-                    }
-                    mApplication.getWorkDB().add((Work)result.get("work"));
+                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_HOMEWORK_INFO,"",paramter,null,this);
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
@@ -102,10 +97,7 @@ public class JpushReceiver extends BroadcastReceiver {
                     case GlobleData.AGREE_USER_TO_GROUP:
                         msg="同意你加入";
                         HashMap<String,String> paramter=new HashMap();
-                        HashMap<String,Object> result=SendMessage.getSendMessage().post(mApplication, GlobleData.AGREE_USER_TO_GROUP, GlobleData.getGroupInfo, paramter, null);
-
-                        GlobleMethod.addMeToGroup(mApplication,result);
-                        GlobleMethod.setTag(mApplication);
+                        SendMessage.getSendMessage().post(mApplication, GlobleData.AGREE_USER_TO_GROUP, GlobleData.getGroupInfo, paramter, null,this);
 
                         //groupID:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
                         break;
@@ -183,5 +175,24 @@ public class JpushReceiver extends BroadcastReceiver {
                 message.getMessageImage(),
                 message.getMessageStatu());
         mApplication.getGroupMessageDB().add(groupId, groupChatMessage);
+    }
+
+    @Override
+    public void success(HashMap<String, Object> result) {
+        if (result==null){
+            return;
+        }
+        switch (messageStatu){
+            case GlobleData.MASTER_SEND_TASK_MESSAGE:
+                mApplication.getTaskDB().add((Task)result.get("task"));
+                break;
+            case GlobleData.USER_SEND_HOMEWORK_MESSAGE:
+                mApplication.getWorkDB().add((Work)result.get("work"));
+                break;
+            case GlobleData.AGREE_USER_TO_GROUP:
+                GlobleMethod.addMeToGroup(mApplication,result);
+                GlobleMethod.setTag(mApplication);
+                break;
+        }
     }
 }

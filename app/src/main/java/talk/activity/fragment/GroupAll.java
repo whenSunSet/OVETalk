@@ -90,7 +90,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 }
             }
         });
-        mIsSystemGroup =getIntent().getStringExtra(GlobleData.GROUP_ID).equals("-1");
+        mIsSystemGroup =getIntent().getIntExtra(GlobleData.GROUP_ID, GlobleData.DEFAULT)==GlobleData.SYSTEM;
         mGroupMessageDB=mApplication.getGroupMessageDB();
         mGroup =(Group)((TalkApplication) getApplication()).map.get("nowGroup");
         //判断当前的用户是不是当前群的master
@@ -217,7 +217,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
     @Override
     protected int supplyTabs(List<TabInfo> tabs) {
         //如果是SystemGroup群
-        if (getIntent().getStringExtra(GlobleData.GROUP_ID).equals("-1")){
+        if (getIntent().getIntExtra(GlobleData.GROUP_ID,GlobleData.DEFAULT)==GlobleData.SYSTEM){
             tabs.add(new TabInfo(FRAGMENT_ONE, "SystemGroup",
                     GroupChatting.class));
             mTitle.setVisibility(View.GONE);

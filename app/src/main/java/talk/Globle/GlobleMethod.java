@@ -78,9 +78,6 @@ public class GlobleMethod {
     }
 
     public static void addMeToGroup(TalkApplication talkApplication,HashMap<String,Object> result){
-        if (result==null){
-            return;
-        }
         GroupDB groupDB=talkApplication.getGroupDB();
         TaskDB taskDB=talkApplication.getTaskDB();
         WorkDB workDB=talkApplication.getWorkDB();

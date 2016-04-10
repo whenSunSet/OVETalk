@@ -1,7 +1,9 @@
 package talk.http;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.example.heshixiyang.ovetalk.BuildConfig;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -25,6 +27,7 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
     }
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+        Log.d("JsonAsyncHttpResponseHa", response.toString());
         switch (statu){
             case GlobleData.PHOTO_MESSAGE:
                 if (statusCode==200){
@@ -53,6 +56,7 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
 
     @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+        if (BuildConfig.DEBUG) Log.d("JsonAsyncHttpResponseHa", errorResponse.toString());
         DialogUtil.showToast(context,"无法连接服务器");
         isSuccess=false;
     }

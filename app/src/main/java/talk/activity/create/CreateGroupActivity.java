@@ -22,11 +22,11 @@ import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.fragment.Groups;
 import talk.activity.supers.BasicActivity;
+import talk.http.SendMessage;
 import talk.model.Group;
 import talk.util.DialogUtil;
-import talk.http.SendMessage;
 
-public class CreateGroupActivity extends BasicActivity implements View.OnClickListener{
+public class CreateGroupActivity extends BasicActivity implements View.OnClickListener,SendMessage.SendMessageListener{
     private EditText mGroupNickNameText;
     private Button mCreate;
     private ImageView mIcon;
@@ -76,20 +76,23 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
     }
 
     private void makeGroup(Bitmap icon,String url) {
-        HashMap<String,Object> result;
         RequestParams requestParams=new RequestParams();
         requestParams.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
-        requestParams.put(GlobleData.GROUP_NICK_NAME,mGroupNickName);
+        requestParams.put(GlobleData.GROUP_NICK,mGroupNickName);
         try {
             requestParams.put(GlobleData.GROUP_ICON,GlobleMethod.saveIamge(icon,GlobleMethod.getFileDir(mApplication)+"/"+mGroupId+".jpg"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        result=SendMessage.getSendMessage().post(mApplication,GlobleData.CREATE_GROUP,url,null,requestParams);
+        SendMessage.getSendMessage().post(mApplication,GlobleData.CREATE_GROUP,url,null,requestParams,this);
+    }
+
+    @Override
+    public void success(HashMap<String, Object> result) {
         if (result==null){
             return;
         }
-        if (result.get("res")==1){
+        if ((int)result.get("res")==1){
             mGroupId= (int) result.get("groupId");
             Groups.mIsFlash =true;
             addGroup();
@@ -97,7 +100,8 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
     }
 
     public void addGroup(){
-        Group group=new Group(mGroupId, mGroupNickName
+        Group group=new Group(mGroupId
+                ,mGroupNickName
                 ,GlobleMethod.getFileDir(mApplication)+"/"+mGroupId+".jpg"
                 ,mApplication.getSpUtil().getUserId(),0,0);
         mApplication.getGroupDB().addGroup(group);

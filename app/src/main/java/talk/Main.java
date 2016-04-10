@@ -3,6 +3,7 @@ package talk;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -19,6 +20,7 @@ public class Main extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
+        Log.d("Main", "tes");
         button=(Button)findViewById(R.id.in);
 
         button.setOnClickListener(new View.OnClickListener() {

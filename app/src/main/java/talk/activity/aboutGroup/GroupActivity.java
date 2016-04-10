@@ -20,7 +20,7 @@ import talk.model.Group;
 import talk.http.SendMessage;
 
 
-public class GroupActivity extends Activity {
+public class GroupActivity extends Activity implements SendMessage.SendMessageListener{
     private ImageView mGroupIcon;
     private TextView mGroupId;
     private TextView mGroupNickName;
@@ -97,7 +97,11 @@ public class GroupActivity extends Activity {
         paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
         paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
 
-        result=SendMessage.getSendMessage().post(mApplication,messageStatu,url,paramter,null);
+        SendMessage.getSendMessage().post(mApplication,messageStatu,url,paramter,null,this);
+    }
+
+    @Override
+    public void success(HashMap<String, Object> result) {
         if (result==null){
             return;
         }

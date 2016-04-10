@@ -1,5 +1,7 @@
 package talk.http;
 
+import android.util.Log;
+
 import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -12,6 +14,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.Header;
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.model.ClickTask;
@@ -28,22 +31,36 @@ import talk.model.Work;
 public class SendMessage {
     public static SendMessage sendMessage=new SendMessage();
 
+    public HashMap<String,Object> result;
+
     private SendMessage() {}
+
+    private SendMessageListener sendMessageListener;
 
     public static SendMessage getSendMessage(){
         return sendMessage;
     }
 
-    public HashMap<String,Object> post(TalkApplication mApplication,final int messageStatu,String url,HashMap<String ,String> paramter,RequestParams requestParams){
+    public void post(TalkApplication mApplication, final int messageStatu, String url, HashMap<String ,String> paramter, final RequestParams requestParams,SendMessageListener listener){
+        sendMessageListener=listener;
         JSONObject jsonObject = new JSONObject();
-
         if ((messageStatu<=11&&messageStatu!= GlobleData.PHOTO_MESSAGE)
                 ||messageStatu==GlobleData.GET_GROUP_INFO
                 ||messageStatu==GlobleData.GET_TASK_CLICK
                 ||messageStatu==GlobleData.GET_HOMEWORK_CLICK
                 ||messageStatu==GlobleData.GET_TASK_INFO
                 ||messageStatu==GlobleData.GET_HOMEWORK_INFO){
-            MyResponseErrorListenerAndListener myResponseErrorListenerAndListener=new MyResponseErrorListenerAndListener(mApplication,messageStatu);
+            MyResponseErrorListenerAndListener myResponseErrorListenerAndListener=new MyResponseErrorListenerAndListener(mApplication,messageStatu){
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    super.onResponse(jsonObject);
+                    if (messageStatu==GlobleData.USER_JOIN_GROUP){
+                        return;
+                    }
+                    result=makeReturnValue(messageStatu, jsonObject, null, this.isSuccess());
+                    sendMessageListener.success(result);
+                }
+            };
             MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
                     Request.Method.POST,
                     url,
@@ -52,20 +69,31 @@ public class SendMessage {
                     myResponseErrorListenerAndListener
             );
             mApplication.getRequestQueue().add(jsonObjectRequest);
-            return makeReturnValue(messageStatu,jsonObject,null,myResponseErrorListenerAndListener.isSuccess());
         }else if (messageStatu==GlobleData.PHOTO_MESSAGE
                 ||messageStatu==GlobleData.CREATE_GROUP
                 ||messageStatu==GlobleData.SEND_TASK
                 ||messageStatu==GlobleData.SEND_HOMEWORK){
-            JsonAsyncHttpResponseHandler jsonAsyncHttpResponseHandler =new JsonAsyncHttpResponseHandler(mApplication,messageStatu);
+            JsonAsyncHttpResponseHandler jsonAsyncHttpResponseHandler =new JsonAsyncHttpResponseHandler(mApplication,messageStatu){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                    result=makeReturnValue(messageStatu, response, null, this.isSuccess());
+                    sendMessageListener.success(result);
+                }
+            };
+            Log.d("SendMessage", url);
             AsyncHttpClientUtil.post(url, requestParams, jsonAsyncHttpResponseHandler);
-            return makeReturnValue(messageStatu, jsonAsyncHttpResponseHandler.getJsonObject(),null,jsonAsyncHttpResponseHandler.isSuccess());
         } else if (messageStatu==GlobleData.GET_TASK_FILE ||messageStatu==GlobleData.GET_HOMEWORK_FILE){
-            ByteAsyncHttpResponseHandler byteAsyncHttpResponseHandler=new ByteAsyncHttpResponseHandler(mApplication,messageStatu);
+            ByteAsyncHttpResponseHandler byteAsyncHttpResponseHandler=new ByteAsyncHttpResponseHandler(mApplication,messageStatu){
+                @Override
+                public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                    super.onSuccess(i, headers, bytes);
+                    result=makeReturnValue(messageStatu, null, bytes, this.isSuccess());
+                    sendMessageListener.success(result);
+                }
+            };
             AsyncHttpClientUtil.post(url,requestParams,byteAsyncHttpResponseHandler);
-            return makeReturnValue(messageStatu,null,byteAsyncHttpResponseHandler.getBytes(),byteAsyncHttpResponseHandler.isSuccess());
         }
-        return null;
     }
 
     private HashMap<String,Object> makeReturnValue(int messageStatu,JSONObject jsonObject,byte[] bytes,boolean isSuccess){
@@ -114,5 +142,9 @@ public class SendMessage {
             e.printStackTrace();
         }
         return returnValue;
+    }
+
+    public interface SendMessageListener{
+        public void success(HashMap<String,Object> result);
     }
 }

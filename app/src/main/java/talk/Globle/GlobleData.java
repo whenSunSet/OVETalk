@@ -9,9 +9,9 @@ public class GlobleData {
     public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_MESSAGE = "message";
 
-    public static final String baseUrl1 = "http://120.27.111.167:8080/OVE/server/group";
+    public static final String baseUrl1 = "http://120.27.111.167:8088/OVE/server/group";
 
-    public static final String baseUrl11 = "http://192.168.199.198:8088/OVE/server/group";
+    public static final String baseUrl11 = "http://192.168.199.198:8088/server/group";
 
     public static final String jpush_sendMessage= baseUrl1+"/jpush_sendMessage.do";
 
@@ -41,7 +41,7 @@ public class GlobleData {
 
     public static final String updateAllWorkClick= baseUrl1+"/updateAllWorkClick.do";
 
-    public static final String create= baseUrl1+"/create.do";
+    public static final String create= baseUrl11+"/create.do";
 
     public static String SD_CACHE="";
 
@@ -97,7 +97,7 @@ public class GlobleData {
     public static final String GROUP_ICON="groupIcon";
     public static final String DATE="date";
     public static final String GROUP_ID="groupId";
-    public static final String GROUP_NICK_NAME="groupNickName";
+    public static final String GROUP_NICK ="groupNick";
     public static final String USER_NAME ="userName";
     public static final String MESSAGE_STATU="messageStatu";
     public static final String MESSAGE_IMAGE="messageImage";
@@ -165,7 +165,7 @@ public class GlobleData {
     public static final int SEND_FILE=1;
     public static final int MAKE_GROUP=2;
 
-    public static final int SYSTEM=-99;
+    public static final int SYSTEM=999999;
 
     public static final int BROADCAST_MESSAGE=1;
     public static final int BROADCAST_TASK_MESSAGE=2;

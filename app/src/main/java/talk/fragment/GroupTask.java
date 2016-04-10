@@ -26,7 +26,7 @@ import talk.http.SendMessage;
 /**
  * Created by asus on 2015/11/15.
  */
-public class GroupTask extends BasicFragment{
+public class GroupTask extends BasicFragment implements SendMessage.SendMessageListener{
     private Group mGroup;
     private int mWhichActivity;
     public GroupTask() {
@@ -83,14 +83,15 @@ public class GroupTask extends BasicFragment{
         HashMap<String,String> paramter=new HashMap<>();
         HashMap<String,Object> result;
         paramter.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupIcon()));
-        result=SendMessage.sendMessage.post(mApplication, GlobleData.GET_TASK_CLICK, GlobleData.updateAllTaskClick, paramter, null);
+        SendMessage.sendMessage.post(mApplication, GlobleData.GET_TASK_CLICK, GlobleData.updateAllTaskClick, paramter, null,this);
+    }
+
+    @Override
+    public void success(HashMap<String, Object> result) {
         if (result==null){
             return;
         }
         mApplication.getClickTaskDB().adds((ArrayList<ClickTask>) result.get("clickTasks"));
         flash(GlobleData.SELECT_FRIST);
-//        formparams.add(new BasicNameValuePair("groupName", mGroup.getGroupId()));
-//        new Thread(new MyRunnable(formparams,"",handler, GlobleData.DEFAULT));
     }
-
 }

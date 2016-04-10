@@ -54,8 +54,8 @@ public class GroupsFind extends Fragment {
         HashMap<String,String> paramter=new HashMap<>();
         paramter.put(GlobleData.GROUP_ID, mGroupId);
         paramter.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
-        paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP));
+        paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_JOIN_GROUP));
 
-        SendMessage.getSendMessage().post(mApplication,GlobleData.USER_REQUEST_JOIN_GROUP,url,paramter,null);
+        SendMessage.getSendMessage().post(mApplication,GlobleData.USER_JOIN_GROUP,url,paramter,null,null);
     }
 }

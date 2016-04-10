@@ -2,6 +2,7 @@ package talk.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import talk.model.GroupChatMessage;
 public class GroupListAdapter extends ArrayAdapter<Group> {
     private int mResource;
 
+    private Group mGroup;
+
     private TalkApplication mApplication;
 
     public GroupListAdapter(Context context, int textViewResourceId, List<Group> objects) {
@@ -38,7 +41,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Group group=getItem(position);
+        mGroup=getItem(position);
         View view;
         ViewHolder holder;
         if (convertView==null){
@@ -57,7 +60,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             holder=(ViewHolder)convertView.getTag();
         }
 
-        setResource(holder,group);
+        setResource(holder,mGroup);
         return view;
     }
     //-----------------------------布置每个item里面的布局
@@ -66,7 +69,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         GroupChatMessage chatMessage=mApplication.getGroupMessageDB().getLastChatMessage(group.getGroupId());
         //放置该group的NickName和icon
         holder.name.setText(group.getGroupNick());
-        holder.icon.setImageResource(R.drawable.ic_launcher);
+        holder.icon.setImageBitmap(BitmapFactory.decodeFile(mGroup.getGroupIcon()));
         //判断该群的groupName是否和其userName相同，若相同则该群为系统群
         boolean isSystemGroup=(group.getGroupId()==GlobleData.SYSTEM);
 
