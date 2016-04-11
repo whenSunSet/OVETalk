@@ -220,6 +220,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         mMessageStatu=chatMessage.getMessageStatu();
         mChatMessage=chatMessage;
         if (chatMessage.getMessageStatu() == GlobleData.USER_REQUEST_JOIN_GROUP) {
+            mGroup.setGroupId(GlobleData.SYSTEM);
             builder.setMessage("加入请求");
             builder.setPositiveButton("同意加入", new DialogInterface.OnClickListener() {
                 @Override
@@ -252,8 +253,8 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     }
 
     public void addAndSendMessage(String message, String messageImage, int messageStatu, Work work, Task task) {
+        mMessageStatu=messageStatu;
         mChatMessage = makeMessage(mGroupId,message, messageImage,mPreferenceManager.getUserId(),mMessageStatu, task, work);
-        mMessageStatu=mMessageStatu;
         HashMap<String,Object> result=null;
         if (mChatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE||mChatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
             sendMessage(GlobleData.jpush_sendMessage, mChatMessage.getMessage(), null,mMessageStatu, null, null);
@@ -296,37 +297,30 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
      *  如果是 不同意某人加入 无
      */
     private void sendMessage(String url, String message, String isImage, int messageStatu, Work work, Task task){
-        HashMap<String ,String > paramter=new HashMap();
         RequestParams requestParams=new RequestParams();
+        requestParams.put(GlobleData.GROUP_ID, mGroup.getGroupId());
+        requestParams.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
+        requestParams.put(GlobleData.MESSAGE_STATU, messageStatu);
+
         if (messageStatu==GlobleData.PHOTO_MESSAGE){
-            requestParams.put(GlobleData.GROUP_ID, mGroup.getGroupId());
-            requestParams.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
-            requestParams.put(GlobleData.MESSAGE_STATU, String.valueOf(messageStatu));
             try {
                 requestParams.put(GlobleData.FILE,new File(isImage));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams,this);
+            SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
         }else{
-            paramter.put(GlobleData.GROUP_ID, String.valueOf(mGroup.getGroupId()));
-            paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
-            paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(messageStatu));
-
             if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
-                paramter.put(GlobleData.TASK_ID, String.valueOf(work.getTaskId()));
-                paramter.put(GlobleData.ID_IN_TASK, String.valueOf(work.getIdInTask()));
-                paramter.put(GlobleData.MESSAGE, message);
+                requestParams.put(GlobleData.TASK_ID, work.getTaskId());
+                requestParams.put(GlobleData.ID_IN_TASK, work.getIdInTask());
 
             }else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
-                paramter.put(GlobleData.ID_IN_GROUP, String.valueOf(task.getIdInGroup()));
-                paramter.put(GlobleData.MESSAGE, message);
+                requestParams.put(GlobleData.ID_IN_GROUP, task.getIdInGroup());
             }
-
-            SendMessage.getSendMessage().post(mApplication,messageStatu,url,paramter,null,this);
+            requestParams.put(GlobleData.MESSAGE, message);
+            SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
         }
     }
-
 
     @Override
     protected void upData() {

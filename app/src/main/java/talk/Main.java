@@ -3,12 +3,12 @@ package talk;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import cn.jpush.android.api.JPushInterface;
 import talk.activity.fragment.Groups;
 
 /**
@@ -20,7 +20,8 @@ public class Main extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
-        Log.d("Main", "tes");
+        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+        JPushInterface.init(this);     		// 初始化 JPush
         button=(Button)findViewById(R.id.in);
 
         button.setOnClickListener(new View.OnClickListener() {

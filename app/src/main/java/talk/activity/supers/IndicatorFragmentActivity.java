@@ -120,11 +120,18 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
             return super.dispatchTouchEvent(event);
         }
 
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             button=((GroupChatting) (mTabs.get(0).fragment)).getmMsgSend();
+            if (button==null){
+                return super.dispatchTouchEvent(event);
+            }
             hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,null,button,event));
         }else if (event.getAction()==MotionEvent.ACTION_UP){
             isImage= ((GroupChatting) (mTabs.get(0).fragment)).getmMore();
+            if (isImage==null){
+                return super.dispatchTouchEvent(event);
+            }
             hideSoftInput(isEdit.getWindowToken(),isShouldHideInput(isEdit,isImage,null,event));
         }
         return super.dispatchTouchEvent(event);

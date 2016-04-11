@@ -126,7 +126,35 @@ public class GroupMessageDB {
         c.close();
         return groupChatMessages;
     }
+    public ArrayList<GroupChatMessage> getGroupMessage(int groupId) {
+        ArrayList<GroupChatMessage> groupChatMessages = new ArrayList<>();
+        createTable(groupId);
+        // 取最后的10条
+        String sql = "select * from _" + groupId;
+        Cursor c = mDb.rawQuery(sql, null);
+        GroupChatMessage groupChatMessage;
+        while (c.moveToNext()) {
+            groupChatMessage = new GroupChatMessage(
+                    c.getString(c.getColumnIndex(COL_MESSAGE)),
+                    c.getInt(c.getColumnIndex(COL_IS_COMING))==1,
+                    c.getInt(c.getColumnIndex(COL_GROUP_ID)),
+                    c.getString(c.getColumnIndex(COL_ICON)),
+                    c.getInt(c.getColumnIndex(COL_READED))== 1,
+                    c.getString(c.getColumnIndex(COL_DATE)),
+                    c.getString(c.getColumnIndex(COL_USER_NICK_NAME)),
+                    c.getString(c.getColumnIndex(COL_USER_ID)),
+                    c.getString(c.getColumnIndex(COL_MESSAGE_IMAGE)),
+                    c.getInt(c.getColumnIndex(COL_MESSAGE_STATU))
+            );
 
+            if (!TextUtils.isEmpty(groupChatMessage.getMessage())){
+                groupChatMessages.add(groupChatMessage);
+            }
+        }
+        //将顺序反一下
+        c.close();
+        return groupChatMessages;
+    }
     /**
      *
      获取指定group的消息条数

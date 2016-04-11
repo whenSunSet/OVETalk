@@ -106,4 +106,14 @@ public class Group implements Parcelable {
             return new Group[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "groupId:"+groupId+"\n"
+                +"groupNcik:"+groupNick+"\n"
+                +"groupIcon:"+groupIcon+"\n"
+                +"groupMaster:"+groupMaster+"\n"
+                +"taskNum:"+taskNum+"\n"
+                +"memberNum:"+memberNum;
+    }
 }

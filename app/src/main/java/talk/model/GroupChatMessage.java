@@ -131,17 +131,16 @@ public class GroupChatMessage {
     @Override
     public String toString() {
         return "GroupChatMessage{" +
-                "message='" + message + '\'' +
-                ", isComing=" + isComing +
-                ", date=" + date +
-                ", groupId='" + groupId + '\'' +
-                ", userIcon='" + userIcon + '\'' +
-                ", readed=" + readed +
-                ", dateStr='" + dateStr + '\'' +
-                ", userNickName='" + userNickName + '\'' +
-                ", userId='" + userId + '\'' +
-                ", messageImage='" + messageImage + '\'' +
-                ", messageStatu='" + messageStatu + '\'' +
-                '}';
+                "message='" + message + '\n' +
+                "isComing=" + isComing+ '\n' +
+                "date=" + date + '\n'+
+                "groupId='" + groupId + '\n' +
+                "userIcon='" + userIcon + '\n' +
+                "readed=" + readed + '\n'+
+                "dateStr='" + dateStr + '\n' +
+                "userNickName='" + userNickName + '\n'+
+                "userId='" + userId + '\n' +
+                "messageImage='" + messageImage + '\n' +
+                "messageStatu='" + messageStatu + '\n' ;
     }
 }

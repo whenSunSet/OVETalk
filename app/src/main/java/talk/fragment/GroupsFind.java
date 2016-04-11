@@ -10,13 +10,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.heshixiyang.ovetalk.R;
-
-import java.util.HashMap;
+import com.loopj.android.http.RequestParams;
 
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
-import talk.util.DialogUtil;
 import talk.http.SendMessage;
+import talk.util.DialogUtil;
 
 public class GroupsFind extends Fragment {
     private TalkApplication mApplication;
@@ -45,17 +44,17 @@ public class GroupsFind extends Fragment {
                     DialogUtil.showToast(mApplication, "你还没输入小组号呢");
                     return;
                 }
-                sendMessage(GlobleData.joinOrExitGroup);
+                sendMessage(GlobleData.join);
             }
         });
         return mView;
     }
     private void sendMessage(String url){
-        HashMap<String,String> paramter=new HashMap<>();
-        paramter.put(GlobleData.GROUP_ID, mGroupId);
-        paramter.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
-        paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_JOIN_GROUP));
+        RequestParams requestParams=new RequestParams();
+        requestParams.put(GlobleData.GROUP_ID, mGroupId);
+        requestParams.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
+        requestParams.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP));
 
-        SendMessage.getSendMessage().post(mApplication,GlobleData.USER_JOIN_GROUP,url,paramter,null,null);
+        SendMessage.getSendMessage().post(mApplication,GlobleData.USER_REQUEST_JOIN_GROUP,url,requestParams,null);
     }
 }

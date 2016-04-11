@@ -3,6 +3,7 @@ package talk.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,12 +67,14 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
     //-----------------------------布置每个item里面的布局
     private void setResource(ViewHolder holder,Group group){
         //获取该group的最后一条信息
+        Log.d("GroupListAdapter", "-------------------------");
         GroupChatMessage chatMessage=mApplication.getGroupMessageDB().getLastChatMessage(group.getGroupId());
         //放置该group的NickName和icon
         holder.name.setText(group.getGroupNick());
         holder.icon.setImageBitmap(BitmapFactory.decodeFile(mGroup.getGroupIcon()));
         //判断该群的groupName是否和其userName相同，若相同则该群为系统群
         boolean isSystemGroup=(group.getGroupId()==GlobleData.SYSTEM);
+        Log.d("GroupListAdapter", group.toString());
 
         //判断当前group的消息是否为空
         if (chatMessage==null){
@@ -98,11 +101,12 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
 
             }
             holder.data.setText(chatMessage.getDateStr());
-            //将发送过来user的姓名和聊天内容都写入
-            holder.chat.setText(mApplication.getUserDB().getMember(chatMessage.getUserId()).getUserNick()+ ":" + chatMessage.getMessage());
             if (isSystemGroup){
                 //如果是系统Group的话就把姓名去掉
                 holder.chat.setText(chatMessage.getMessage());
+            }else {
+                //将发送过来user的姓名和聊天内容都写入
+                holder.chat.setText(mApplication.getUserDB().getMember(chatMessage.getUserId()).getUserNick()+ ":" + chatMessage.getMessage());
             }
         }
 

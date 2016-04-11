@@ -13,7 +13,7 @@ import talk.model.JoinGroup;
  * Created by heshixiyang on 2016/1/22.
  */
 public class JoinGroupDB {
-    public static final String JOIN_TABLE_NAME="joinGroup";
+    public static final String JOIN_TABLE_NAME="joinOrExitGroup";
     
     public static final String GROUP_Id ="groupId";
     public static final String USER_ID="memberId";

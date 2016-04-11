@@ -100,19 +100,19 @@ public class ChatMessageAdapter extends BaseAdapter{
 		viewHolder.img.setVisibility(View.GONE);
 		viewHolder.createDate.setText(chatMessage.getDateStr());
 
-		if (mUser.getUserIcon().contains("http")){
-			//没有获取成功的userIcon
-			viewHolder.userIcon.setImageResource(R.drawable.icon);
-		}else {
-			viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
-		}
-
 		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_SEND_HOMEWORK_MESSAGE 只能在普通群组里使用
 		if (messageStatu<=3||messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE ||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
+			if (mUser.getUserIcon().contains("http")){
+				//没有获取成功的userIcon
+				viewHolder.userIcon.setImageResource(R.drawable.icon);
+			}else {
+				viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
+			}
 			viewHolder.nickname.setText(mUser.getUserNick());
 		}else {
 			//其他的消息只能在system里使用
 			viewHolder.nickname.setText("OVEsystem");
+			viewHolder.userIcon.setImageResource(R.drawable.icon);
 		}
 
 		if (messageStatu==GlobleData.PHOTO_MESSAGE){

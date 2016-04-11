@@ -9,7 +9,6 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.jpush.android.api.JPushInterface;
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 import talk.datebase.ClickTaskDB;
@@ -39,8 +38,6 @@ public class TalkApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
-        JPushInterface.init(this);     		// 初始化 JPush
 
         initData();
     }
@@ -50,6 +47,7 @@ public class TalkApplication extends Application {
         MyPreferenceManager.init(this);
         mNotificationManager = (NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
         requestQueue= Volley.newRequestQueue(this);
+
 
         groupMessageDB = new GroupMessageDB(this);
         groupDB = new GroupDB(this);
@@ -67,6 +65,34 @@ public class TalkApplication extends Application {
 
         GlobleData.SD_CACHE= GlobleMethod.getCacheDir(this);
         GlobleData.SD_FILE= GlobleMethod.getFileDir(this);
+
+//        ArrayList<Group> list=groupDB.getGroups();
+//        for (Group group:list){
+//            Log.d("TalkApplication", group.toString());
+//        }
+//
+//        Log.d("TalkApplication", "------------------system---------------------");
+//        ArrayList<GroupChatMessage> list1=groupMessageDB.getGroupMessage(GlobleData.SYSTEM);
+//
+//        for (GroupChatMessage groupChatMessage:list1){
+//            Log.d("TalkApplication", groupChatMessage.toString());
+//        }
+//
+//        Log.d("TalkApplication", "------------------41---------------------");
+//
+//        ArrayList<GroupChatMessage> list2=groupMessageDB.getGroupMessage(41);
+//
+//        Log.d("TalkApplication", "------------------42---------------------");
+//
+//        for (GroupChatMessage groupChatMessage:list2){
+//            Log.d("TalkApplication", groupChatMessage.toString());
+//        }
+//
+//        ArrayList<GroupChatMessage> list3=groupMessageDB.getGroupMessage(42);
+//
+//        for (GroupChatMessage groupChatMessage:list3){
+//            Log.d("TalkApplication", groupChatMessage.toString());
+//        }
     }
 
     public NotificationManager getNotificationManager() {

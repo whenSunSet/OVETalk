@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heshixiyang.ovetalk.R;
+import com.loopj.android.http.RequestParams;
 
 import java.util.HashMap;
 
@@ -91,13 +92,12 @@ public class GroupActivity extends Activity implements SendMessage.SendMessageLi
     }
 
     private void sendMessage(String url, final int messageStatu){
-        HashMap<String ,String > paramter=new HashMap();
-        HashMap<String ,Object> result;
-        paramter.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupId()));
-        paramter.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
-        paramter.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
+        RequestParams requestParams=new RequestParams();
+        requestParams.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupId()));
+        requestParams.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
+        requestParams.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
 
-        SendMessage.getSendMessage().post(mApplication,messageStatu,url,paramter,null,this);
+        SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
     }
 
     @Override

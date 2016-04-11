@@ -13,35 +13,37 @@ public class GlobleData {
 
     public static final String baseUrl11 = "http://192.168.199.198:8088/server/group";
 
-    public static final String jpush_sendMessage= baseUrl1+"/jpush_sendMessage.do";
+    public static final String jpush_sendMessage= baseUrl11+"/jpush_sendMessage.do";
 
-    public static final String jpush_sendImage= baseUrl1+"/jpush_sendImage.do";
+    public static final String jpush_sendImage= baseUrl11+"/jpush_sendImage.do";
 
-    public static final String sendTaskMessage= baseUrl1+"/sendTaskMessage.do";
+    public static final String sendTaskMessage= baseUrl11+"/sendTaskMessage.do";
 
-    public static final String sendWorkMessage= baseUrl1+"/sendWorkMessage.do";
+    public static final String sendWorkMessage= baseUrl11+"/sendWorkMessage.do";
 
-    public static final String joinOrExitGroup= baseUrl1+"/joinOrExitGroup.do";
+    public static final String joinOrExitGroup = baseUrl11+"/joinOrExitGroup.do";
 
-    public static final String logoutGroup= baseUrl1+"/logoutGroup.do";
+    public static final String logoutGroup= baseUrl11+"/logoutGroup.do";
 
-    public static final String agreeOrDisAgree= baseUrl1+"/group/master.do";
+    public static final String agreeOrDisAgree= "http://192.168.199.198:8088/group/master.do";
 
-    public static final String pushWork= baseUrl1+"/pushWork.do";
+    public static final String pushWork= baseUrl11+"/pushWork.do";
 
-    public static final String sendTask= baseUrl1+"/sendTask.do";
+    public static final String sendTask= baseUrl11+"/sendTask.do";
 
-    public static final String getWorkFile= baseUrl1+"/getWorkFile.do";
+    public static final String getWorkFile= baseUrl11+"/getWorkFile.do";
 
-    public static final String getTaskFile= baseUrl1+"/getTaskFile.do";
+    public static final String getTaskFile= baseUrl11+"/getTaskFile.do";
 
-    public static final String getGroupInfo= baseUrl1+"/getGroupInfo.do";
+    public static final String getGroupInfo= baseUrl11+"/getGroupInfo.do";
 
-    public static final String updateAllTaskClick= baseUrl1+"/updateAllTaskClick.do";
+    public static final String updateAllTaskClick= baseUrl11+"/updateAllTaskClick.do";
 
-    public static final String updateAllWorkClick= baseUrl1+"/updateAllWorkClick.do";
+    public static final String updateAllWorkClick= baseUrl11+"/updateAllWorkClick.do";
 
-    public static final String create= baseUrl11+"/create.do";
+    public static final String create= baseUrl11+"/create.do";//已经测通
+
+    public static final String join= baseUrl11+"/join.do";//已经测通
 
     public static String SD_CACHE="";
 

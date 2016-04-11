@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,10 +82,11 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
         requestParams.put(GlobleData.GROUP_NICK,mGroupNickName);
         try {
             requestParams.put(GlobleData.GROUP_ICON,GlobleMethod.saveIamge(icon,GlobleMethod.getFileDir(mApplication)+"/"+mGroupId+".jpg"));
+            Log.d("CreateGroupActivity", (GlobleMethod.getFileDir(mApplication) + "/" + mGroupId + ".jpg"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        SendMessage.getSendMessage().post(mApplication,GlobleData.CREATE_GROUP,url,null,requestParams,this);
+        SendMessage.getSendMessage().post(mApplication,GlobleData.CREATE_GROUP,url,requestParams,this);
     }
 
     @Override
@@ -94,6 +96,7 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
         }
         if ((int)result.get("res")==1){
             mGroupId= (int) result.get("groupId");
+
             Groups.mIsFlash =true;
             addGroup();
         }
@@ -102,8 +105,9 @@ public class CreateGroupActivity extends BasicActivity implements View.OnClickLi
     public void addGroup(){
         Group group=new Group(mGroupId
                 ,mGroupNickName
-                ,GlobleMethod.getFileDir(mApplication)+"/"+mGroupId+".jpg"
+                ,GlobleMethod.changeFileName(mApplication,String.valueOf(mGroupId))
                 ,mApplication.getSpUtil().getUserId(),0,0);
+
         mApplication.getGroupDB().addGroup(group);
         GlobleMethod.setTag(mApplication);
         GlobleMethod.addUserToGroup(mApplication

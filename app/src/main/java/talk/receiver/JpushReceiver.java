@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.loopj.android.http.RequestParams;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,17 +56,17 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
                 groupId=message.getGroupId();
                 makeAndSaveMessage(message, groupId);
 
-                HashMap<String,String> paramter=new HashMap<>();
-                paramter.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
+                RequestParams requestParams =new RequestParams();
+                requestParams.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
                 if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                     message.setMessage("我发布了一个任务，快来看看吧");
-                    paramter.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
-                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_TASK_INFO,"",paramter,null,this);
+                    requestParams.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
+                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_TASK_INFO,"",requestParams,this);
                 }else if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
                     message.setMessage("我发布了一个作业，快来看看吧");
-                    paramter.put(GlobleData.TASK_ID, message.getUserIcon());
-                    paramter.put(GlobleData.ID_IN_TASK, message.getUserNickName());
-                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_HOMEWORK_INFO,"",paramter,null,this);
+                    requestParams.put(GlobleData.TASK_ID, message.getUserIcon());
+                    requestParams.put(GlobleData.ID_IN_TASK, message.getUserNickName());
+                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_HOMEWORK_INFO,"",requestParams,this);
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
@@ -96,8 +98,8 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
                         break;
                     case GlobleData.AGREE_USER_TO_GROUP:
                         msg="同意你加入";
-                        HashMap<String,String> paramter=new HashMap();
-                        SendMessage.getSendMessage().post(mApplication, GlobleData.AGREE_USER_TO_GROUP, GlobleData.getGroupInfo, paramter, null,this);
+                        RequestParams requestParams =new RequestParams();
+                        SendMessage.getSendMessage().post(mApplication, GlobleData.AGREE_USER_TO_GROUP, GlobleData.getGroupInfo, requestParams,this);
 
                         //groupID:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
                         break;
@@ -125,12 +127,12 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
             message = new Message(
                     bundle.getString("cn.jpush.android.MESSAGE"),
                     object.getInt("groupId"),
-                    object.getString("icon"),
+                    object.getString("groupIcon"),
                     object.getString("date"),
-                    object.getString("nickname"),
+                    object.getString("userNickName"),
                     object.getString("userName"),
-                    object.getInt("messagestatu"),
-                    object.getString("messageimage"));
+                    object.getInt("messageStatu"),
+                    object.getString("messageImage"));
 
             //如果是自己发出的信息，则不接受
             if (object.getString("userName").equals(myPreferenceManager.getUserId())){

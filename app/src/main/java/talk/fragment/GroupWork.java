@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import com.example.heshixiyang.ovetalk.R;
+import com.loopj.android.http.RequestParams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,10 +65,9 @@ public class GroupWork extends BasicFragment implements SendMessage.SendMessageL
     @Override
     protected void upData() {
         super.upData();
-        HashMap<String,String> paramter=new HashMap<>();
-        HashMap<String,Object> result;
-        paramter.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupIcon()));
-        SendMessage.sendMessage.post(mApplication, GlobleData.GET_TASK_CLICK, GlobleData.updateAllTaskClick, paramter, null,this);
+        RequestParams requestParams=new RequestParams();
+        requestParams.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupIcon()));
+        SendMessage.sendMessage.post(mApplication, GlobleData.GET_TASK_CLICK, GlobleData.updateAllTaskClick, requestParams,this);
     }
 
     @Override

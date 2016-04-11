@@ -2,7 +2,6 @@ package talk.http;
 
 import android.util.Log;
 
-import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.RequestParams;
@@ -41,35 +40,15 @@ public class SendMessage {
         return sendMessage;
     }
 
-    public void post(TalkApplication mApplication, final int messageStatu, String url, HashMap<String ,String> paramter, final RequestParams requestParams,SendMessageListener listener){
+    public void post(TalkApplication mApplication, final int messageStatu, String url,final RequestParams requestParams,SendMessageListener listener){
         sendMessageListener=listener;
-        JSONObject jsonObject = new JSONObject();
-        if ((messageStatu<=11&&messageStatu!= GlobleData.PHOTO_MESSAGE)
+        if (messageStatu<=11
                 ||messageStatu==GlobleData.GET_GROUP_INFO
                 ||messageStatu==GlobleData.GET_TASK_CLICK
                 ||messageStatu==GlobleData.GET_HOMEWORK_CLICK
                 ||messageStatu==GlobleData.GET_TASK_INFO
-                ||messageStatu==GlobleData.GET_HOMEWORK_INFO){
-            MyResponseErrorListenerAndListener myResponseErrorListenerAndListener=new MyResponseErrorListenerAndListener(mApplication,messageStatu){
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    super.onResponse(jsonObject);
-                    if (messageStatu==GlobleData.USER_JOIN_GROUP){
-                        return;
-                    }
-                    result=makeReturnValue(messageStatu, jsonObject, null, this.isSuccess());
-                    sendMessageListener.success(result);
-                }
-            };
-            MyJsonObjectRequest jsonObjectRequest = new MyJsonObjectRequest(
-                    Request.Method.POST,
-                    url,
-                    jsonObject,
-                    paramter,
-                    myResponseErrorListenerAndListener
-            );
-            mApplication.getRequestQueue().add(jsonObjectRequest);
-        }else if (messageStatu==GlobleData.PHOTO_MESSAGE
+                ||messageStatu==GlobleData.GET_HOMEWORK_INFO
+                ||messageStatu==GlobleData.PHOTO_MESSAGE
                 ||messageStatu==GlobleData.CREATE_GROUP
                 ||messageStatu==GlobleData.SEND_TASK
                 ||messageStatu==GlobleData.SEND_HOMEWORK){
@@ -77,6 +56,9 @@ public class SendMessage {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
+                    if (messageStatu== GlobleData.USER_REQUEST_JOIN_GROUP){
+                        return;
+                    }
                     result=makeReturnValue(messageStatu, response, null, this.isSuccess());
                     sendMessageListener.success(result);
                 }
@@ -122,7 +104,7 @@ public class SendMessage {
                 returnValue.put("users",gson.fromJson(jsonObject.toString(),userListType));
                 returnValue.put("clickWorks",gson.fromJson(jsonObject.toString(), clickWorkListType));
                 returnValue.put("clickTask",gson.fromJson(jsonObject.toString(), clickTaskListType));
-                returnValue.put("joinGroup",gson.fromJson(jsonObject.toString(), joinGroupListType));
+                returnValue.put("joinOrExitGroup",gson.fromJson(jsonObject.toString(), joinGroupListType));
             }else if (messageStatu==GlobleData.GET_TASK_CLICK){
                 Type clickTaskListType = new TypeToken<ArrayList<ClickTask>>(){}.getType();
                 returnValue.put("clickTasks",gson.fromJson(jsonObject.toString(), clickTaskListType));

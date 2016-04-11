@@ -50,7 +50,7 @@ public class HttpIntentService extends IntentService implements SendMessage.Send
              requestParams.put(GlobleData.TARGET, task.getTarget());
              requestParams.put(GlobleData.CLICK_NUMBER,task.getClickNum());
              requestParams.put(GlobleData.DATE, task.getDate());
-             SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams,this);
+             SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
 
          } else if (messageStatu == GlobleData.SEND_HOMEWORK) {
              Work work=(Work)pa.get("work");
@@ -66,14 +66,14 @@ public class HttpIntentService extends IntentService implements SendMessage.Send
              requestParams.put(GlobleData.MASTER, work.getMaster());
              requestParams.put(GlobleData.CLICK_NUMBER, work.getClickNum());
              requestParams.put(GlobleData.DATE, work.getDate());
-             SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams,this);
+             SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
 
          }else if (messageStatu==GlobleData.GET_TASK_FILE){
              int type= (int) pa.get("type");
              requestParams.put(GlobleData.GROUP_ID,(int)pa.get(GlobleData.GROUP_ID));
              requestParams.put(GlobleData.ID_IN_GROUP,(int)pa.get(GlobleData.ID_IN_GROUP));
              requestParams.put(GlobleData.USER_NAME,(String)pa.get(GlobleData.USER_NAME));
-             SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams,this);
+             SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
 
          }else if (messageStatu==GlobleData.GET_HOMEWORK_FILE){
              int type= (int) pa.get("type");
@@ -81,7 +81,7 @@ public class HttpIntentService extends IntentService implements SendMessage.Send
              requestParams.put(GlobleData.ID_IN_TASK,(int)pa.get(GlobleData.ID_IN_TASK));
              requestParams.put(GlobleData.TASK_ID,(String)pa.get(GlobleData.TASK_ID));
              requestParams.put(GlobleData.USER_NAME,(String)pa.get(GlobleData.USER_NAME));
-             SendMessage.getSendMessage().post(mApplication,messageStatu,url,null,requestParams,this);
+             SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
 
          }
     }

@@ -52,6 +52,7 @@ import talk.model.Message;
 import talk.model.Task;
 import talk.model.User;
 import talk.model.Work;
+import talk.util.DialogUtil;
 
 /**
  * Created by heshixiyang on 2016/1/22.
@@ -92,7 +93,7 @@ public class GlobleMethod {
         userDB.adds((ArrayList<User>) result.get("users"));
         clickTaskDB.adds((ArrayList<ClickTask>) result.get("clickTasks"));
         clickWorkDB.adds((ArrayList<ClickWork>) result.get("clickWorks"));
-        joinGroupDB.adds((ArrayList<JoinGroup>) result.get("joinGroup"));
+        joinGroupDB.adds((ArrayList<JoinGroup>) result.get("joinOrExitGroup"));
     }
 
     public static ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,int groupId){
@@ -126,27 +127,37 @@ public class GlobleMethod {
 
     }
 
-    public static boolean setTag(TalkApplication application){
+    public static void setTag(final TalkApplication application){
         List<String > groupIds=application.getGroupDB().getGroupIds();
         Set<String> set= new HashSet<String>();
-        final int[] j = new int[1];
         set.addAll(groupIds);
         set= JPushInterface.filterValidTags(set);
+
 
         //这个每次改变都会覆盖前面的
         JPushInterface.setTags(application, set, new TagAliasCallback() {
             @Override
             public void gotResult(int i, String s, Set<String> set) {
-
-                j[0] = i;
+                if (i==0){
+                    DialogUtil.showToast(application,"设置tag成功");
+                }else {
+                    DialogUtil.showToast(application,"设置tag失败");
+                }
             }
         });
+    }
 
-        if (j[0]==0){
-            return true;
-        }else {
-            return false;
-        }
+    public static void setAlias(final TalkApplication application, String alias){
+        JPushInterface.setAlias(application, alias, new TagAliasCallback() {
+            @Override
+            public void gotResult(int i, String s, Set<String> set) {
+                if (i==0){
+                    DialogUtil.showToast(application,"设置alias成功");
+                }else {
+                    DialogUtil.showToast(application,"设置alias失败");
+                }
+            }
+        });
     }
 
     public static ArrayList<User> findClickWorkMembers(int groupId,
@@ -237,6 +248,19 @@ public class GlobleMethod {
         }
         return image;
     }
+
+    public static String changeFileName(TalkApplication mApplication,String newName){
+        String oldName= GlobleMethod.getFileDir(mApplication)+"/"+"0.jpg";
+        newName=GlobleMethod.getFileDir(mApplication)+"/"+newName+".jpg";
+        File file=new File(oldName);   //指定文件名及路径
+        String filename=file.getAbsolutePath();
+        if(filename.indexOf(".")>=0) {
+            filename = filename.substring(0,filename.lastIndexOf("."));
+        }
+        file.renameTo(new File(newName));   //改名
+        return newName;
+    }
+
 
     public static void getFile(byte[] bfile, String filePath,String fileName) {
         BufferedOutputStream bos = null;
