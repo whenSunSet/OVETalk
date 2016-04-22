@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import talk.Globle.GlobleData;
-import talk.model.Work;
+import talk.model.WorkBean;
 
 /**
  * Created by heshixiyang on 2016/1/22.
@@ -45,16 +45,16 @@ public class WorkDB {
                 + "PRIMARY KEY (" + ID + "," + GROUP_ID + "," + TASK_ID + "))");
     }
 
-    public void adds(ArrayList<Work> list){
-        for (Work work:list) {
-            add(work);
+    public void adds(ArrayList<WorkBean> list){
+        for (WorkBean workBean :list) {
+            add(workBean);
         }
 
     }
 
-    public void add(Work work) {
-        if (getTaskWork(work.getGroupId(),work.getTaskId(),work.getIdInTask())==null){
-            update(work);
+    public void add(WorkBean workBean) {
+        if (getTaskWork(workBean.getGroupId(), workBean.getTaskId(), workBean.getIdInTask())==null){
+            update(workBean);
         }
         mDb.execSQL("insert into " + WORK_TABLE_NAME + " ("
                         + TASK_ID + ","
@@ -66,14 +66,14 @@ public class WorkDB {
                         + MASTER + ","
                         + CLICK_NUMBER + ") values(?,?,?,?,?,?,?,?)",
                 new Object[]{
-                        work.getTaskId(),
-                        work.getGroupId(),
-                        work.getIdInTask(),
-                        work.getType(),
-                        work.getDate(),
-                        work.getPath(),
-                        work.getMaster(),
-                        work.getClickNum()}
+                        workBean.getTaskId(),
+                        workBean.getGroupId(),
+                        workBean.getIdInTask(),
+                        workBean.getType(),
+                        workBean.getDate(),
+                        workBean.getPath(),
+                        workBean.getMaster(),
+                        workBean.getClickNum()}
         );
     }
 
@@ -90,9 +90,9 @@ public class WorkDB {
                         idInTask});
     }
 
-    public void update(Work work){
-        delWork(work.getGroupId(),work.getTaskId(),work.getIdInTask());
-        add(work);
+    public void update(WorkBean workBean){
+        delWork(workBean.getGroupId(), workBean.getTaskId(), workBean.getIdInTask());
+        add(workBean);
     }
 
     public void update(int clickNum,int taskId,int idInTask,int groupId){
@@ -111,8 +111,8 @@ public class WorkDB {
                         groupId});
     }
 
-    public Work getWork(int groupId,int taskId,int idInTask){
-        Work work=new Work();
+    public WorkBean getWork(int groupId, int taskId, int idInTask){
+        WorkBean workBean =new WorkBean();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
                         + GROUP_ID + "=? AND "
@@ -124,17 +124,17 @@ public class WorkDB {
                         String.valueOf(idInTask)});
 
         if (c.moveToFirst()) {
-            work=makeWork(c);
+            workBean =makeWork(c);
         }
         c.close();
-        return work;
+        return workBean;
 
     }
 
 
 
-    public  List<Work> getTaskWorks(int groupId,int taskId){
-        List<Work> list=new ArrayList<>();
+    public  List<WorkBean> getTaskWorks(int groupId, int taskId){
+        List<WorkBean> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
                         + GROUP_ID + "=? AND "
@@ -148,8 +148,8 @@ public class WorkDB {
         c.close();
         return list;
     }
-    public  Work getTaskWork(int groupId,int taskId,int idInTask){
-        Work work=null;
+    public WorkBean getTaskWork(int groupId, int taskId, int idInTask){
+        WorkBean workBean =null;
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME
                         + " where "
                         + GROUP_ID + "=? AND "
@@ -161,10 +161,10 @@ public class WorkDB {
                         String.valueOf(taskId)});
 
         if (c.moveToNext()){
-           work = makeWork(c);
+           workBean = makeWork(c);
         }
         c.close();
-        return work;
+        return workBean;
     }
 
 
@@ -181,8 +181,8 @@ public class WorkDB {
         c.close();
         return a;
     }
-    public ArrayList<Work> getGroupWork(int groupId) {
-        ArrayList<Work> list=new ArrayList<>();
+    public ArrayList<WorkBean> getGroupWork(int groupId) {
+        ArrayList<WorkBean> list=new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+WORK_TABLE_NAME+" where "+ GROUP_ID +"=?",new String []{String .valueOf(groupId)});
 
         while (c.moveToNext()) {list.add(makeWork(c));}
@@ -191,17 +191,17 @@ public class WorkDB {
         return list;
     }
 
-    public Work makeWork(Cursor c){
-        Work work=new Work();
-        work.setGroupId(c.getInt(c.getColumnIndex(GROUP_ID)));
-        work.setIdInTask(c.getInt(c.getColumnIndex(ID)));
-        work.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
-        work.setDate(c.getString(c.getColumnIndex(DATE)));
-        work.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
-        work.setType(c.getInt(c.getColumnIndex(TYPE)));
-        work.setPath(c.getString(c.getColumnIndex(PATH)));
-        work.setMaster(c.getString(c.getColumnIndex(MASTER)));
-        return work;
+    public WorkBean makeWork(Cursor c){
+        WorkBean workBean =new WorkBean();
+        workBean.setGroupId(c.getInt(c.getColumnIndex(GROUP_ID)));
+        workBean.setIdInTask(c.getInt(c.getColumnIndex(ID)));
+        workBean.setTaskId(c.getInt(c.getColumnIndex(TASK_ID)));
+        workBean.setDate(c.getString(c.getColumnIndex(DATE)));
+        workBean.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
+        workBean.setType(c.getInt(c.getColumnIndex(TYPE)));
+        workBean.setPath(c.getString(c.getColumnIndex(PATH)));
+        workBean.setMaster(c.getString(c.getColumnIndex(MASTER)));
+        return workBean;
     }
 
     public void delTable(int groupId) {

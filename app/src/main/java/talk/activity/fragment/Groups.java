@@ -34,7 +34,8 @@ public class Groups extends IndicatorFragmentActivity {
         registerMessageReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getIntExtra("type", GlobleData.DEFAULT)==GlobleData.BROADCAST_MESSAGE)
+                int statu=intent.getIntExtra("type", GlobleData.DEFAULT);
+                if (statu==GlobleData.BROADCAST_MESSAGE||statu==GlobleData.BROADCAST_JOIN_GROUP)
                 flashFragment();
             }
         });

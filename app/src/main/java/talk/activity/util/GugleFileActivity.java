@@ -47,7 +47,6 @@ public class GugleFileActivity extends Activity {
 	// 是否是升序
 	private boolean isAsc = true;
 	private SharedPreferences setting = null;
-	private String fileManagePath;
 	private String TEMP_BASE = null;
 	private int fileType;
 	private ImageButton mGoBackBtn;
@@ -58,7 +57,6 @@ public class GugleFileActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
 		init();
 		if (null == sdFile) {
 			GugleUtils.showMessage(GugleFileActivity.this, getString(R.string.no_sdcard));
@@ -113,9 +111,18 @@ public class GugleFileActivity extends Activity {
 		});
 	}
 
-	/**
-	 * 转到主目录
-	 */
+	private void initSetting(String basePath) {
+		if (null == setting) {
+			setting = getSharedPreferences(GUGLE_FILE_SET, MODE_PRIVATE);
+		}
+
+		if (-1 == setting.getInt(GF_SET_LIST_TYPE, -1)) {
+			SharedPreferences.Editor editor = setting.edit();
+			editor.putInt(GF_SET_LIST_TYPE, GugleConstants.SORT_BY_WORD);
+			editor.apply();
+		}
+	}
+
 	private void goHome() {
 		if (nowFolder.equalsIgnoreCase(GugleUtils.getSDFile().getAbsolutePath())) {
 			return;
@@ -128,26 +135,6 @@ public class GugleFileActivity extends Activity {
 		// 刷新列表
 		freshList(setting.getInt(GF_SET_LIST_TYPE, GugleConstants.SORT_BY_WORD));
 	}
-
-	/**
-	 * 压入元素，如果元素个数超过了规定的数量，则把最底层的元素弹出，再压入
-	 */
-	private void pushData(String data)
-	{
-		folderStack.push(data);
-	}
-
-	/**
-	 * 取得堆栈元素，当取到最后一层时，直接返回根目录
-	 */
-	private String popData() {
-		if (folderStack.isEmpty()) {
-			return null;
-		}
-
-		return folderStack.pop();
-	}
-
 
 	private void freshList(int sortType) {
 		List<File> fileList = GugleUtils.getSortedFiles(new File(nowFolder), sortType, isAsc);
@@ -190,8 +177,7 @@ public class GugleFileActivity extends Activity {
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)
-	{
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
 		// 返回键按下时，返回刚才操作的目录，如果已經到了最後一層，則按再次退出
 		if (keyCode == KeyEvent.KEYCODE_BACK)
@@ -233,18 +219,6 @@ public class GugleFileActivity extends Activity {
 	 * 初始化程序配置
 	 * </pre>
 	 */
-	private void initSetting(String basePath)
-	{
-		if (null == setting) {
-			setting = getSharedPreferences(GUGLE_FILE_SET, MODE_PRIVATE);
-		}
-
-		if (-1 == setting.getInt(GF_SET_LIST_TYPE, -1)) {
-			SharedPreferences.Editor editor = setting.edit();
-			editor.putInt(GF_SET_LIST_TYPE, GugleConstants.SORT_BY_WORD);
-			editor.apply();
-		}
-	}
 
 
 	/**
@@ -268,6 +242,7 @@ public class GugleFileActivity extends Activity {
 		}else {
 			Intent intent = new Intent();
 			intent.putExtra("filePath",absolutePath);
+			Log.d("GugleFileActivity", absolutePath);
 			setResult(2, intent);
 			finish();
 
@@ -296,7 +271,6 @@ public class GugleFileActivity extends Activity {
 		}
 	}
 
-
 	@Override
 	protected void onDestroy() {
 		listItem.clear();
@@ -305,6 +279,16 @@ public class GugleFileActivity extends Activity {
 		folderStack = null;
 		setting = null;
 		super.onDestroy();
+	}
+
+	private void pushData(String data) {
+		folderStack.push(data);
+	}
+	private String popData() {
+		if (folderStack.isEmpty()) {
+			return null;
+		}
+		return folderStack.pop();
 	}
 
 	public String getNowFolder() {

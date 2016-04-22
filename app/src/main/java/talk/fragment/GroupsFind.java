@@ -1,5 +1,6 @@
 package talk.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -10,11 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.heshixiyang.ovetalk.R;
-import com.loopj.android.http.RequestParams;
 
 import talk.Globle.GlobleData;
 import talk.TalkApplication;
-import talk.http.SendMessage;
+import talk.service.HttpIntentService;
 import talk.util.DialogUtil;
 
 public class GroupsFind extends Fragment {
@@ -44,17 +44,18 @@ public class GroupsFind extends Fragment {
                     DialogUtil.showToast(mApplication, "你还没输入小组号呢");
                     return;
                 }
-                sendMessage(GlobleData.join);
+                startHttpService();
             }
         });
         return mView;
     }
-    private void sendMessage(String url){
-        RequestParams requestParams=new RequestParams();
-        requestParams.put(GlobleData.GROUP_ID, mGroupId);
-        requestParams.put(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
-        requestParams.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_REQUEST_JOIN_GROUP));
-
-        SendMessage.getSendMessage().post(mApplication,GlobleData.USER_REQUEST_JOIN_GROUP,url,requestParams,null);
+    private void startHttpService(){
+        Intent intent=new Intent(getActivity(), HttpIntentService.class);
+        intent.putExtra(GlobleData.URL,GlobleData.join);
+        intent.putExtra(GlobleData.GROUP_ID,Integer.parseInt(mGroupId));
+        intent.putExtra(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
+        intent.putExtra(GlobleData.MESSAGE_STATU, GlobleData.USER_REQUEST_JOIN_GROUP);
+        intent.putExtra(GlobleData.IS_MESSAGE, true);
+        getActivity().startService(intent);
     }
 }

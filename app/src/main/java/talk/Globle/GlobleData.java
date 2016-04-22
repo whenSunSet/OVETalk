@@ -8,10 +8,11 @@ public class GlobleData {
     public static final String CHAT_DB_NAME="chat.db";
     public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_MESSAGE = "message";
+    public static final String base="http://192.168.199.198:8088";
 
     public static final String baseUrl1 = "http://120.27.111.167:8088/OVE/server/group";
 
-    public static final String baseUrl11 = "http://192.168.199.198:8088/server/group";
+    public static final String baseUrl11 = "http://192.168.199.198:8088/ove/server/group";
 
     public static final String jpush_sendMessage= baseUrl11+"/jpush_sendMessage.do";
 
@@ -25,7 +26,7 @@ public class GlobleData {
 
     public static final String logoutGroup= baseUrl11+"/logoutGroup.do";
 
-    public static final String agreeOrDisAgree= "http://192.168.199.198:8088/group/master.do";
+    public static final String agreeOrDisAgree= "http://192.168.199.198:8088/ove/group/master.do";
 
     public static final String pushWork= baseUrl11+"/pushWork.do";
 
@@ -114,6 +115,12 @@ public class GlobleData {
     public static final String CLICK_NUMBER="clickNumber";
     public static final String TARGET="target";
     public static final String FILE="file";
+    public static final String FILE_NAME="fileName";
+    public static final String TASK="task";
+    public static final String HOMEWORK="homeWork";
+    public static final String URL="url";
+    public static final String CHAT_MESSAGE="chatMessage";
+    public static final String IS_MESSAGE="isMessage";
 
     public static final int GROUP_TASK_LIST=1;
     public static final int GROUP_MEMBER_LIST=2;
@@ -132,6 +139,7 @@ public class GlobleData {
     public static final int NET_ERROR=2;
     public static final int CAN_NOT_CONNECT_SERVER=3;
     public static final int NO_SUCH_GROUP=4;
+    public static final int YOU_IN_GROUP=5;
 
     public static final int SEND_FILE_FAIL=0;
     public static final int SEND_FILE_SUCCESS=1;
@@ -172,5 +180,16 @@ public class GlobleData {
     public static final int BROADCAST_MESSAGE=1;
     public static final int BROADCAST_TASK_MESSAGE=2;
     public static final int BROADCAST_HOMEWORK_MESSAGE=3;
+    public static final int BROADCAST_JOIN_GROUP=4;
+    public static final int BROADCAST_FLASH=5;
+
+    public static final int SAVE_GROUP_ICON=1;
+    public static final int SAVE_USER_ICON=2;
+
+    public static final int OPEN_PHOTO_ALBUM=0;
+
+    public static final int SELECT_STRING=0;
+    public static final int SELECT_JSON=1;
+    public static final int SELECT_BYTE=2;
 }
 

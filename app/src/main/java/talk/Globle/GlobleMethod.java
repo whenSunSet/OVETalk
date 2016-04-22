@@ -2,28 +2,26 @@ package talk.Globle;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.example.heshixiyang.ovetalk.BuildConfig;
-import com.loopj.android.http.RequestParams;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
+import com.android.volley.toolbox.Volley;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import java.util.Set;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 import talk.TalkApplication;
+import talk.activity.fragment.Groups;
 import talk.datebase.ClickTaskDB;
 import talk.datebase.ClickWorkDB;
 import talk.datebase.GroupDB;
@@ -42,23 +41,21 @@ import talk.datebase.JoinGroupDB;
 import talk.datebase.TaskDB;
 import talk.datebase.UserDB;
 import talk.datebase.WorkDB;
-import talk.http.AsyncHttpClientUtil;
-import talk.http.JsonAsyncHttpResponseHandler;
-import talk.model.ClickTask;
-import talk.model.ClickWork;
-import talk.model.Group;
+import talk.model.ChangeBean;
 import talk.model.JoinGroup;
 import talk.model.Message;
-import talk.model.Task;
 import talk.model.User;
-import talk.model.Work;
 import talk.util.DialogUtil;
 
 /**
  * Created by heshixiyang on 2016/1/22.
  */
 public class GlobleMethod {
-
+    public static void openPhotoAlbum(Activity activity,int type){
+        Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        activity.startActivityForResult(intent, type);
+    }
     public static void addUserToGroup(TalkApplication talkApplication,Message message,int statu){
         UserDB userDB=talkApplication.getUserDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
@@ -72,8 +69,8 @@ public class GlobleMethod {
         if (statu==GlobleData.ADD_MEMBER){
             User user=new User();
             user.setUserId(message.getUserId());
-            user.setUserIcon(savaImage(talkApplication, message));
-            user.setUserNick(message.getUserNickName());
+            user.setUserIcon(saveImage(talkApplication, message));
+            user.setUserNick(message.getUserNick());
             userDB.add(user);
         }
     }
@@ -86,14 +83,26 @@ public class GlobleMethod {
         ClickTaskDB clickTaskDB=talkApplication.getClickTaskDB();
         ClickWorkDB clickWorkDB=talkApplication.getClickWorkDB();
         JoinGroupDB joinGroupDB=talkApplication.getJoinGroupDB();
+        ChangeBean changeBean=((ChangeBean)(result.get("changeBean")));
 
-        groupDB.addGroup((Group)result.get("group"));
-        taskDB.adds((ArrayList<Task>) result.get("tasks"));
-        workDB.adds((ArrayList<Work>)result.get("works"));
-        userDB.adds((ArrayList<User>) result.get("users"));
-        clickTaskDB.adds((ArrayList<ClickTask>) result.get("clickTasks"));
-        clickWorkDB.adds((ArrayList<ClickWork>) result.get("clickWorks"));
-        joinGroupDB.adds((ArrayList<JoinGroup>) result.get("joinOrExitGroup"));
+        for (User user:changeBean.getUsers()){
+            user.setUserIcon("http");
+        }
+        groupDB.addGroup(changeBean.getGroup());
+        taskDB.adds(changeBean.getTasks());
+        workDB.adds(changeBean.getWorks());
+        userDB.adds(changeBean.getUsers());
+        clickTaskDB.adds(changeBean.getClickTasks());
+        clickWorkDB.adds(changeBean.getClickWorks());
+        joinGroupDB.adds(changeBean.getJoinGroups());
+        GlobleMethod.saveIcon(talkApplication,GlobleData.base+changeBean.getGroup().getGroupIcon(),String.valueOf(changeBean.getGroup().getGroupId()),GlobleData.SAVE_GROUP_ICON);
+        Groups.mIsFlash=true;
+//        taskDB.adds((ArrayList<TaskBean>) result.get("tasks"));
+//        workDB.adds((ArrayList<WorkBean>)result.get("works"));
+//        userDB.adds((ArrayList<User>) result.get("users"));
+//        clickTaskDB.adds((ArrayList<ClickTask>) result.get("clickTasks"));
+//        clickWorkDB.adds((ArrayList<ClickWork>) result.get("clickWorks"));
+//        joinGroupDB.adds((ArrayList<JoinGroup>) result.get("joinGroups"));
     }
 
     public static ArrayList<User> findUserFromGroup(JoinGroupDB joinGroupDB,UserDB userDB,int groupId){
@@ -182,7 +191,7 @@ public class GlobleMethod {
         }
         return list;
     }
-    public static String savaImage(TalkApplication talkApplication, final Message message){
+    public static String saveImage(TalkApplication talkApplication, final Message message){
         final String[] userIcon = new String[1];
         final File file = new File(getCacheDir(talkApplication)+"/"+message.getUserId()+".jpg");
         if (file.exists()){
@@ -212,7 +221,7 @@ public class GlobleMethod {
         return userIcon[0];
     }
 
-    public static Bitmap getImage(Uri uri,Activity activity){
+    public static Bitmap getImageFromUri(Uri uri, Activity activity){
         try {
             // 读取uri所在的图片
             return MediaStore.Images.Media.getBitmap(activity.getContentResolver(), uri);
@@ -224,7 +233,7 @@ public class GlobleMethod {
         }
     }
 
-    public static File saveIamge(Bitmap bitmap,String fileName){
+    public static File saveImage(Bitmap bitmap, String fileName){
         File image=new File(fileName);
         FileOutputStream fileOutputStream=null;
         if (image.exists()){
@@ -249,18 +258,78 @@ public class GlobleMethod {
         return image;
     }
 
+    public static void saveIcon(final TalkApplication talkApplication, String url, String iconId, int type){
+        final StringBuilder imageName=new StringBuilder(getCacheDir(talkApplication));
+        if (type==GlobleData.SAVE_GROUP_ICON){
+            imageName.append("/groupIcon"+iconId+".jpg");
+        }else if (type==GlobleData.SAVE_USER_ICON){
+            imageName.append("/userIcon"+iconId+".jpg");
+        }
+
+        RequestQueue requestQueue= Volley.newRequestQueue(talkApplication);
+        ImageRequest imageRequest=new ImageRequest(url,new Response.Listener<Bitmap>(){
+            @Override
+            public void onResponse(Bitmap bitmap) {
+                saveImage(bitmap,imageName.toString());
+            }
+        },60,60, Bitmap.Config.ARGB_8888,new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                DialogUtil.showToast(talkApplication,"图片下载失败");
+            }
+        });
+        requestQueue.add(imageRequest);
+    }
+
+    public static String getIconFromId(TalkApplication talkApplication,String id,int type){
+        if (type==GlobleData.SAVE_GROUP_ICON){
+            return getCacheDir(talkApplication)+"/groupIcon"+id+".jpg";
+        }
+        return getCacheDir(talkApplication)+"/userIcon"+id+".jpg";
+    }
     public static String changeFileName(TalkApplication mApplication,String newName){
         String oldName= GlobleMethod.getFileDir(mApplication)+"/"+"0.jpg";
         newName=GlobleMethod.getFileDir(mApplication)+"/"+newName+".jpg";
         File file=new File(oldName);   //指定文件名及路径
-        String filename=file.getAbsolutePath();
-        if(filename.indexOf(".")>=0) {
-            filename = filename.substring(0,filename.lastIndexOf("."));
-        }
         file.renameTo(new File(newName));   //改名
         return newName;
     }
 
+    public static String saveFile(TalkApplication talkApplication,File file, String fileName){
+        String oldFileName=file.getAbsolutePath();
+        String prefix =oldFileName.substring(oldFileName.lastIndexOf(".")+1);
+        String newFileName=getFileDir(talkApplication)+"/"+fileName+"."+prefix;
+        BufferedReader bufferedReader = null;
+        FileWriter fileWriter = null;
+        try {
+            String s;
+            bufferedReader=new BufferedReader(new FileReader(file));
+            fileWriter=new FileWriter(new File(newFileName));
+            while ((s=bufferedReader.readLine())!=null){
+                fileWriter.write(s);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (bufferedReader!=null){
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fileWriter!=null){
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return newFileName;
+    }
 
     public static void getFile(byte[] bfile, String filePath,String fileName) {
         BufferedOutputStream bos = null;
@@ -348,70 +417,7 @@ public class GlobleMethod {
 
 
 
-    public static boolean upLoadFile(Object object,String name,String url, final Context context) throws FileNotFoundException {
-        AsyncHttpClientUtil asyncHttpClientUtil=new AsyncHttpClientUtil();
-        RequestParams requestParams=new RequestParams();
-        JsonAsyncHttpResponseHandler jsonAsyncHttpResponseHandler =new JsonAsyncHttpResponseHandler(context,GlobleData.SEND_FILE);
-        if (name.equals("task")){
-            Task mTask=(Task)object;
-            File file=new File(mTask.getPath());
-            requestParams.put(GlobleData.ID_IN_GROUP, mTask.getIdInGroup());
-            requestParams.put(GlobleData.GROUP_ID,mTask.getGroupId());
-            requestParams.put(GlobleData.TYPE, mTask.getType());
-            requestParams.put(GlobleData.TARGET, mTask.getTarget());
-            requestParams.put(GlobleData.CLICK_NUMBER, mTask.getClickNum());
-            requestParams.put(GlobleData.DATE, mTask.getDate());
-            requestParams.put(GlobleData.FILE, file);
 
-            asyncHttpClientUtil.post(url, requestParams, jsonAsyncHttpResponseHandler);
-        }else if (name.equals("work")){
-            Work mWork=(Work)object;
-            File file=new File(mWork.getPath());
-
-            requestParams.put(GlobleData.GROUP_ID, mWork.getGroupId());
-            requestParams.put(GlobleData.MASTER, mWork.getMaster());
-            requestParams.put(GlobleData.TYPE, mWork.getType());
-            requestParams.put(GlobleData.ID_IN_TASK, mWork.getIdInTask());
-            requestParams.put(GlobleData.TASK_ID,mWork.getTaskId());
-            requestParams.put(GlobleData.CLICK_NUMBER, mWork.getClickNum());
-            requestParams.put(GlobleData.DATE, mWork.getDate());
-            requestParams.put(GlobleData.FILE, file);
-
-            asyncHttpClientUtil.post(url, requestParams, jsonAsyncHttpResponseHandler);
-        }
-        return jsonAsyncHttpResponseHandler.isSuccess();
-    }
-    public static void updateFile(Part[] parts,String url){
-
-        PostMethod filePost = new PostMethod(url);
-        if (BuildConfig.DEBUG) Log.d("GlobleMethod", url);
-        //  filePost.setRequestHeader("Content-type", "multipart/form-data");
-        try {
-            filePost.setRequestEntity(new MultipartRequestEntity(parts,filePost.getParams()));
-            HttpClient client = new HttpClient();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-            int status = client.executeMethod(filePost);
-            if (BuildConfig.DEBUG) Log.d("GlobleMethod", "status:" + status);
-            if (status == HttpStatus.SC_OK) {
-                System.out.println("上传成功");
-                // 上传成功
-                System.out.println(filePost.getResponseBodyAsString());
-            }
-            else {
-                System.out.println("上传失败");
-                if (BuildConfig.DEBUG)
-                    Log.d("GlobleMethod", "filePost.getResponseHeaders():" + filePost.getResponseHeaders());
-                if (BuildConfig.DEBUG) Log.d("GlobleMethod", filePost.getResponseBodyAsString());
-                // 上传失败
-            }
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        finally {
-            filePost.releaseConnection();
-        }
-    }
 
 //    public static String GetResult(String url, List<org.apache.http.NameValuePair> formparams) {
 //

@@ -10,15 +10,15 @@ import talk.TalkApplication;
 import talk.fragment.GroupTask;
 import talk.fragment.MemberFragment;
 import talk.model.Group;
-import talk.model.Task;
-import talk.model.Work;
+import talk.model.TaskBean;
+import talk.model.WorkBean;
 public class ListViewActivity extends AppCompatActivity {
     public TalkApplication mApplication;
     public Group mGroup;
     public Boolean mIsTaskClick =false;
     public Boolean mIsWorkClick =false;
-    public Task mTask;
-    public Work mWork;
+    public TaskBean mTaskBean;
+    public WorkBean mWorkBean;
     private Fragment mFragment;
     private FragmentTransaction mFragmentTransaction;
 
@@ -43,12 +43,12 @@ public class ListViewActivity extends AppCompatActivity {
                 break;
             case GlobleData.TASK_CLICK_MEMBER_LIST:
                 mIsTaskClick =true;
-                mTask=((Task)(mApplication.map.get("nowTask")));
+                mTaskBean =((TaskBean)(mApplication.map.get("nowTask")));
                 mFragment=new MemberFragment();
                 break;
             case GlobleData.WORK_CLICK_MEMBER_LIST:
                 mIsWorkClick =true;
-                mWork=((Work)(mApplication.map.get("nowWork")));
+                mWorkBean =((WorkBean)(mApplication.map.get("nowWork")));
                 mFragment=new MemberFragment();
                 break;
             default:

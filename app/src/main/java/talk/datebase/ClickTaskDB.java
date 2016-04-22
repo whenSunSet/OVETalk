@@ -93,7 +93,7 @@ public class ClickTaskDB {
         ArrayList<ClickTask> list=new ArrayList<>();
         Cursor c=mDb.rawQuery("select * from " + CLICK_TASK_TABLE_NAME+ " where " + GROUP_ID + "=? AND "+ ID_IN_GROUP + "=?",
                 new String []{String .valueOf(groupId),String.valueOf(taskId)});
-        while (c.moveToFirst()){
+        while (c.moveToNext()){
             list.add(makeClickTask(c));
         }
         c.close();

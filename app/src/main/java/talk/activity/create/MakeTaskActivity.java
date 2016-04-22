@@ -16,21 +16,22 @@ import android.widget.ListView;
 
 import com.example.heshixiyang.ovetalk.R;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
-import talk.model.Task;
+import talk.model.TaskBean;
 import talk.service.HttpIntentService;
 import talk.util.DialogUtil;
 
 public class MakeTaskActivity extends BasicActivity {
-    private Task mTask;
+    private TaskBean mTaskBean;
     private TalkApplication mApplication;
     private String[] mDate;
     private LinearLayout mAll;
@@ -58,7 +59,7 @@ public class MakeTaskActivity extends BasicActivity {
     public void init(){
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
-        mTask=new Task();
+        mTaskBean =new TaskBean();
         mGroupId =getIntent().getIntExtra(GlobleData.GROUP_ID, GlobleData.DEFAULT);
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
@@ -102,7 +103,7 @@ public class MakeTaskActivity extends BasicActivity {
                         if (TextUtils.isEmpty(mName.getText().toString())) {
                             DialogUtil.showToast(mApplication, "还没有输入任务的名字");
                         } else {
-                            mTask.setGroupId(Integer.parseInt(mName.getText().toString()));
+                            mTaskBean.setTarget(mName.getText().toString()+":");
                             stepThree();
                         }
                         break;
@@ -112,18 +113,17 @@ public class MakeTaskActivity extends BasicActivity {
                         } else {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
                             simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
-                            mTask.setDate(simpleDateFormat.format(new Date()));
-                            mTask.setTarget(mName.getText().toString());
-                            mTask.setClickNum(0);
-                            mTask.setGroupId(mGroupId);
-                            mTask.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupId) + 1);
+                            mTaskBean.setDate(simpleDateFormat.format(new Date()));
+                            mTaskBean.setTarget(mTaskBean.getTarget()+mConent.getText().toString());
+                            mTaskBean.setClickNum(0);
+                            mTaskBean.setGroupId(mGroupId);
 
-                            HashMap<String ,Object> pa=new HashMap<>();
-                            pa.put("task",mTask);
                             Intent startHttpService=new Intent(MakeTaskActivity.this, HttpIntentService.class);
-                            startHttpService.putExtra("url",GlobleData.sendTask);
-                            startHttpService.putExtra("messageStatu",GlobleData.SEND_TASK);
-                            startHttpService.putExtra("pa",pa);
+                            startHttpService.putExtra(GlobleData.TASK,mTaskBean);
+                            startHttpService.putExtra(GlobleData.URL,GlobleData.sendTask);
+                            startHttpService.putExtra(GlobleData.MESSAGE_STATU,GlobleData.SEND_TASK);
+                            startHttpService.putExtra(GlobleData.IS_MESSAGE,false);
+                            startHttpService.putExtra(GlobleData.GROUP_ID,mGroupId);
                             startService(startHttpService);
 
                             finish();
@@ -153,17 +153,17 @@ public class MakeTaskActivity extends BasicActivity {
                         mChoose.setText("选择发布文件类型：文档");
                         intent.putExtra("fileType", GlobleData.IS_TEXT);
                         startActivityForResult(intent, 2);
-                        mTask.setType(GlobleData.IS_TEXT);
+                        mTaskBean.setType(GlobleData.IS_TEXT);
                         break;
                     case "音频":
                         mChoose.setText("选择发布文件类型：音频");
                         intent.putExtra("fileType", GlobleData.IS_MUSIC);
                         startActivityForResult(intent, 2);
-                        mTask.setType(GlobleData.IS_MUSIC);
+                        mTaskBean.setType(GlobleData.IS_MUSIC);
                         break;
                     default:
                         mChoose.setText("选择发布文件类型：视频");
-                        mTask.setType(GlobleData.IS_VIDEO);
+                        mTaskBean.setType(GlobleData.IS_VIDEO);
                         break;
                 }
                 mItem.startAnimation(mAnimationPullBack);
@@ -233,7 +233,10 @@ public class MakeTaskActivity extends BasicActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
             case 2:
-                mTask.setPath(data.getStringExtra("filePath"));
+                File file=new File(data.getStringExtra("filePath"));
+                mTaskBean.setIdInGroup(mApplication.getTaskDB().getGroupTaskNum(mGroupId) + 1);
+                String fileName=mGroupId+"_"+mTaskBean.getIdInGroup();
+                mTaskBean.setPath(GlobleMethod.saveFile(mApplication,file,fileName));
                 break;
             default:
                 break;

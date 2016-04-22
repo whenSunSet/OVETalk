@@ -14,19 +14,16 @@ import android.widget.ListView;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 import talk.Globle.GlobleData;
-import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.supers.BasicActivity;
 import talk.activity.util.GugleFileActivity;
 import talk.activity.util.ListViewActivity;
-import talk.model.Work;
+import talk.model.WorkBean;
 import talk.service.HttpIntentService;
 
 public class MakeHomeWorkActivity extends BasicActivity {
@@ -34,7 +31,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
     private Button mNextStep;
     private int mNowStep =GlobleData.STEP_ONE;
 
-    private Work mWork;
+    private WorkBean mWorkBean;
     private TalkApplication mApplication;
     private String[] mDate;
     private LinearLayout mAll;
@@ -58,8 +55,8 @@ public class MakeHomeWorkActivity extends BasicActivity {
     public void init(){
         mApplication=(TalkApplication)getApplication();
         mDate= new String[]{"文档", "音频", "视频"};
-        mWork=new Work();
-        mWork.setGroupId(getIntent().getIntExtra("groupId",-999));
+        mWorkBean =new WorkBean();
+        mWorkBean.setGroupId(getIntent().getIntExtra("groupId",-999));
 
         mAnimationExpand = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
         mAnimationPullBack= new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
@@ -97,17 +94,17 @@ public class MakeHomeWorkActivity extends BasicActivity {
                     case GlobleData.STEP_TWO:
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("", Locale.SIMPLIFIED_CHINESE);
                         simpleDateFormat.applyPattern("yyyy年MM月dd日HH时mm分ss秒");
-                        mWork.setDate(simpleDateFormat.format(new Date()));
-                        mWork.setMaster(mApplication.getSpUtil().getUserId());
-                        mWork.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWork.getGroupId(), mWork.getTaskId()) + 1);
-                        mWork.setClickNum(0);
+                        mWorkBean.setDate(simpleDateFormat.format(new Date()));
+                        mWorkBean.setMaster(mApplication.getSpUtil().getUserId());
+                        mWorkBean.setIdInTask(mApplication.getWorkDB().getTaskWorkNum(mWorkBean.getGroupId(), mWorkBean.getTaskId()) + 1);
+                        mWorkBean.setClickNum(0);
 
-                        HashMap<String ,Object> pa=new HashMap<>();
-                        pa.put("work",mWork);
                         Intent startHttpService=new Intent(MakeHomeWorkActivity.this, HttpIntentService.class);
-                        startHttpService.putExtra("url",GlobleData.pushWork);
-                        startHttpService.putExtra("messageStatu",GlobleData.SEND_HOMEWORK);
-                        startHttpService.putExtra("pa",pa);
+                        startHttpService.putExtra(GlobleData.URL,GlobleData.pushWork);
+                        startHttpService.putExtra(GlobleData.MESSAGE_STATU,GlobleData.SEND_HOMEWORK);
+                        startHttpService.putExtra(GlobleData.HOMEWORK,mWorkBean);
+                        startHttpService.putExtra(GlobleData.IS_MESSAGE,false);
+                        startHttpService.putExtra(GlobleData.GROUP_ID,mWorkBean.getGroupId());
                         startService(startHttpService);
 
                         finish();
@@ -135,17 +132,17 @@ public class MakeHomeWorkActivity extends BasicActivity {
                         mChooseType.setText("选择发布文件类型：文档");
                         intent.putExtra("fileType", GlobleData.IS_TEXT);
                         startActivityForResult(intent, GlobleData.CHOOSE_FILE);
-                        mWork.setType(GlobleData.IS_TEXT);
+                        mWorkBean.setType(GlobleData.IS_TEXT);
                         break;
                     case "音频":
                         mChooseType.setText("选择发布文件类型：音频");
                         intent.putExtra("fileType", GlobleData.IS_MUSIC);
                         startActivityForResult(intent, GlobleData.CHOOSE_FILE);
-                        mWork.setType(GlobleData.IS_MUSIC);
+                        mWorkBean.setType(GlobleData.IS_MUSIC);
                         break;
                     default:
                         mChooseType.setText("选择发布文件类型：视频");
-                        mWork.setType(GlobleData.IS_VIDEO);
+                        mWorkBean.setType(GlobleData.IS_VIDEO);
                         break;
                 }
                 mItem.startAnimation(mAnimationPullBack);
@@ -182,7 +179,7 @@ public class MakeHomeWorkActivity extends BasicActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MakeHomeWorkActivity.this, ListViewActivity.class);
                 intent.putExtra("which", GlobleData.GROUP_TASK_LIST);
-                intent.putExtra(GlobleData.GROUP_ID, mWork.getGroupId());
+                intent.putExtra(GlobleData.GROUP_ID, mWorkBean.getGroupId());
                 startActivityForResult(intent, GlobleData.CHOOSE_TASK);
             }
         });
@@ -206,24 +203,13 @@ public class MakeHomeWorkActivity extends BasicActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
             case GlobleData.CHOOSE_TASK:
-                mWork.setTaskId(data.getIntExtra("idInGroup", GlobleData.DEFAULT));
+                mWorkBean.setTaskId(data.getIntExtra("idInGroup", GlobleData.DEFAULT));
                 break;
             case GlobleData.CHOOSE_FILE:
-                mWork.setPath(data.getStringExtra("filePath"));
+                mWorkBean.setPath(data.getStringExtra("filePath"));
                 break;
             default:
                 break;
         }
-    }
-
-    private boolean sendHomeWork(String url,TalkApplication talkApplication){
-
-        boolean isSuccess=false;
-        try {
-            isSuccess= GlobleMethod.upLoadFile(mWork,"work",url,talkApplication);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return isSuccess;
     }
 }

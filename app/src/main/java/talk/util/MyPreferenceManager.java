@@ -23,7 +23,6 @@ public class MyPreferenceManager {
     public static void init(Context context){
         if (null == mSharedPreferences) {
             mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context) ;
-
         }
     }
 

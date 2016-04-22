@@ -16,22 +16,16 @@ import talk.Globle.GlobleData;
 import talk.TalkApplication;
 import talk.activity.util.ListViewActivity;
 import talk.activity.util.NotePadActivity;
-import talk.model.Task;
-import talk.model.Work;
+import talk.model.TaskBean;
+import talk.model.WorkBean;
 import talk.service.HttpIntentService;
 
 public class TaskAndWorkActivity extends Activity {
     private TalkApplication mApplication;
-    private ImageView mType;
-    private TextView mName;
-    private TextView mTime;
-    private TextView mTarget;
     private Button mButton;
-    private Button mCliclMember;
-    private Task mTask;
-    private Work mWork;
+    private TaskBean mTaskBean;
+    private WorkBean mWorkBean;
     private int which;
-
     private int groupId;
     private boolean disDownLoad =true;
     @Override
@@ -44,41 +38,43 @@ public class TaskAndWorkActivity extends Activity {
 
     public void init(){
         mApplication=(TalkApplication)getApplication();
-        mTask=((Task)(mApplication.map.get("nowTask")));
-        mWork=((Work)(mApplication.map.get("nowWork")));
-
-        mType = (ImageView) findViewById(R.id.type);
-        mName=(TextView)findViewById(R.id.name);
-        mTime=(TextView)findViewById(R.id.time);
-        mTarget=(TextView)findViewById(R.id.target);
+        mTaskBean =((TaskBean)(mApplication.map.get("nowTask")));
+        mWorkBean =((WorkBean)(mApplication.map.get("nowWork")));
         mButton=(Button)findViewById(R.id.button);
-        mCliclMember=(Button)findViewById(R.id.clickMember);
 
+        ImageView mType = (ImageView) findViewById(R.id.type);
+        TextView mName = (TextView) findViewById(R.id.name);
+        TextView mTime = (TextView) findViewById(R.id.time);
+        TextView mTarget = (TextView) findViewById(R.id.target);
+        Button mCliclMember = (Button) findViewById(R.id.clickMember);
         String p = null;
         int t = 0;
         int w = 0;
+
         switch (which){
             case GlobleData.IS_TASK:
-                mTarget.setText(mTask.getTarget());
-                mName.setText(mTask.getGroupId());
-                mTime.setText(mTask.getDate());
-                p=mTask.getPath();
-                t=mTask.getType();
+                mTarget.setText(mTaskBean.getTarget());
+                mName.setText(mTaskBean.getGroupId());
+                mTime.setText(mTaskBean.getDate());
+                p= mTaskBean.getPath();
+                t= mTaskBean.getType();
                 w=GlobleData.TASK_CLICK_MEMBER_LIST;
-                groupId =mTask.getGroupId();
+                groupId = mTaskBean.getGroupId();
                 break;
             case GlobleData.IS_WORK:
                 mTarget.setVisibility(View.GONE);
-                mName.setText(mWork.getMaster());
-                mTime.setText(mWork.getDate());
-                p=mWork.getPath();
-                t=mWork.getType();
+                mName.setText(mWorkBean.getMaster());
+                mTime.setText(mWorkBean.getDate());
+                p= mWorkBean.getPath();
+                t= mWorkBean.getType();
                 w=GlobleData.WORK_CLICK_MEMBER_LIST;
-                groupId =mWork.getGroupId();
+                groupId = mWorkBean.getGroupId();
                 break;
         }
+
         final String[] path = {p};
         final int type=t;
+
         disDownLoad =p.contains("http");
         switch (type){
             case GlobleData.IS_TEXT:
@@ -109,6 +105,7 @@ public class TaskAndWorkActivity extends Activity {
             default:
                 break;
         }
+
         final int whichMember=w;
         mCliclMember.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,24 +154,24 @@ public class TaskAndWorkActivity extends Activity {
     private void downLoadFile(){
         Intent startHttpService=new Intent(TaskAndWorkActivity.this, HttpIntentService.class);
         HashMap<String,Object> pa=new HashMap<>();
-        int messageStatu;
         String url;
+        int messageStatu;
 
         if (which==GlobleData.IS_TASK){
             messageStatu=GlobleData.GET_TASK_FILE;
             url=GlobleData.getTaskFile;
-            pa.put(GlobleData.GROUP_ID,mTask.getGroupId());
-            pa.put(GlobleData.ID_IN_GROUP,mTask.getIdInGroup());
-            pa.put(GlobleData.USER_NAME,mApplication.getGroupDB().getGroup(mTask.getGroupId()).getGroupId());
-            pa.put("type",mTask.getType());
+            pa.put(GlobleData.GROUP_ID, mTaskBean.getGroupId());
+            pa.put(GlobleData.ID_IN_GROUP, mTaskBean.getIdInGroup());
+            pa.put(GlobleData.USER_NAME,mApplication.getGroupDB().getGroup(mTaskBean.getGroupId()).getGroupId());
+            pa.put("type", mTaskBean.getType());
         }else {
             messageStatu=GlobleData.GET_HOMEWORK_FILE;
             url=GlobleData.getWorkFile;
-            pa.put(GlobleData.GROUP_ID,mWork.getGroupId());
-            pa.put(GlobleData.ID_IN_TASK,mWork.getIdInTask());
-            pa.put(GlobleData.USER_NAME,mWork.getMaster());
-            pa.put(GlobleData.TASK_ID,mWork.getTaskId());
-            pa.put("type",mWork.getType());
+            pa.put(GlobleData.GROUP_ID, mWorkBean.getGroupId());
+            pa.put(GlobleData.ID_IN_TASK, mWorkBean.getIdInTask());
+            pa.put(GlobleData.USER_NAME, mWorkBean.getMaster());
+            pa.put(GlobleData.TASK_ID, mWorkBean.getTaskId());
+            pa.put("type", mWorkBean.getType());
         }
 
         startHttpService.putExtra("pa", pa);

@@ -7,15 +7,15 @@ import android.os.Parcelable;
 /**
  * Created by asus on 2015/12/16.
  */
-public class Task implements Parcelable {
+public class TaskBean implements Parcelable {
 
-    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
-        public Task createFromParcel(Parcel source) {
-            return new Task(source);
+    public static final Parcelable.Creator<TaskBean> CREATOR = new Parcelable.Creator<TaskBean>() {
+        public TaskBean createFromParcel(Parcel source) {
+            return new TaskBean(source);
         }
 
-        public Task[] newArray(int size) {
-            return new Task[size];
+        public TaskBean[] newArray(int size) {
+            return new TaskBean[size];
         }
     };
     //0 ：文档，1：音频，2：视频
@@ -27,15 +27,19 @@ public class Task implements Parcelable {
     private int clickNum;
     private String date;
 
-    public Task() {
+    public TaskBean() {
     }
 
-    public Task(String path, int idInGroup) {
+    public TaskBean(int idInGroup) {
+        this.idInGroup = idInGroup;
+    }
+
+    public TaskBean(String path, int idInGroup) {
         this.path = path;
         this.idInGroup = idInGroup;
     }
 
-    public Task(int groupId, int idInGroup, int type, String path, String target, int clickNum, String date) {
+    public TaskBean(int groupId, int idInGroup, int type, String path, String target, int clickNum, String date) {
         this.groupId = groupId;
         this.idInGroup = idInGroup;
         this.type = type;
@@ -45,7 +49,7 @@ public class Task implements Parcelable {
         this.date = date;
     }
 
-    protected Task(Parcel in) {
+    protected TaskBean(Parcel in) {
         this.groupId = in.readInt();
         this.idInGroup = in.readInt();
         this.type = in.readInt();

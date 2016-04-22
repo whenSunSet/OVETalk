@@ -18,6 +18,7 @@ public class User {
         this.userIcon = userIcon;
     }
 
+
     public String getUserId() {
         return userId;
     }

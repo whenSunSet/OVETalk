@@ -96,7 +96,7 @@ public class ClickWorkDB {
         ArrayList<ClickWork> list=new ArrayList<>();
         Cursor c=mDb.rawQuery("select * from " + CLICK_WORK_TABLE_NAME + " where " + ID_IN_TASK + "=? AND " + GROUP_ID + "=? AND "+TASK_ID + "=?",
                 new String []{String.valueOf(workId),String .valueOf(groupId),String.valueOf(taskId)});
-        while (c.moveToFirst()){
+        while (c.moveToNext()){
             list.add(makeClickWork(c));
         }
 

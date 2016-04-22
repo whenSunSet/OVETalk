@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,6 +62,7 @@ public class GroupMessageDB {
      *
      */
     public void add(int groupId, GroupChatMessage groupChatMessage) {
+        Log.d("GroupMessageDB", "add:groupId:" + groupId);
         createTable(groupId);
         int isComing = groupChatMessage.isComing() ? 1 : 0;
         int readed = groupChatMessage.isReaded() ? 1 : 0;
@@ -93,7 +95,10 @@ public class GroupMessageDB {
      *
      查找指定的最后n条消息记录
      */
-    public ArrayList<GroupChatMessage> find(int groupId, int currentPage, int pageSize) {
+    public ArrayList<GroupChatMessage> find(int groupId, int currentPage, int pageSize,Boolean isMax) {
+        if (getMessageNum(groupId)<=(pageSize-currentPage)){
+            isMax=true;
+        }
         ArrayList<GroupChatMessage> groupChatMessages = new ArrayList<>();
         createTable(groupId);
         int start = (currentPage - 1) * pageSize;
@@ -252,10 +257,11 @@ public class GroupMessageDB {
      通过日期和group找到指定的信息，改变其中的值
      */
     public void update(String which,String what,String time,int groupId){
+        Log.d("GroupMessageDB", "update:groupId:" + groupId);
         createTable(groupId);
         mDb.execSQL("update  _" + groupId + " set "
                 + which+ " = "+what +" where "
-                + COL_DATE + " ='"+time+"'", new Object[]{});
+                + COL_DATE + " =\""+time+"\"", new Object[]{});
 
     }
 

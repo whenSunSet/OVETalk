@@ -6,30 +6,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.loopj.android.http.RequestParams;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 import cn.jpush.android.api.JPushInterface;
 import talk.Globle.GlobleData;
 import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
-import talk.activity.fragment.GroupAll;
-import talk.activity.fragment.Groups;
-import talk.http.SendMessage;
 import talk.model.GroupChatMessage;
 import talk.model.Message;
-import talk.model.Task;
-import talk.model.Work;
+import talk.model.TaskBean;
+import talk.model.WorkBean;
+import talk.service.HttpIntentService;
 import talk.util.MyPreferenceManager;
 
 /**
  * Created by asus on 2015/11/5.o
  */
-public class JpushReceiver extends BroadcastReceiver implements SendMessage.SendMessageListener{
+public class JpushReceiver extends BroadcastReceiver {
     private TalkApplication mApplication;
     private MyPreferenceManager myPreferenceManager;
     private int messageStatu;
@@ -56,17 +50,12 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
                 groupId=message.getGroupId();
                 makeAndSaveMessage(message, groupId);
 
-                RequestParams requestParams =new RequestParams();
-                requestParams.put(GlobleData.GROUP_ID, String .valueOf(message.getGroupId()));
                 if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
                     message.setMessage("我发布了一个任务，快来看看吧");
-                    requestParams.put(GlobleData.ID_IN_GROUP, message.getUserIcon());
-                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_TASK_INFO,"",requestParams,this);
+                    startHttpService("",GlobleData.GET_TASK_INFO,message.getGroupId(),new TaskBean(Integer.parseInt(message.getUserIcon())),null);
                 }else if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
                     message.setMessage("我发布了一个作业，快来看看吧");
-                    requestParams.put(GlobleData.TASK_ID, message.getUserIcon());
-                    requestParams.put(GlobleData.ID_IN_TASK, message.getUserNickName());
-                    SendMessage.getSendMessage().post(mApplication,GlobleData.GET_HOMEWORK_INFO,"",requestParams,this);
+                    startHttpService("",GlobleData.GET_HOMEWORK_INFO,message.getGroupId(),null,new WorkBean(Integer.parseInt(message.getUserIcon()),Integer.parseInt(message.getUserNick())));
                 }
             }else {
                 //以下都是把信息发在SystemGroup里面的
@@ -98,9 +87,7 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
                         break;
                     case GlobleData.AGREE_USER_TO_GROUP:
                         msg="同意你加入";
-                        RequestParams requestParams =new RequestParams();
-                        SendMessage.getSendMessage().post(mApplication, GlobleData.AGREE_USER_TO_GROUP, GlobleData.getGroupInfo, requestParams,this);
-
+                        startHttpService(GlobleData.getGroupInfo,GlobleData.GET_GROUP_INFO,message.getGroupId(),null,null);
                         //groupID:被同意加入的群组，date：服务器发送的时间，nickname：同意加入的群主的昵称，username：同意加入的群主的id，userIcon：群组的icon，message：群的nickname
                         break;
                     case GlobleData.DISAGREE_USER_TO_GROUP:
@@ -143,16 +130,18 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
         }
         return message;
     }
-    private void sendMessageToActivity(Context context, Message message) {
-        if (GroupAll.mIsForeground || Groups.mIsForeground) {
-            Bundle bundle=new Bundle();
-            bundle.putParcelable(GlobleData.KEY_MESSAGE,message);
-            Intent msgIntent = new Intent(GlobleData.MESSAGE_RECEIVED_ACTION);
-            msgIntent.putExtra("type",GlobleData.BROADCAST_MESSAGE);
-            msgIntent.putExtras(bundle);
-            context.sendBroadcast(msgIntent);
-        }
+
+    private void startHttpService(String url,int messageStatu,int groupId,TaskBean taskBean,WorkBean workBean){
+        Intent startHttpService=new Intent(mApplication, HttpIntentService.class);
+        startHttpService.putExtra(GlobleData.IS_MESSAGE,false);
+        startHttpService.putExtra(GlobleData.GROUP_ID,groupId);
+        startHttpService.putExtra(GlobleData.URL,url);
+        startHttpService.putExtra(GlobleData.MESSAGE_STATU,messageStatu);
+        startHttpService.putExtra(GlobleData.TASK,taskBean);
+        startHttpService.putExtra(GlobleData.HOMEWORK,workBean);
+        mApplication.startService(startHttpService);
     }
+
     private void makeAndSaveMessage(Message message, int groupId){
         makeAndSaveMessage("", message, groupId, "");
     }
@@ -162,7 +151,7 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
         if (TextUtils.isEmpty(s)){
             msg=message.getMessage();
         }else {
-            msg=message.getUserNickName()+"("+message.getUserId()+")"+ s+"："+groupNickName+"("+message.getGroupId()+")群";
+            msg=message.getUserNick()+"("+message.getUserId()+")"+ s+"："+groupNickName+"("+message.getGroupId()+")群";
         }
         message.setMessage(msg);
         GroupChatMessage groupChatMessage=new GroupChatMessage(
@@ -172,29 +161,19 @@ public class JpushReceiver extends BroadcastReceiver implements SendMessage.Send
                 message.getUserIcon(),
                 false,
                 message.getDate(),
-                message.getUserNickName(),
+                message.getUserNick(),
                 message.getUserId(),
                 message.getMessageImage(),
                 message.getMessageStatu());
         mApplication.getGroupMessageDB().add(groupId, groupChatMessage);
     }
 
-    @Override
-    public void success(HashMap<String, Object> result) {
-        if (result==null){
-            return;
-        }
-        switch (messageStatu){
-            case GlobleData.MASTER_SEND_TASK_MESSAGE:
-                mApplication.getTaskDB().add((Task)result.get("task"));
-                break;
-            case GlobleData.USER_SEND_HOMEWORK_MESSAGE:
-                mApplication.getWorkDB().add((Work)result.get("work"));
-                break;
-            case GlobleData.AGREE_USER_TO_GROUP:
-                GlobleMethod.addMeToGroup(mApplication,result);
-                GlobleMethod.setTag(mApplication);
-                break;
-        }
+    private void sendMessageToActivity(Context context, Message message) {
+        Bundle bundle=new Bundle();
+        bundle.putParcelable(GlobleData.KEY_MESSAGE,message);
+        Intent msgIntent = new Intent(GlobleData.MESSAGE_RECEIVED_ACTION);
+        msgIntent.putExtra("type",GlobleData.BROADCAST_MESSAGE);
+        msgIntent.putExtras(bundle);
+        context.sendBroadcast(msgIntent);
     }
 }

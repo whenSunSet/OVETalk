@@ -19,7 +19,7 @@ import talk.activity.fragment.Groups;
 import talk.adapter.WorkAdapter;
 import talk.model.ClickTask;
 import talk.model.Group;
-import talk.model.Work;
+import talk.model.WorkBean;
 import talk.http.SendMessage;
 
 /**
@@ -41,8 +41,8 @@ public class GroupWork extends BasicFragment implements SendMessage.SendMessageL
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Work work = (Work) (mListView.getItemAtPosition(position));
-                mApplication.map.put("nowWork", work);
+                WorkBean workBean = (WorkBean) (mListView.getItemAtPosition(position));
+                mApplication.map.put("nowWork", workBean);
                 Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
                 intent.putExtra("which", GlobleData.IS_WORK);
                 getActivity().startActivity(intent);

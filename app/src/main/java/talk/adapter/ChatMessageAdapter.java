@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -43,45 +44,37 @@ public class ChatMessageAdapter extends BaseAdapter{
 
 		if (convertView == null) {
 			viewHolder = new ViewHolder();
-			if (chatMessage.isComing()) {
-				convertView = mInflater.inflate(R.layout.main_chat_from_msg,
+				convertView = mInflater.inflate(R.layout.main_chat_msg,
 						parent, false);
-				viewHolder.createDate = (TextView) convertView
+
+				viewHolder.fromCreateDate = (TextView) convertView
 						.findViewById(R.id.chat_from_createDate);
-				viewHolder.content = (TextView) convertView
+				viewHolder.fromContent = (TextView) convertView
 						.findViewById(R.id.chat_from_content);
-				viewHolder.nickname = (TextView) convertView
+				viewHolder.fromUserNickname = (TextView) convertView
 						.findViewById(R.id.chat_from_name);
-				viewHolder.img=(NetworkImageView)convertView
-						.findViewById(R.id.img);
-				viewHolder.agree=(Button)convertView
-						.findViewById(R.id.agree);
-				viewHolder.disagree=(Button)convertView
-						.findViewById(R.id.disagree);
-				viewHolder.userIcon=(ImageView)convertView
+				viewHolder.fromImg=(NetworkImageView)convertView
+						.findViewById(R.id.from_img);
+				viewHolder.fromUserIcon=(ImageView)convertView
 						.findViewById(R.id.chat_from_icon);
 
-				convertView.setTag(viewHolder);
-
-				viewHolder.isFrom=true;
-			} else {
-				convertView = mInflater.inflate(R.layout.main_chat_send_msg,
-						null);
-				viewHolder.createDate = (TextView) convertView
+				viewHolder.sendCreateDate = (TextView) convertView
 						.findViewById(R.id.chat_send_createDate);
-				viewHolder.content = (TextView) convertView
+				viewHolder.sendContent= (TextView) convertView
 						.findViewById(R.id.chat_send_content);
-				viewHolder.nickname = (TextView) convertView
+				viewHolder.sendUserNickname = (TextView) convertView
 						.findViewById(R.id.chat_send_name);
-				viewHolder.img=(NetworkImageView)convertView
-						.findViewById(R.id.img);
-				viewHolder.userIcon=(ImageView)convertView
+				viewHolder.sendImg=(NetworkImageView)convertView
+						.findViewById(R.id.send_img);
+				viewHolder.sendUserIcon=(ImageView)convertView
 						.findViewById(R.id.chat_send_icon);
 
-				convertView.setTag(viewHolder);
+				viewHolder.agree=(Button) convertView.findViewById(R.id.agree);
+				viewHolder.disagree=(Button) convertView.findViewById(R.id.disagree);
 
-				viewHolder.isFrom=false;
-			}
+				viewHolder.send=(LinearLayout)convertView.findViewById(R.id.send);
+				viewHolder.from=(LinearLayout)convertView.findViewById(R.id.from);
+				convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
@@ -91,70 +84,123 @@ public class ChatMessageAdapter extends BaseAdapter{
 	}
 	public void setView(ViewHolder viewHolder,GroupChatMessage chatMessage, final int position){
 		int messageStatu=chatMessage.getMessageStatu();
+		boolean isComing=chatMessage.isComing();
 
-		// 初始化View状态
-		if (viewHolder.isFrom){
-			viewHolder.disagree.setVisibility(View.GONE);
-			viewHolder.agree.setVisibility(View.GONE);
-		}
-		viewHolder.img.setVisibility(View.GONE);
-		viewHolder.createDate.setText(chatMessage.getDateStr());
+		viewHolder.disagree.setVisibility(View.GONE);
+		viewHolder.agree.setVisibility(View.GONE);
+		viewHolder.fromImg.setVisibility(View.GONE);
+		viewHolder.sendImg.setVisibility(View.GONE);
+		viewHolder.fromCreateDate.setText(chatMessage.getDateStr());
 
-		//根据消息的不同 放置nickname 消息1-3和MASTER_PUT_TASK USER_SEND_HOMEWORK_MESSAGE 只能在普通群组里使用
-		if (messageStatu<=3||messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE ||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
+		if (isComing){
+			viewHolder.send.setVisibility(View.GONE);
+			viewHolder.from.setVisibility(View.VISIBLE);
+
+			if (messageStatu==GlobleData.COMMOM_MESSAGE
+					||messageStatu==GlobleData.EMOJI_MESSAGE
+					||messageStatu==GlobleData.PHOTO_MESSAGE
+					||messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE
+					||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
+				if (mUser.getUserIcon()==null){
+					mUser.setUserIcon("htt");
+				}
+				if (mUser.getUserIcon().contains("http")){
+					//没有获取成功的userIcon
+					viewHolder.fromUserIcon.setImageResource(R.drawable.icon);
+				}else {
+					viewHolder.fromUserIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
+				}
+				viewHolder.fromUserNickname.setText(mUser.getUserNick());
+				if (messageStatu==GlobleData.PHOTO_MESSAGE){
+					setImage(viewHolder,chatMessage);
+				}else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE
+						||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
+					setImage(viewHolder,chatMessage);
+					viewHolder.fromContent.setText(chatMessage.getMessage());
+					viewHolder.fromImg.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
+						}
+					});
+				}else {
+					viewHolder.fromContent.setText(chatMessage.getMessage());
+				}
+			}else {
+				//其他的消息只能在system里使用
+				viewHolder.fromUserNickname.setText("OVEsystem");
+				viewHolder.fromUserIcon.setImageResource(R.drawable.icon);
+				viewHolder.fromContent.setText(chatMessage.getMessage());
+
+				if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
+					//如果是请求加入群里 则显示两个按钮
+					viewHolder.agree.setVisibility(View.VISIBLE);
+					viewHolder.disagree.setVisibility(View.VISIBLE);
+
+					viewHolder.agree.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
+						}
+					});
+					viewHolder.disagree.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
+						}
+					});
+				}
+			}
+		}else {
+			viewHolder.send.setVisibility(View.VISIBLE);
+			viewHolder.from.setVisibility(View.GONE);
+
+			if (mUser.getUserIcon()==null){
+				mUser.setUserIcon("htt");
+			}
 			if (mUser.getUserIcon().contains("http")){
 				//没有获取成功的userIcon
-				viewHolder.userIcon.setImageResource(R.drawable.icon);
+				viewHolder.sendUserIcon.setImageResource(R.drawable.icon);
 			}else {
-				viewHolder.userIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
+				viewHolder.sendUserIcon.setImageBitmap(BitmapFactory.decodeFile(mUser.getUserIcon()));
 			}
-			viewHolder.nickname.setText(mUser.getUserNick());
-		}else {
-			//其他的消息只能在system里使用
-			viewHolder.nickname.setText("OVEsystem");
-			viewHolder.userIcon.setImageResource(R.drawable.icon);
-		}
+			viewHolder.sendUserNickname.setText(mUser.getUserNick());
 
-		if (messageStatu==GlobleData.PHOTO_MESSAGE){
-			setImage(viewHolder,chatMessage);
-		}else if (messageStatu==GlobleData.EMOJI_MESSAGE){
-
-		}else {
-			//将消息内容显示
-			viewHolder.content.setText(chatMessage.getMessage());
-			if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE ||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
-				//如果是 任务或者作品 将附上一张图
+			if (messageStatu==GlobleData.PHOTO_MESSAGE){
+				viewHolder.sendImg.setVisibility(View.VISIBLE);
+				viewHolder.sendImg.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
+			}else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE
+					||messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
 				setImage(viewHolder,chatMessage);
-				viewHolder.img.setOnClickListener(new View.OnClickListener() {
+				viewHolder.sendContent.setText(chatMessage.getMessage());
+				viewHolder.sendImg.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
 					}
 				});
-			}else if (messageStatu==GlobleData.USER_REQUEST_JOIN_GROUP){
-				//如果是请求加入群里 则显示两个按钮
-				viewHolder.agree.setVisibility(View.VISIBLE);
-				viewHolder.disagree.setVisibility(View.VISIBLE);
-				viewHolder.agree.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
-					}
-				});
-				viewHolder.disagree.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						mAdapterClickListener.onClick((GroupChatMessage)getItem(position));
-					}
-				});
+			}else {
+				viewHolder.sendContent.setText(chatMessage.getMessage());
 			}
 		}
 	}
 	private void setImage(ViewHolder viewHolder,GroupChatMessage chatMessage){
-		viewHolder.img.setVisibility(View.VISIBLE);
-		viewHolder.img.setDefaultImageResId(R.drawable.icon);
-		viewHolder.img.setErrorImageResId(R.drawable.error);
-		viewHolder.img.setImageUrl(chatMessage.getMessageImage(), new ImageLoader(Volley.newRequestQueue(mApplication), new ImageLoader.ImageCache() {
+		NetworkImageView networkImageView=null;
+		if (chatMessage.isComing()){
+			viewHolder.fromImg.setVisibility(View.VISIBLE);
+			networkImageView=viewHolder.fromImg;
+		}else {
+			viewHolder.sendImg.setVisibility(View.VISIBLE);
+			networkImageView=viewHolder.sendImg;
+		}
+		if (mUser.getUserId().equals(mApplication.getGroupDB().getGroup(chatMessage.getGroupId()).getGroupMaster())){
+			//是群主
+			networkImageView.setImageBitmap(BitmapFactory.decodeFile(chatMessage.getMessageImage()));
+			return;
+		}
+		networkImageView.setDefaultImageResId(R.drawable.icon);
+		networkImageView.setErrorImageResId(R.drawable.error);
+		networkImageView.setImageUrl(chatMessage.getMessageImage(), new ImageLoader(Volley.newRequestQueue(mApplication), new ImageLoader.ImageCache() {
 			@Override
 			public Bitmap getBitmap(String s) {
 				return null;
@@ -191,14 +237,23 @@ public class ChatMessageAdapter extends BaseAdapter{
 
 
 	private class ViewHolder {
-		public TextView createDate;
-		public TextView nickname;
-		public TextView content;
-		public NetworkImageView img;
+		public TextView fromCreateDate;
+		public TextView fromUserNickname;
+		public TextView fromContent;
+		public NetworkImageView fromImg;
+		public ImageView fromUserIcon;
+
+		public TextView sendCreateDate;
+		public TextView sendUserNickname;
+		public TextView sendContent;
+		public NetworkImageView sendImg;
+		public ImageView sendUserIcon;
+
 		public Button agree;
 		public Button disagree;
-		public boolean isFrom;
-		public ImageView userIcon;
+
+		public LinearLayout send;
+		public LinearLayout from;
 	}
 
 	public interface AdapterClickListener {

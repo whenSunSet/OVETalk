@@ -1,12 +1,15 @@
 package talk.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * Created by asus on 2015/11/3.
  */
-public class GroupChatMessage {
+public class GroupChatMessage implements Parcelable {
     private String message;
     private boolean isComing;
     private Date date;
@@ -143,4 +146,51 @@ public class GroupChatMessage {
                 "messageImage='" + messageImage + '\n' +
                 "messageStatu='" + messageStatu + '\n' ;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.message);
+        dest.writeByte(isComing ? (byte) 1 : (byte) 0);
+        dest.writeLong(date != null ? date.getTime() : -1);
+        dest.writeInt(this.groupId);
+        dest.writeString(this.userIcon);
+        dest.writeByte(readed ? (byte) 1 : (byte) 0);
+        dest.writeString(this.dateStr);
+        dest.writeString(this.userNickName);
+        dest.writeString(this.userId);
+        dest.writeString(this.messageImage);
+        dest.writeInt(this.messageStatu);
+    }
+
+    protected GroupChatMessage(Parcel in) {
+        this.message = in.readString();
+        this.isComing = in.readByte() != 0;
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate);
+        this.groupId = in.readInt();
+        this.userIcon = in.readString();
+        this.readed = in.readByte() != 0;
+        this.dateStr = in.readString();
+        this.userNickName = in.readString();
+        this.userId = in.readString();
+        this.messageImage = in.readString();
+        this.messageStatu = in.readInt();
+    }
+
+    public static final Parcelable.Creator<GroupChatMessage> CREATOR = new Parcelable.Creator<GroupChatMessage>() {
+        @Override
+        public GroupChatMessage createFromParcel(Parcel source) {
+            return new GroupChatMessage(source);
+        }
+
+        @Override
+        public GroupChatMessage[] newArray(int size) {
+            return new GroupChatMessage[size];
+        }
+    };
 }

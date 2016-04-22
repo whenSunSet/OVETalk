@@ -18,14 +18,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.heshixiyang.ovetalk.R;
-import com.loopj.android.http.RequestParams;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.HashMap;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.activity.aboutGroup.TaskAndWorkActivity;
 import talk.activity.create.MakeHomeWorkActivity;
 import talk.activity.fragment.GroupAll;
@@ -34,56 +31,55 @@ import talk.adapter.ChatMessageAdapter;
 import talk.datebase.GroupMessageDB;
 import talk.model.Group;
 import talk.model.GroupChatMessage;
-import talk.model.Task;
-import talk.model.Work;
+import talk.model.TaskBean;
+import talk.model.WorkBean;
+import talk.service.HttpIntentService;
 import talk.util.DialogUtil;
-import talk.util.MyPreferenceManager;
-import talk.http.SendMessage;
 
-public class GroupChatting extends BasicFragment implements ChatMessageAdapter.AdapterClickListener,SendMessage.SendMessageListener{
-    private ImageView mMore;
+public class GroupChatting extends BasicFragment implements ChatMessageAdapter.AdapterClickListener{
     private Button mMsgSend;
     private EditText mMsgInput;
+    private ImageView mMore;
     private ImageView mHomeWork;
     private ImageView mPicture;
     private ImageView mEmoji;
     public LinearLayout mContainer;
 
     private int mGroupId;
-    private GroupAll mActivity;
+    private Group mGroup;
+    private String myId;
+    private String messageImage;
 
-    //发送消息的数据
-    private MyPreferenceManager mPreferenceManager;
+    private GroupAll mActivity;
     private GroupMessageDB mGroupMessageDB;
 
-    private Group mGroup;
-    private Work mWork;
-    private Task mTask;
     //---------------------mContan是否可见
-    private Boolean isVisble=false;
+    private Boolean isVisable =false;
 
-    //---------------------每次加载消息10个为阶梯
     private int mMessageNum=10;
-    private int mMessageMax;
 
     private GroupChatMessage mChatMessage;
-    private int mMessageStatu;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mIsChattingFragment =true;
         init(inflater);
-        initEvent();
+        if (!mActivity.mIsSystemGroup){
+            initPrintEvent();
+            initMoreEvent();
+        }
         return view;
     }
+
     @Override
     protected void init(final LayoutInflater inflater) {
         super.init(inflater);
         mActivity=(GroupAll)getActivity();
-        mPreferenceManager = mApplication.getSpUtil();
         mGroupMessageDB=mActivity.mGroupMessageDB;
 
         mGroup = mActivity.mGroup;
         mGroupId = mGroup.getGroupId();
+        myId=mApplication.getSpUtil().getUserId();
 
         if (mActivity.mIsSystemGroup){
             //如果是SystemGroup的话就把输入框去掉
@@ -103,10 +99,9 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
 
         //将本group的所有消息设置为已读
         mGroupMessageDB.updateReaded(mGroupId);
-        mMessageMax=mGroupMessageDB.getMessageNum(mGroup.getGroupId());
 
         // 获取10条聊天记录
-        mData = mGroupMessageDB.find(mGroup.getGroupId(), 1, mMessageNum);
+        mData = mGroupMessageDB.find(mGroup.getGroupId(), 1, mMessageNum,null);
         mAdapter = new ChatMessageAdapter(mApplication, mData,this);
         mListView.setAdapter(mAdapter);
         mListView.setSelection(mData.size() - 1);
@@ -115,15 +110,7 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
 
     }
 
-    private void initEvent(){
-        if (!mActivity.mIsSystemGroup){
-            initPrintEvent();
-            initMoreEvent();
-        }
-    }
-
     private void initMoreEvent(){
-
         mEmoji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,7 +121,8 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         mPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                GlobleMethod.openPhotoAlbum(getActivity(),GlobleData.OPEN_PHOTO_ALBUM);
+                startHttpService(GlobleData.jpush_sendImage,GlobleData.PHOTO_MESSAGE,mGroupId,myId,messageImage,null,null,null);
             }
         });
 
@@ -158,12 +146,12 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
                     im.hideSoftInputFromWindow(mMsgInput.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
                 }
 
-                if (!isVisble) {
+                if (!isVisable) {
                     mContainer.setVisibility(View.VISIBLE);
-                    isVisble = true;
+                    isVisable = true;
                 } else {
                     mContainer.setVisibility(View.GONE);
-                    isVisble = false;
+                    isVisable = false;
                 }
 
             }
@@ -175,20 +163,18 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
                 String msg = mMsgInput.getText().toString();
                 if (TextUtils.isEmpty(msg)) {
                     DialogUtil.showToast(mApplication, "你还没输入文字呢");
-                    return;
+                }else {
+                    startHttpService(GlobleData.jpush_sendMessage,GlobleData.COMMOM_MESSAGE,mGroupId,myId,null,msg,null,null);
+                    mMsgInput.setText("");
                 }
-                //添加消息到数据库里并开启线程发送数据
-
-                addAndSendMessage(msg, "0", 1, null, null);
-                mMsgInput.setText("");
             }
         });
+
         //当输入框中有文字的时候，让send显示，否则则让mMore显示
         mMsgInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!TextUtils.isEmpty(s)) {
@@ -200,7 +186,6 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
                     mMsgSend.setVisibility(View.GONE);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -217,59 +202,67 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     @Override
     public void onClick(final GroupChatMessage chatMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        mMessageStatu=chatMessage.getMessageStatu();
         mChatMessage=chatMessage;
         if (chatMessage.getMessageStatu() == GlobleData.USER_REQUEST_JOIN_GROUP) {
-            mGroup.setGroupId(GlobleData.SYSTEM);
+            mGroup.setGroupId(mChatMessage.getGroupId());
             builder.setMessage("加入请求");
             builder.setPositiveButton("同意加入", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    sendMessage(GlobleData.agreeOrDisAgree, null, null, GlobleData.AGREE_USER_TO_GROUP, null, null);
+                    startHttpService(GlobleData.agreeOrDisAgree,GlobleData.AGREE_USER_TO_GROUP,chatMessage.getGroupId(),chatMessage.getUserId(),null,null,null,null);
                 }
             });
             builder.setNegativeButton("不同意加入", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    sendMessage(GlobleData.agreeOrDisAgree, null, null, GlobleData.DISAGREE_USER_TO_GROUP, null, null);
+                    startHttpService(GlobleData.agreeOrDisAgree,GlobleData.DISAGREE_USER_TO_GROUP,chatMessage.getGroupId(),chatMessage.getUserId(),null,null,null,null);
                 }
             });
             builder.create().show();
         } else if (chatMessage.getMessageStatu() == GlobleData.MASTER_SEND_TASK_MESSAGE) {
-            mTask = mApplication.getTaskDB().getTask(chatMessage.getGroupId(), Integer.parseInt(chatMessage.getUserIcon()));
-            mApplication.map.put("nowTask", mTask);
+            TaskBean mTaskBean = mApplication.getTaskDB().getTask(chatMessage.getGroupId(), Integer.parseInt(chatMessage.getUserIcon()));
+            mApplication.map.put("nowTask", mTaskBean);
             Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
             intent.putExtra("which", GlobleData.IS_TASK);
             startActivity(intent);
         } else if (chatMessage.getMessageStatu() == GlobleData.USER_SEND_HOMEWORK_MESSAGE) {
-            mWork = mApplication.getWorkDB().getWork(chatMessage.getGroupId(),
+            WorkBean mWorkBean = mApplication.getWorkDB().getWork(chatMessage.getGroupId(),
                     Integer.parseInt(chatMessage.getUserIcon()),
                     Integer.parseInt(chatMessage.getUserNickName()));
-            mApplication.map.put("nowWork", mWork);
+            mApplication.map.put("nowWork", mWorkBean);
             Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
             intent.putExtra("which", GlobleData.IS_WORK);
             startActivity(intent);
         }
     }
 
-    public void addAndSendMessage(String message, String messageImage, int messageStatu, Work work, Task task) {
-        mMessageStatu=messageStatu;
-        mChatMessage = makeMessage(mGroupId,message, messageImage,mPreferenceManager.getUserId(),mMessageStatu, task, work);
-        HashMap<String,Object> result=null;
-        if (mChatMessage.getMessageStatu()==GlobleData.COMMOM_MESSAGE||mChatMessage.getMessageStatu()==GlobleData.EMOJI_MESSAGE){
-            sendMessage(GlobleData.jpush_sendMessage, mChatMessage.getMessage(), null,mMessageStatu, null, null);
-        }else if (mChatMessage.getMessageStatu()==GlobleData.PHOTO_MESSAGE){
-            sendMessage(GlobleData.jpush_sendImage, null, mChatMessage.getMessageImage(),mMessageStatu, null, null);
-        }else if (mChatMessage.getMessageStatu()==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
-            sendMessage(GlobleData.sendWorkMessage,mChatMessage.getMessage(), mChatMessage.getMessageImage(),mMessageStatu, work, null);
-        }else if (mChatMessage.getMessageStatu()==GlobleData.MASTER_SEND_TASK_MESSAGE){
-            sendMessage(GlobleData.sendTaskMessage,mChatMessage.getMessage(), null, mMessageStatu, null, task);
+    public void startHttpService(String url,int messageStatu,int groupId,String userName,String messageImage,String message,WorkBean workBean,TaskBean taskBean){
+        GroupChatMessage chatMessage=makeMessage(groupId,message,messageImage,userName,messageStatu,taskBean,workBean);
+        Intent intent=new Intent(getActivity(), HttpIntentService.class);
+        intent.putExtra(GlobleData.MESSAGE_STATU,messageStatu);
+        intent.putExtra(GlobleData.GROUP_ID,groupId);
+        intent.putExtra(GlobleData.USER_NAME,userName);
+        intent.putExtra(GlobleData.URL,url);
+        intent.putExtra(GlobleData.IS_MESSAGE,true);
+        intent.putExtra(GlobleData.CHAT_MESSAGE,chatMessage);
+
+        if (messageStatu==GlobleData.COMMOM_MESSAGE||messageStatu==GlobleData.EMOJI_MESSAGE){
+            intent.putExtra(GlobleData.MESSAGE,message);
+        }else {
+            intent.putExtra(GlobleData.MESSAGE_IMAGE,messageImage);
+            if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
+                intent.putExtra(GlobleData.TASK,taskBean);
+            }else if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
+                intent.putExtra(GlobleData.HOMEWORK,workBean);
+            }
         }
-        makeResult(result, mMessageStatu, mChatMessage);
+
+        getActivity().startService(intent);
         flash(GlobleData.SELECT_LAST, mChatMessage);
     }
+
     //组装chatMessage
-    public GroupChatMessage makeMessage(int groupId,String message, String messageImage,String you, int messageStatu, Task task, Work work){
+    public GroupChatMessage makeMessage(int groupId, String message, String messageImage, String you, int messageStatu, TaskBean taskBean, WorkBean workBean){
         GroupChatMessage chatMessage = new GroupChatMessage();
         chatMessage.setIsComing(false);
         chatMessage.setDate(new Date());
@@ -280,65 +273,27 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         chatMessage.setMessageImage(messageImage);
         chatMessage.setMessageStatu(messageStatu);
         if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
-            chatMessage.setUserIcon(String.valueOf(work.getTaskId()));
-            chatMessage.setUserNickName(String.valueOf(work.getIdInTask()));
+            chatMessage.setUserIcon(String.valueOf(workBean.getTaskId()));
+            chatMessage.setUserNickName(String.valueOf(workBean.getIdInTask()));
+            chatMessage.setMessageImage(mGroup.getGroupIcon());
         }else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
-            chatMessage.setUserIcon(String.valueOf(task.getIdInGroup()));
+            chatMessage.setUserIcon(String.valueOf(taskBean.getIdInGroup()));
+            chatMessage.setMessageImage(mGroup.getGroupIcon());
         }
         return chatMessage;
-    }
-    /**
-     *  如果是普通消息 message=消息 isIamge=空 type=空
-     *  如果是 Emoji消息 !
-     *  如果是 photo消息 message=空 isIamge=图片路径 type=空!
-     *  如果是 homeWork消息 message=消息 isImage=无 work
-     *  如果是 Task消息 message=消息 isImage=无 task
-     *  如果是 同意某人加入 无
-     *  如果是 不同意某人加入 无
-     */
-    private void sendMessage(String url, String message, String isImage, int messageStatu, Work work, Task task){
-        RequestParams requestParams=new RequestParams();
-        requestParams.put(GlobleData.GROUP_ID, mGroup.getGroupId());
-        requestParams.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
-        requestParams.put(GlobleData.MESSAGE_STATU, messageStatu);
-
-        if (messageStatu==GlobleData.PHOTO_MESSAGE){
-            try {
-                requestParams.put(GlobleData.FILE,new File(isImage));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
-        }else{
-            if (messageStatu==GlobleData.USER_SEND_HOMEWORK_MESSAGE){
-                requestParams.put(GlobleData.TASK_ID, work.getTaskId());
-                requestParams.put(GlobleData.ID_IN_TASK, work.getIdInTask());
-
-            }else if (messageStatu==GlobleData.MASTER_SEND_TASK_MESSAGE){
-                requestParams.put(GlobleData.ID_IN_GROUP, task.getIdInGroup());
-            }
-            requestParams.put(GlobleData.MESSAGE, message);
-            SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
-        }
     }
 
     @Override
     protected void upData() {
         super.upData();
-        if (mMessageMax==0){
-            mMessageMax=mGroupMessageDB.getMessageNum(mGroup.getGroupId());
-        }
         mMessageNum+=10;
-        if (mMessageNum>=mMessageMax){
-            mMessageNum=mMessageMax;
-            DialogUtil.showToast(getActivity(), "消息已经显示完毕");
-        }
         flash(GlobleData.SELECT_FRIST,null);
     }
 
     public void flash(int which,GroupChatMessage chatMessage) {
+        Boolean isMax=false;
         if (chatMessage==null){
-            mData=mGroupMessageDB.find(mGroup.getGroupId(), 1,mMessageNum);
+            mData=mGroupMessageDB.find(mGroup.getGroupId(), 1,mMessageNum,isMax);
             mAdapter=new ChatMessageAdapter(mApplication,mData,this);
             mListView.setAdapter(mAdapter);
         }else {
@@ -349,34 +304,12 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
         GroupAll.mIsChattingFlash =false;
         super.flash(which);
         Groups.mIsFlash =true;
-    }
 
-
-    @Override
-    public void success(HashMap<String, Object> result) {
-        makeResult(result, mMessageStatu, mChatMessage);
-    }
-
-    private void makeResult(HashMap<String,Object> result,int messageStatu,GroupChatMessage chatMessage){
-        if (result==null){
-            return;
-        }
-        if ((int)result.get("res")==GlobleData.SEND_MESSAGE_SUCCESS){
-            switch (messageStatu){
-                case GlobleData.AGREE_USER_TO_GROUP:
-                    mGroupMessageDB.update(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.YOU_AGREE_TO_JOIN_GROUP), chatMessage.getDateStr(), mGroupId);
-                    mGroupMessageDB.update(GlobleData.MESSAGE, "您已经同意" + chatMessage.getUserNickName() + "加入了" + chatMessage.getGroupId(), chatMessage.getDateStr(), mGroupId);
-                    break;
-                case GlobleData.DISAGREE_USER_TO_GROUP:
-                    mGroupMessageDB.update(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.YOU_DISAGREE_TO_JOIN_GROUP), chatMessage.getDateStr(), mGroupId);
-                    mGroupMessageDB.update(GlobleData.MESSAGE, "您已经拒绝了" + chatMessage.getUserNickName() + "加入" + chatMessage.getGroupId(), chatMessage.getDateStr(), mGroupId);
-                    break;
-                default:
-                    mGroupMessageDB.add(mGroup.getGroupId(), chatMessage);
-                    break;
-            }
+        if (isMax){
+            DialogUtil.showToast(mActivity,"消息已经显示完毕");
         }
     }
+
     public ImageView getmMore() {
         return mMore;
     }
@@ -384,4 +317,8 @@ public class GroupChatting extends BasicFragment implements ChatMessageAdapter.A
     public Button getmMsgSend() {
         return mMsgSend;
     }
-   }
+
+    public void setMessageImage(String messageImage) {
+        this.messageImage = messageImage;
+    }
+}

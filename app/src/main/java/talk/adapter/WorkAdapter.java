@@ -12,12 +12,12 @@ import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
 
-import talk.model.Work;
+import talk.model.WorkBean;
 
 /**
  * Created by heshixiyang on 2016/2/22.
  */
-public class WorkAdapter extends ArrayAdapter<Work> {
+public class WorkAdapter extends ArrayAdapter<WorkBean> {
     private int mResource;
     private View mView;
     public WorkAdapter(Context context, int mResource, List objects) {
@@ -27,7 +27,7 @@ public class WorkAdapter extends ArrayAdapter<Work> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Work work=getItem(position);
+        WorkBean workBean =getItem(position);
         ViewHolder holder;
         if (convertView==null){
             mView = LayoutInflater.from(getContext()).inflate(mResource,null);
@@ -41,16 +41,16 @@ public class WorkAdapter extends ArrayAdapter<Work> {
             holder=(ViewHolder)convertView.getTag();
         }
 
-        setResource(work,holder);
+        setResource(workBean,holder);
 
         return mView;
     }
 
-    private void setResource(Work work,ViewHolder holder){
-        holder.date.setText(work.getDate());
-        holder.name.setText("master name:"+work.getMaster());
+    private void setResource(WorkBean workBean, ViewHolder holder){
+        holder.date.setText(workBean.getDate());
+        holder.name.setText("master name:"+ workBean.getMaster());
 
-        switch (work.getType()){
+        switch (workBean.getType()){
             case 0:
                 holder.typeImage.setImageResource(R.drawable.text);
                 break;

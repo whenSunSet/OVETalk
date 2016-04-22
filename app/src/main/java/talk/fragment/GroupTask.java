@@ -21,7 +21,7 @@ import talk.activity.util.ListViewActivity;
 import talk.adapter.TaskAdapter;
 import talk.model.ClickTask;
 import talk.model.Group;
-import talk.model.Task;
+import talk.model.TaskBean;
 import talk.http.SendMessage;
 
 /**
@@ -52,14 +52,14 @@ public class GroupTask extends BasicFragment implements SendMessage.SendMessageL
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task = (Task) (mListView.getItemAtPosition(position));
+                TaskBean taskBean = (TaskBean) (mListView.getItemAtPosition(position));
                 if (mWhichActivity == 1) {
-                    mApplication.map.put("nowTask", task);
+                    mApplication.map.put("nowTask", taskBean);
                     Intent intent = new Intent(getActivity(), TaskAndWorkActivity.class);
                     intent.putExtra("which", GlobleData.IS_TASK);
                     getActivity().startActivity(intent);
                 } else if (mWhichActivity == 2) {
-                    ((ListViewActivity) getActivity()).finish(task.getGroupId(), task.getIdInGroup());
+                    ((ListViewActivity) getActivity()).finish(taskBean.getGroupId(), taskBean.getIdInGroup());
                 }
             }
         });

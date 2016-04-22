@@ -88,7 +88,7 @@ public class JoinGroupDB {
         Cursor c=mDb.rawQuery("select "+USER_ID+" from " + JOIN_TABLE_NAME + " where "+ GROUP_Id +"=?",
                 new String []{String .valueOf(groupId)});
         ArrayList<String> list=new ArrayList<>();
-        if (c.moveToFirst()){
+        while (c.moveToNext()){
             list.add(c.getString(c.getColumnIndex(USER_ID)));
         }
 

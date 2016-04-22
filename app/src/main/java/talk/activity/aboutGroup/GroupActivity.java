@@ -9,25 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heshixiyang.ovetalk.R;
-import com.loopj.android.http.RequestParams;
-
-import java.util.HashMap;
 
 import talk.Globle.GlobleData;
-import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.util.ListViewActivity;
 import talk.model.Group;
-import talk.http.SendMessage;
+import talk.service.HttpIntentService;
 
 
-public class GroupActivity extends Activity implements SendMessage.SendMessageListener{
-    private ImageView mGroupIcon;
-    private TextView mGroupId;
-    private TextView mGroupNickName;
-    private Button mExit;
-    private Button mDestroy;
-    private Button mMember;
+public class GroupActivity extends Activity {
     private Group mGroup;
     private TalkApplication mApplication;
 
@@ -47,27 +37,28 @@ public class GroupActivity extends Activity implements SendMessage.SendMessageLi
         mApplication=(TalkApplication)getApplication();
         mGroup=getIntent().getParcelableExtra("group");
 
-        mGroupIcon=(ImageView)findViewById(R.id.icon);
-        mGroupId =(TextView)findViewById(R.id.groupId);
-        mGroupNickName=(TextView)findViewById(R.id.groupNick);
-        mExit=(Button)findViewById(R.id.exit);
-        mDestroy=(Button)findViewById(R.id.destroy);
-        mMember=(Button)findViewById(R.id.member);
+        ImageView mGroupIcon = (ImageView) findViewById(R.id.icon);
+        TextView mGroupId = (TextView) findViewById(R.id.groupId);
+        TextView mGroupNickName = (TextView) findViewById(R.id.groupNick);
+        Button mExit = (Button) findViewById(R.id.exit);
+        Button mDestroy = (Button) findViewById(R.id.destroy);
+        Button mMember = (Button) findViewById(R.id.member);
 
 //      mGroupIcon.setImageResource(Integer.parseInt(mGroup.getGroupIcon()));
-        mGroupId.setText(mGroup.getGroupId());
+        mGroupId.setText(String.valueOf(mGroup.getGroupId()));
         mGroupNickName.setText(mGroup.getGroupNick());
+
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage(GlobleData.joinOrExitGroup,GlobleData.USER_OUT_GROUP);
+                startHttpService(GlobleData.joinOrExitGroup,GlobleData.USER_OUT_GROUP);
             }
         });
 
         mDestroy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage(GlobleData.logoutGroup,GlobleData.USER_CANCEL_GROUP);
+                startHttpService(GlobleData.logoutGroup,GlobleData.USER_CANCEL_GROUP);
             }
         });
 
@@ -88,25 +79,15 @@ public class GroupActivity extends Activity implements SendMessage.SendMessageLi
             mExit.setVisibility(View.VISIBLE);
             mDestroy.setVisibility(View.GONE);
         }
-
     }
 
-    private void sendMessage(String url, final int messageStatu){
-        RequestParams requestParams=new RequestParams();
-        requestParams.put(GlobleData.GROUP_ID,String.valueOf(mGroup.getGroupId()));
-        requestParams.put(GlobleData.USER_NAME, mApplication.getSpUtil().getUserId());
-        requestParams.put(GlobleData.MESSAGE_STATU, String.valueOf(GlobleData.USER_OUT_GROUP));
-
-        SendMessage.getSendMessage().post(mApplication,messageStatu,url,requestParams,this);
-    }
-
-    @Override
-    public void success(HashMap<String, Object> result) {
-        if (result==null){
-            return;
-        }
-        if ((int)result.get("res")==GlobleData.SEND_MESSAGE_SUCCESS){
-            GlobleMethod.deleteGroup(mApplication,mGroup.getGroupId(),mApplication.getSpUtil().getUserId());
-        }
+    private void startHttpService(String url, final int messageStatu){
+        Intent intent=new Intent(GroupActivity.this, HttpIntentService.class);
+        intent.putExtra(GlobleData.URL,url);
+        intent.putExtra(GlobleData.GROUP_ID,mGroup.getGroupId());
+        intent.putExtra(GlobleData.USER_NAME,mApplication.getSpUtil().getUserId());
+        intent.putExtra(GlobleData.MESSAGE_STATU, messageStatu);
+        intent.putExtra(GlobleData.IS_MESSAGE, true);
+        startService(intent);
     }
 }

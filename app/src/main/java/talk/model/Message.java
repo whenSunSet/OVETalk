@@ -25,24 +25,24 @@ public class Message implements Parcelable {
     private String messageImage;
 
     private String userIcon;
-    private String userNickName;
+    private String userNick;
 
     public Message() {}
 
-    public Message(String userId, int groupId, String date, String userIcon, String userNickName) {
+    public Message(String userId, int groupId, String date, String userIcon, String userNick) {
         this.userId = userId;
         this.groupId = groupId;
         this.date = date;
         this.userIcon = userIcon;
-        this.userNickName = userNickName;
+        this.userNick = userNick;
     }
 
-    public Message(String message, int groupId, String userIcon, String date, String userNickName, String userId, int messageStatu, String messageImage) {
+    public Message(String message, int groupId, String userIcon, String date, String userNick, String userId, int messageStatu, String messageImage) {
         this.message = message;
         this.groupId = groupId;
         this.userIcon = userIcon;
         this.date = date;
-        this.userNickName = userNickName;
+        this.userNick = userNick;
         this.userId = userId;
         this.messageStatu = messageStatu;
         this.messageImage = messageImage;
@@ -53,7 +53,7 @@ public class Message implements Parcelable {
         this.groupId = in.readInt();
         this.userIcon = in.readString();
         this.date = in.readString();
-        this.userNickName = in.readString();
+        this.userNick = in.readString();
         this.userId = in.readString();
         this.messageStatu = in.readInt();
         this.messageImage = in.readString();
@@ -91,12 +91,12 @@ public class Message implements Parcelable {
         this.date = date;
     }
 
-    public String getUserNickName() {
-        return userNickName;
+    public String getUserNick() {
+        return userNick;
     }
 
-    public void setUserNickName(String userNickName) {
-        this.userNickName = userNickName;
+    public void setUserNick(String userNick) {
+        this.userNick = userNick;
     }
 
     public String getUserId() {
@@ -134,7 +134,7 @@ public class Message implements Parcelable {
         dest.writeInt(this.groupId);
         dest.writeString(this.userIcon);
         dest.writeString(this.date);
-        dest.writeString(this.userNickName);
+        dest.writeString(this.userNick);
         dest.writeString(this.userId);
         dest.writeInt(this.messageStatu);
         dest.writeString(this.messageImage);

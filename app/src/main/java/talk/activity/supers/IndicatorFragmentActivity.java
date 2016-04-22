@@ -204,7 +204,7 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     protected void flashFragment(){
         if (mCurrentTab==0&&(this instanceof GroupAll)){
             ((GroupChatting)mTabs.get(mCurrentTab).fragment).flash(GlobleData.SELECT_LAST, null);
-        }else {
+        }else if (!(mCurrentTab==1&&(this instanceof Groups))){
             ((BasicFragment)mTabs.get(mCurrentTab).fragment).flash(GlobleData.SELECT_FRIST);
         }
     }
@@ -212,7 +212,7 @@ public abstract class IndicatorFragmentActivity extends FragmentActivity impleme
     @Override
     protected void onStart() {
         super.onStart();
-        mIsForeground =false;
+        mIsForeground =true;
     }
 
     @Override

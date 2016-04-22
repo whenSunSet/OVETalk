@@ -13,12 +13,12 @@ import com.example.heshixiyang.ovetalk.R;
 
 import java.util.List;
 
-import talk.model.Task;
+import talk.model.TaskBean;
 
 /**
  * Created by asus on 2015/12/21.
  */
-public class TaskAdapter extends ArrayAdapter<Task> {
+public class TaskAdapter extends ArrayAdapter<TaskBean> {
     private int mResource;
     private View mView;
     public TaskAdapter(Context context, int mResource, List objects) {
@@ -28,7 +28,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Task task=getItem(position);
+        TaskBean taskBean =getItem(position);
         ViewHolder holder;
         if (convertView==null){
             mView = LayoutInflater.from(getContext()).inflate(mResource,null);
@@ -43,17 +43,17 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             holder=(ViewHolder)convertView.getTag();
         }
 
-        setResource(task,holder);
+        setResource(taskBean,holder);
 
         return mView;
     }
 
-    private void setResource(Task task,ViewHolder holder){
-        holder.date.setText(task.getDate());
-        holder.name.setText("master name:"+task.getGroupId());
-        holder.content.setText("target:"+task.getTarget());
+    private void setResource(TaskBean taskBean, ViewHolder holder){
+        holder.date.setText(taskBean.getDate());
+        holder.name.setText("master name:"+ taskBean.getGroupId());
+        holder.content.setText("target:"+ taskBean.getTarget());
 
-        switch (task.getType()){
+        switch (taskBean.getType()){
             case 0:
                 holder.typeImage.setImageResource(R.drawable.text);
                 break;

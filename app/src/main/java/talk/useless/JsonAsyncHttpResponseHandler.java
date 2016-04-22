@@ -1,6 +1,7 @@
-package talk.http;
+package talk.useless;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -25,11 +26,13 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
     }
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+        Log.d("JsonAsyncHttpResponseHa", "chengg");
         try {
             GlobleData.res=response.getInt("res");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         switch (statu){
             case GlobleData.USER_REQUEST_JOIN_GROUP:
                 if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
@@ -38,6 +41,8 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
                     DialogUtil.showToast(context,"加入请求发送成功");
                 }else if (GlobleData.res== GlobleData.NO_SUCH_GROUP){
                     DialogUtil.showToast(context,"对不起，没有该群组");
+                }else if (GlobleData.res==GlobleData.YOU_IN_GROUP){
+                    DialogUtil.showToast(context,"您已经在该群组中，请勿重复加入");
                 }
                 break;
             case GlobleData.USER_OUT_GROUP:
@@ -69,9 +74,7 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
                 }
                 break;
             case GlobleData.PHOTO_MESSAGE:
-                if (statusCode==200){
                     DialogUtil.showToast(context, "发送消息成功");
-                }
                 break;
             case GlobleData.CREATE_GROUP:
                 try {
@@ -82,17 +85,19 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (statusCode==200){
                     DialogUtil.showToast(context,"群组创建成功");
-                }
                 break;
             case GlobleData.SEND_HOMEWORK:
-                if (statusCode==200){
+                if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
+                    DialogUtil.showToast(context,"作业上传失败" );
+                }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
                     DialogUtil.showToast(context,"作业上传成功");
                 }
                 break;
             case GlobleData.SEND_TASK:
-                if (statusCode==200){
+                if (GlobleData.res== GlobleData.SEND_MESSAGE_FAIL){
+                    DialogUtil.showToast(context,"任务上传失败" );
+                }else if (GlobleData.res==GlobleData.SEND_MESSAGE_SUCCESS){
                     DialogUtil.showToast(context,"任务上传成功");
                 }
                 break;
@@ -107,7 +112,17 @@ public class JsonAsyncHttpResponseHandler extends JsonHttpResponseHandler{
     }
 
     @Override
+    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+        Log.d("JsonAsyncHttpResponseHa", "headers:" + headers);
+        Log.d("JsonAsyncHttpResponseHa", "throwable:" + throwable);
+        Log.d("JsonAsyncHttpResponseHa", "shib");
+    }
+
+    @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+        Log.d("JsonAsyncHttpResponseHa", "headers:" + headers);
+        Log.d("JsonAsyncHttpResponseHa", "throwable:" + throwable);
+        Log.d("JsonAsyncHttpResponseHa", "shib");
         DialogUtil.showToast(context,"无法连接服务器");
         isSuccess=false;
     }

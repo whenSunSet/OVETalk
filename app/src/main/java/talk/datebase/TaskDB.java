@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import talk.Globle.GlobleData;
-import talk.model.Task;
+import talk.model.TaskBean;
 
 public class TaskDB {
     public static final String TASK_TABLE_NAME="task";
@@ -39,15 +39,15 @@ public class TaskDB {
                 + "PRIMARY KEY (" + ID + "," + GROUP_Id + "))");
     }
 
-    public void adds(ArrayList<Task> list){
-        for (Task task:list){
-            add(task);
+    public void adds(ArrayList<TaskBean> list){
+        for (TaskBean taskBean :list){
+            add(taskBean);
         }
     }
 
-    public void add(Task task) {
-        if (getTask(task.getGroupId(),task.getIdInGroup())!=null){
-            update(task);
+    public void add(TaskBean taskBean) {
+        if (getTask(taskBean.getGroupId(), taskBean.getIdInGroup())!=null){
+            return;
         }
         mDb.execSQL("insert into " + TASK_TABLE_NAME + " ("
                         + ID + ","
@@ -58,13 +58,13 @@ public class TaskDB {
                         + PATH + ","
                         + CLICK_NUMBER + ") values(?,?,?,?,?,?,?)",
                 new Object[]{
-                        task.getIdInGroup(),
-                        task.getGroupId(),
-                        task.getTarget(),
-                        task.getType(),
-                        task.getDate(),
-                        task.getPath(),
-                        task.getClickNum()}
+                        taskBean.getIdInGroup(),
+                        taskBean.getGroupId(),
+                        taskBean.getTarget(),
+                        taskBean.getType(),
+                        taskBean.getDate(),
+                        taskBean.getPath(),
+                        taskBean.getClickNum()}
         );
     }
 
@@ -79,9 +79,9 @@ public class TaskDB {
                             groupId});
     }
 
-    public void update(Task task){
-        deltask(task.getGroupId(),task.getIdInGroup());
-        add(task);
+    public void update(TaskBean taskBean){
+        deltask(taskBean.getGroupId(), taskBean.getIdInGroup());
+        add(taskBean);
     }
 
     public void update(int clickNum,int idInGroup ,int groupId){
@@ -110,43 +110,43 @@ public class TaskDB {
                         idInGroup,
                         groupId});
     }
-    public Task getTask(int groupId,int idInGroup){
-        Task task=new Task();
+    public TaskBean getTask(int groupId, int idInGroup){
+        TaskBean taskBean =new TaskBean();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ ID + "=? AND " + GROUP_Id +"=?",
                 new String []{String.valueOf(idInGroup),String.valueOf(groupId)});
 
         if (c.moveToFirst()) {
-            task.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
-            task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
-            task.setDate(c.getString(c.getColumnIndex(DATE)));
-            task.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
-            task.setType(c.getInt(c.getColumnIndex(TYPE)));
-            task.setPath(c.getString(c.getColumnIndex(PATH)));
-            task.setTarget(c.getString(c.getColumnIndex(TARGET)));
+            taskBean.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
+            taskBean.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
+            taskBean.setDate(c.getString(c.getColumnIndex(DATE)));
+            taskBean.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
+            taskBean.setType(c.getInt(c.getColumnIndex(TYPE)));
+            taskBean.setPath(c.getString(c.getColumnIndex(PATH)));
+            taskBean.setTarget(c.getString(c.getColumnIndex(TARGET)));
         }
         c.close();
-        return task;
+        return taskBean;
 
     }
 
-    public ArrayList<Task> getGroupTask(int groupId) {
-        ArrayList<Task> tasks= new ArrayList<>();
+    public ArrayList<TaskBean> getGroupTask(int groupId) {
+        ArrayList<TaskBean> taskBeen = new ArrayList<>();
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{String .valueOf(groupId)});
 
         while (c.moveToNext()) {
-            Task task=new Task();
-            task.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
-            task.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
-            task.setDate(c.getString(c.getColumnIndex(DATE)));
-            task.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
-            task.setType(c.getInt(c.getColumnIndex(TYPE)));
-            task.setPath(c.getString(c.getColumnIndex(PATH)));
-            task.setTarget(c.getString(c.getColumnIndex(TARGET)));
-            tasks.add(task);
+            TaskBean taskBean =new TaskBean();
+            taskBean.setGroupId(c.getInt(c.getColumnIndex(GROUP_Id)));
+            taskBean.setIdInGroup(c.getInt(c.getColumnIndex(ID)));
+            taskBean.setDate(c.getString(c.getColumnIndex(DATE)));
+            taskBean.setClickNum(c.getInt(c.getColumnIndex(CLICK_NUMBER)));
+            taskBean.setType(c.getInt(c.getColumnIndex(TYPE)));
+            taskBean.setPath(c.getString(c.getColumnIndex(PATH)));
+            taskBean.setTarget(c.getString(c.getColumnIndex(TARGET)));
+            taskBeen.add(taskBean);
         }
-        Collections.reverse(tasks);
+        Collections.reverse(taskBeen);
         c.close();
-        return tasks;
+        return taskBeen;
     }
     public int getGroupTaskNum(int groupId) {
         Cursor c = mDb.rawQuery("select * from "+TASK_TABLE_NAME+" where "+ GROUP_Id +"=?",new String []{String .valueOf(groupId)});

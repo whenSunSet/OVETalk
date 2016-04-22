@@ -6,14 +6,14 @@ import android.os.Parcelable;
 /**
  * Created by heshixiyang on 2016/1/22.
  */
-public class Work implements Parcelable {
-    public static final Parcelable.Creator<Work> CREATOR = new Parcelable.Creator<Work>() {
-        public Work createFromParcel(Parcel source) {
-            return new Work(source);
+public class WorkBean implements Parcelable {
+    public static final Parcelable.Creator<WorkBean> CREATOR = new Parcelable.Creator<WorkBean>() {
+        public WorkBean createFromParcel(Parcel source) {
+            return new WorkBean(source);
         }
 
-        public Work[] newArray(int size) {
-            return new Work[size];
+        public WorkBean[] newArray(int size) {
+            return new WorkBean[size];
         }
     };
     private int taskId;
@@ -25,7 +25,12 @@ public class Work implements Parcelable {
     private int clickNum;
     private String date;
 
-    public Work(int taskId, int groupId, int idInTask, int type, String path, String master, int clickNum, String date) {
+    public WorkBean(int taskId, int idInTask) {
+        this.taskId = taskId;
+        this.idInTask = idInTask;
+    }
+
+    public WorkBean(int taskId, int groupId, int idInTask, int type, String path, String master, int clickNum, String date) {
         this.taskId = taskId;
         this.groupId = groupId;
         this.idInTask = idInTask;
@@ -36,17 +41,17 @@ public class Work implements Parcelable {
         this.date = date;
     }
 
-    public Work(int idInTask, int taskId,String path,int type) {
+    public WorkBean(int idInTask, int taskId, String path, int type) {
         this.idInTask = idInTask;
         this.taskId = taskId;
         this.path=path;
         this.type=type;
     }
 
-    public Work() {}
+    public WorkBean() {}
 
 
-    protected Work(Parcel in) {
+    protected WorkBean(Parcel in) {
         this.taskId = in.readInt();
         this.groupId = in.readInt();
         this.idInTask = in.readInt();

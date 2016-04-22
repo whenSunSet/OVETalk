@@ -3,6 +3,8 @@ package talk.activity.fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -14,10 +16,10 @@ import android.widget.Toast;
 
 import com.example.heshixiyang.ovetalk.R;
 
-import java.util.HashMap;
 import java.util.List;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.aboutGroup.GroupActivity;
 import talk.activity.create.MakeHomeWorkActivity;
@@ -31,8 +33,8 @@ import talk.model.Group;
 import talk.model.GroupChatMessage;
 import talk.model.Message;
 import talk.model.TabInfo;
-import talk.model.Task;
-import talk.model.Work;
+import talk.model.TaskBean;
+import talk.model.WorkBean;
 
 /**
  * Created by asus on 2015/11/14.
@@ -74,19 +76,25 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_MESSAGE){
                     receive(intent);
                 }else if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_TASK_MESSAGE){
-                    ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
-                            "我发布了一个任务，快来看看吧",
-                            null,
-                            GlobleData.MASTER_SEND_TASK_MESSAGE,
-                            null,
-                            (Task)((HashMap<String, Object>) intent.getParcelableExtra("task")).get("task"));
+                    ((GroupChatting) (mTabs.get(0).fragment)).startHttpService(GlobleData.sendTaskMessage
+                            ,GlobleData.MASTER_SEND_TASK_MESSAGE
+                            ,mGroup.getGroupId()
+                            ,mApplication.getSpUtil().getUserId()
+                            ,mGroup.getGroupIcon()
+                            ,"我发布了一个任务，快来看看吧"
+                            ,null
+                            ,(TaskBean)intent.getParcelableExtra("taskBean"));
                 }else if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_HOMEWORK_MESSAGE){
-                    ((GroupChatting) (mTabs.get(0).fragment)).addAndSendMessage(
-                            "我发布了一个作业，快来看看吧",
-                            null,
-                            GlobleData.USER_SEND_HOMEWORK_MESSAGE,
-                            (Work)((HashMap<String, Object>) intent.getParcelableExtra("work")).get("work"),
-                            null);
+                    ((GroupChatting) (mTabs.get(0).fragment)).startHttpService(GlobleData.sendWorkMessage
+                            ,GlobleData.USER_SEND_HOMEWORK_MESSAGE
+                            ,mGroup.getGroupId()
+                            ,mApplication.getSpUtil().getUserId()
+                            ,mGroup.getGroupIcon()
+                            ,"我发布了一个任务，快来看看吧"
+                            ,(WorkBean)(intent.getParcelableExtra("workBean"))
+                            ,null);
+                }else if (intent.getIntExtra("type",GlobleData.DEFAULT)==GlobleData.BROADCAST_FLASH){
+                    flashFragment();
                 }
             }
         });
@@ -105,7 +113,7 @@ public class  GroupAll extends IndicatorFragmentActivity {
     public void receive(Intent intent) {
         Message message=intent.getParcelableExtra(GlobleData.KEY_MESSAGE);
         GroupChatMessage chatMessage=new GroupChatMessage(message.getMessage(),true,message.getGroupId()
-                ,message.getUserIcon(),true,message.getDate(),message.getUserNickName(),message.getUserId()
+                ,message.getUserIcon(),true,message.getDate(),message.getUserNick(),message.getUserId()
                 ,message.getMessageImage(),message.getMessageStatu());
 
         int messageStatu=message.getMessageStatu();
@@ -232,6 +240,17 @@ public class  GroupAll extends IndicatorFragmentActivity {
                 , GroupWork.class));
         return 0;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode==GlobleData.OPEN_PHOTO_ALBUM){
+            Uri uri = data.getData();
+            Bitmap photo= GlobleMethod.getImageFromUri(uri, this);
+            String fileName=GlobleMethod.getCacheDir(mApplication)+"/"+System.currentTimeMillis()+".jpg";
+            ((GroupChatting) (mTabs.get(0).fragment)).setMessageImage(GlobleMethod.saveImage(photo,fileName).getAbsolutePath());
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

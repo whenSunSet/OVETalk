@@ -11,8 +11,8 @@ import talk.Globle.GlobleMethod;
 import talk.activity.util.ListViewActivity;
 import talk.adapter.MemberAdapter;
 import talk.model.Group;
-import talk.model.Task;
-import talk.model.Work;
+import talk.model.TaskBean;
+import talk.model.WorkBean;
 
 /**
  * Created by heshixiyang on 2016/3/3.
@@ -20,8 +20,8 @@ import talk.model.Work;
 public class MemberFragment extends BasicFragment {
     private Group mGroup;
     private ListViewActivity activity;
-    private Work mWork;
-    private Task mTask;
+    private WorkBean mWorkBean;
+    private TaskBean mTaskBean;
     public MemberFragment() {
         super();
     }
@@ -35,20 +35,20 @@ public class MemberFragment extends BasicFragment {
         super.init(inflater);
         activity=(ListViewActivity)getActivity();
         mGroup=activity.mGroup;
-        mTask=activity.mTask;
-        mWork=activity.mWork;
+        mTaskBean =activity.mTaskBean;
+        mWorkBean =activity.mWorkBean;
         if (activity.mIsWorkClick){
             mData=GlobleMethod.findClickWorkMembers(
                     mGroup.getGroupId(),
-                    mWork.getTaskId(),
-                    mWork.getIdInTask(),
+                    mWorkBean.getTaskId(),
+                    mWorkBean.getIdInTask(),
                     activity.mApplication.getClickWorkDB(),
                     activity.mApplication.getUserDB());
 
         }else if (activity.mIsTaskClick){
             mData=GlobleMethod.findClickTaskMembers(
                     mGroup.getGroupId(),
-                    mTask.getIdInGroup(),
+                    mTaskBean.getIdInGroup(),
                     activity.mApplication.getClickTaskDB(),
                     activity.mApplication.getUserDB());
         }else {

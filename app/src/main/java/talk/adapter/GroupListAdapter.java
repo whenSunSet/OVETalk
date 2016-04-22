@@ -18,6 +18,7 @@ import com.example.heshixiyang.ovetalk.R;
 import java.util.List;
 
 import talk.Globle.GlobleData;
+import talk.Globle.GlobleMethod;
 import talk.TalkApplication;
 import talk.activity.fragment.GroupAll;
 import talk.model.Group;
@@ -71,10 +72,15 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         GroupChatMessage chatMessage=mApplication.getGroupMessageDB().getLastChatMessage(group.getGroupId());
         //放置该group的NickName和icon
         holder.name.setText(group.getGroupNick());
-        holder.icon.setImageBitmap(BitmapFactory.decodeFile(mGroup.getGroupIcon()));
         //判断该群的groupName是否和其userName相同，若相同则该群为系统群
-        boolean isSystemGroup=(group.getGroupId()==GlobleData.SYSTEM);
-        Log.d("GroupListAdapter", group.toString());
+        boolean isSystemGroup=group.getGroupId()==GlobleData.SYSTEM;
+        if (group.getGroupMaster().equals(mApplication.getSpUtil().getUserId())){
+            //是群主
+            holder.icon.setImageBitmap(BitmapFactory.decodeFile(mGroup.getGroupIcon()));
+        }else {
+            //不是群主
+            holder.icon.setImageBitmap(BitmapFactory.decodeFile(GlobleMethod.getIconFromId(mApplication,String .valueOf(group.getGroupId()),GlobleData.SAVE_GROUP_ICON)));
+        }
 
         //判断当前group的消息是否为空
         if (chatMessage==null){
@@ -118,7 +124,6 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
             //若不是，则直接传递groupName
             setClick(holder.chatAll,group.getGroupId(),group);
         }
-
     }
 
     private void setClick(LinearLayout chatAll, final int groupId, final Group group){
